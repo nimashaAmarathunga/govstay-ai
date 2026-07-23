@@ -1,45 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
-
-const BUNGALOWS = [
-  {
-    id: 1,
-    title: "Nuwara Eliya Rest House",
-    location: "Nuwara Eliya, Central Province",
-    price: "Rs. 18,500",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
-    amenities: ["Garden View", "Fireplace", "Steward Service"],
-  },
-  {
-    id: 2,
-    title: "Galle Fort Heritage Bungalow",
-    location: "Galle, Southern Province",
-    price: "Rs. 22,000",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC7B6uYfI_cOhVd_c31fC_V41wJt0605kQ7tD2xG63c-qM_d9sZl7Z5YjX8x5hH-G8l6r1B_F2b489FjH5gD6mP1XlR7D2d5w4m7V5p9w8c2h4_6N7f-t7n7N1Y7Z2Y7H4m4Z9n8X7Y2Z7J9N4m8X9g8X5g4n1Y7X4Z8m8V4X8d8X9p6m9V6f7_F1b4F1m8g9d8X9g8X5g4n1Y7X4Z8m8V4X8d8X9p6m9V6f7?sz=w400", // using placeholder, let's just use generic unsplash or same image for now. Actually wait, I can just use a similar long string or a standard placeholder. Let's use standard placeholders if it's dummy data.
-  },
-  {
-    id: 3,
-    title: "Kandy Lake View Circuit",
-    location: "Kandy, Central Province",
-    price: "Rs. 15,000",
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    amenities: ["Lake View", "AC", "WiFi"],
-  },
-  {
-    id: 4,
-    title: "Yala Safari Lodge (Gov)",
-    location: "Yala, Southern Province",
-    price: "Rs. 25,000",
-    image: "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    amenities: ["Safari Access", "Full Board", "Guide"],
-  }
-];
-
-// fixing image 2
-BUNGALOWS[1].image = "https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
-BUNGALOWS[1].amenities = ["Ocean View", "Historical", "AC"];
-
+import { BUNGALOWS } from "@/lib/bungalows";
 
 export default function BrowsePage() {
   return (
@@ -88,9 +51,9 @@ export default function BrowsePage() {
                     <span className="font-bold text-xl text-blue-600">{bungalow.price}</span>
                     <span className="text-xs text-slate-400 uppercase tracking-wide ml-1">/ night</span>
                   </div>
-                  <button className="px-4 py-2 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
+                  <Link href={`/browse/${bungalow.slug}`} className="px-4 py-2 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
                     View Details
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
