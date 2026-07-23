@@ -49,6 +49,9 @@ const INITIAL_BUNGALOWS = [
   }
 ];
 
+import Link from "next/link";
+import React from "react";
+import { BUNGALOWS } from "@/lib/bungalows";
 
 export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -205,6 +208,9 @@ export default function BrowsePage() {
                       </span>
                     ))}
                   </div>
+                  <Link href={`/browse/${bungalow.slug}`} className="px-4 py-2 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
+                    View Details
+                  </Link>
                 </div>
 
                 <div className="mt-auto border-t border-slate-100 pt-6">

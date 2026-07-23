@@ -17,7 +17,7 @@ const INITIAL_BOOKINGS = [
     date: "Aug 02 - Aug 05, 2024",
     status: "Completed",
     amount: "Rs. 67,500",
-    image: "https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1582610116397-edb318620f90?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     id: "BKG-2023-112",
