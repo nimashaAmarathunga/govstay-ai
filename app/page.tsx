@@ -51,7 +51,6 @@ export default function Page() {
   const [inputText, setInputText] = useState("");
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
-  const [systemLoad, setSystemLoad] = useState(12);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -61,18 +60,6 @@ export default function Page() {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
-  // Subtle updates to system load to look live
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSystemLoad((prev) => {
-        const change = Math.floor(Math.random() * 3) - 1; // -1 to +1
-        const nextLoad = prev + change;
-        return Math.max(8, Math.min(18, nextLoad));
-      });
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
 
   const formatTime = () => {
     const now = new Date();
@@ -119,7 +106,7 @@ export default function Page() {
         triggerConfirmBooking();
         return;
       } else {
-        replyText = `I have logged: "${text}". Please confirm the booking using the panel on the right or ask for more details.`;
+        replyText = `I have noted: "${text}". Feel free to confirm your booking or ask for more details.`;
       }
 
       setMessages((prev) => [
@@ -158,8 +145,8 @@ export default function Page() {
           sender: "ai",
           agent: "Notification Agent",
           text: whatsappEnabled
-            ? "WhatsApp notification secure link generated and dispatched."
-            : "Notification secure receipt generated and dispatched to your email.",
+            ? "WhatsApp confirmation sent to your registered number."
+            : "Booking confirmation sent to your email.",
           timestamp: time,
         },
       ]);
@@ -173,494 +160,271 @@ export default function Page() {
   };
 
   return (
-    <>
-      {/* TopAppBar */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-inverse-surface shadow-sm select-none">
-        <div className="flex items-center gap-8">
-          <h1 className="font-headline-md text-headline-md font-bold text-surface-bright">
-            GovStay AI
-          </h1>
-          <nav className="hidden md:flex gap-6 items-center h-full">
-            <a
-              href="#"
-              className="font-label-md text-label-md text-surface-variant hover:text-surface-bright transition-colors"
-            >
-              Browse
-            </a>
-            <a
-              href="#"
-              className="font-label-md text-label-md text-surface-variant hover:text-surface-bright transition-colors"
-            >
-              Map View
-            </a>
-            <a
-              href="#"
-              className="font-label-md text-label-md text-primary-fixed border-b-2 border-primary-fixed pb-1 font-medium"
-            >
-              Agent Platform
-            </a>
-            <a
-              href="#"
-              className="font-label-md text-label-md text-surface-variant hover:text-surface-bright transition-colors"
-            >
-              My Bookings
-            </a>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="font-label-md text-label-md text-surface-variant cursor-pointer hover:text-surface-bright">
-            English
-          </span>
-          <div className="flex gap-2">
-            <button className="p-2 text-surface-variant hover:bg-on-surface-variant/10 rounded-full transition-all active:scale-95 cursor-pointer">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            <button className="p-2 text-surface-variant hover:bg-on-surface-variant/10 rounded-full transition-all active:scale-95 cursor-pointer">
-              <span className="material-symbols-outlined">help</span>
-            </button>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant">
-            <img
-              className="w-full h-full object-cover"
-              alt="Avatar of government official"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGCXl0kYkpoLHHx0G_49GPuQztc4VopnoiFgKFM_wr71bz39PeikWIGXi8W-a3OIJ4dt9TUW1SrWN4xHp3qxcsHuKPihaTSA4dK6Swgq11R36yHsueOmIDeUDvwe9t0Wb67HkoK87Ka9cWAQHU7o9mb_QM0l9HNZ-A_6zkhW72NfAbO19JnNlWwPkn4-OqnsYMzyWehYs3B2dkVC2vskOW2PoqFPtelLviBm35-TgFZYO1RVt3z15f"
-            />
-          </div>
-        </div>
-      </header>
-
+    <div className="flex flex-col h-full bg-slate-50">
       {/* Main Content Area */}
-      <main className="flex flex-1 pt-16 h-full overflow-hidden">
-        {/* Left Column: Agent Pipeline */}
-        <aside className="w-80 border-r border-outline-variant bg-surface-container-low flex flex-col select-none">
-          <div className="p-6 border-b border-outline-variant">
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">
-              Agent Pipeline
-            </h2>
-            <p className="font-label-sm text-label-sm text-on-surface-variant">
-              Real-time status monitoring
-            </p>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {/* Verification Agent */}
-            <div className="bento-card p-4 bg-surface-container-lowest rounded-xl border border-primary/20 shadow-sm relative overflow-hidden">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 ai-pulse"></span>
-                  <span className="font-label-md text-label-md text-on-surface">
-                    Verification Agent
-                  </span>
-                </div>
-                <span className="material-symbols-outlined text-primary text-[20px]">
-                  verified
-                </span>
+      <main className="flex-1 flex overflow-hidden">
+        
+        {/* Left Column: Clean Agent Status */}
+        <aside className="w-72 bg-white border-r border-slate-200 flex flex-col hidden lg:flex">
+           <div className="p-5 border-b border-slate-100">
+             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Assistant Agents</h2>
+           </div>
+           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              
+              {/* Verification Agent */}
+              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 relative">
+                 <div className="flex items-center gap-3 mb-1">
+                    <span className="material-symbols-outlined text-blue-600 text-xl">verified_user</span>
+                    <span className="font-semibold text-slate-800 text-sm">Verification</span>
+                 </div>
+                 <p className="text-xs text-slate-600 ml-8">Identity Confirmed</p>
+                 <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500"></div>
               </div>
-              <div className="p-2 bg-surface rounded-lg">
-                <p className="font-label-sm text-label-sm text-on-surface-variant italic">
-                  Log: "Identity confirmed via Gov-ID"
-                </p>
-              </div>
-            </div>
 
-            {/* Preference Agent */}
-            <div className="bento-card p-4 bg-surface-container-lowest rounded-xl border border-primary/20 shadow-sm relative overflow-hidden">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 ai-pulse"></span>
-                  <span className="font-label-md text-label-md text-on-surface">
-                    Preference Agent
-                  </span>
-                </div>
-                <span className="material-symbols-outlined text-primary text-[20px]">
-                  psychology
-                </span>
+              {/* Preference Agent */}
+              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 relative">
+                 <div className="flex items-center gap-3 mb-1">
+                    <span className="material-symbols-outlined text-blue-600 text-xl">psychology</span>
+                    <span className="font-semibold text-slate-800 text-sm">Preferences</span>
+                 </div>
+                 <p className="text-xs text-slate-600 ml-8">Analyzing Requirements</p>
+                 <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500"></div>
               </div>
-              <div className="p-2 bg-surface rounded-lg">
-                <p className="font-label-sm text-label-sm text-on-surface-variant italic">
-                  Log: "Analyzing historical booking patterns"
-                </p>
-              </div>
-            </div>
 
-            {/* Booking Agent */}
-            <div
-              className={`bento-card p-4 rounded-xl border transition-all duration-300 relative overflow-hidden ${
-                bookingStatus === "draft"
-                  ? "bg-surface-container-low border-outline-variant/50 opacity-70"
-                  : "bg-surface-container-lowest border-primary/20 shadow-sm"
-              }`}
-            >
-              {bookingStatus !== "draft" && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-              )}
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      bookingStatus === "confirmed"
-                        ? "bg-emerald-500 ai-pulse"
-                        : bookingStatus === "confirming"
-                        ? "bg-amber-500 animate-pulse"
-                        : "bg-outline"
-                    }`}
-                  ></span>
-                  <span className="font-label-md text-label-md text-on-surface">
-                    Booking Agent
-                  </span>
-                </div>
-                <span
-                  className={`material-symbols-outlined text-[20px] ${
-                    bookingStatus === "draft" ? "text-on-surface-variant" : "text-primary"
-                  }`}
-                >
-                  calendar_today
-                </span>
+              {/* Booking Agent */}
+              <div className={`p-4 rounded-2xl border transition-all ${bookingStatus !== 'draft' ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100 opacity-70'} relative`}>
+                 <div className="flex items-center gap-3 mb-1">
+                    <span className={`material-symbols-outlined text-xl ${bookingStatus !== 'draft' ? 'text-blue-600' : 'text-slate-400'}`}>event_available</span>
+                    <span className={`font-semibold text-sm ${bookingStatus !== 'draft' ? 'text-slate-800' : 'text-slate-500'}`}>Booking</span>
+                 </div>
+                 <p className="text-xs text-slate-600 ml-8">
+                   {bookingStatus === 'draft' ? 'Awaiting Confirmation' : bookingStatus === 'confirming' ? 'Processing...' : 'Confirmed'}
+                 </p>
+                 <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${bookingStatus === 'confirmed' ? 'bg-emerald-500' : bookingStatus === 'confirming' ? 'bg-amber-500 animate-pulse' : 'bg-slate-300'}`}></div>
               </div>
-              <div className={`p-2 rounded-lg ${bookingStatus === "draft" ? "bg-surface-container" : "bg-surface"}`}>
-                <p className="font-label-sm text-label-sm text-on-surface-variant italic">
-                  {bookingStatus === "draft"
-                    ? 'Log: "Waiting for user confirmation"'
-                    : bookingStatus === "confirming"
-                    ? 'Log: "Authenticating Gov-Gateway allocation..."'
-                    : 'Log: "Booking finalized and token archived"'}
-                </p>
-              </div>
-            </div>
 
-            {/* Notification Agent */}
-            <div
-              className={`bento-card p-4 rounded-xl border transition-all duration-300 relative overflow-hidden ${
-                bookingStatus !== "confirmed"
-                  ? "bg-surface-container-low border-outline-variant/50 opacity-70"
-                  : "bg-surface-container-lowest border-primary/20 shadow-sm"
-              }`}
-            >
-              {bookingStatus === "confirmed" && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-              )}
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      bookingStatus === "confirmed" ? "bg-emerald-500 ai-pulse" : "bg-outline"
-                    }`}
-                  ></span>
-                  <span className="font-label-md text-label-md text-on-surface">
-                    Notification Agent
-                  </span>
-                </div>
-                <span
-                  className={`material-symbols-outlined text-[20px] ${
-                    bookingStatus !== "confirmed" ? "text-on-surface-variant" : "text-primary"
-                  }`}
-                >
-                  notifications_active
-                </span>
+              {/* Notification Agent */}
+              <div className={`p-4 rounded-2xl border transition-all ${bookingStatus === 'confirmed' ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100 opacity-70'} relative`}>
+                 <div className="flex items-center gap-3 mb-1">
+                    <span className={`material-symbols-outlined text-xl ${bookingStatus === 'confirmed' ? 'text-blue-600' : 'text-slate-400'}`}>notifications_active</span>
+                    <span className={`font-semibold text-sm ${bookingStatus === 'confirmed' ? 'text-slate-800' : 'text-slate-500'}`}>Notifications</span>
+                 </div>
+                 <p className="text-xs text-slate-600 ml-8">
+                   {bookingStatus === 'confirmed' ? 'Message Sent' : 'Standby'}
+                 </p>
+                 <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${bookingStatus === 'confirmed' ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
               </div>
-              <div className={`p-2 rounded-lg ${bookingStatus !== "confirmed" ? "bg-surface-container" : "bg-surface"}`}>
-                <p className="font-label-sm text-label-sm text-on-surface-variant italic">
-                  {bookingStatus !== "confirmed"
-                    ? 'Log: "Awaiting trigger"'
-                    : whatsappEnabled
-                    ? 'Log: "WhatsApp secure dispatch confirmed"'
-                    : 'Log: "Gov-Email secure dispatch confirmed"'}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="p-4 bg-surface-container border-t border-outline-variant">
-            <div className="flex items-center justify-between text-on-surface-variant px-2 font-medium">
-              <span className="text-label-sm font-label-sm">System Load</span>
-              <span className="text-label-sm font-label-sm">{systemLoad}%</span>
-            </div>
-            <div className="mt-2 w-full bg-outline-variant rounded-full h-1 overflow-hidden">
-              <div
-                className="bg-primary h-1 rounded-full transition-all duration-500"
-                style={{ width: `${systemLoad}%` }}
-              ></div>
-            </div>
-          </div>
+
+           </div>
         </aside>
 
-        {/* Center Column: Conversational Chat */}
-        <section className="flex-1 bg-surface-container-lowest flex flex-col">
-          <div className="p-6 border-b border-outline-variant flex items-center justify-between select-none">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  smart_toy
-                </span>
-              </div>
-              <div>
-                <h3 className="font-headline-md text-[18px] text-on-surface font-semibold">
-                  AI Booking Assistant
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span className="text-label-sm font-label-sm text-on-surface-variant">
-                    Active Session • Nuwara Eliya Search
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button className="p-2 hover:bg-surface-container rounded-lg transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-on-surface-variant">share</span>
-              </button>
-              <button className="p-2 hover:bg-surface-container rounded-lg transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-on-surface-variant">more_vert</span>
-              </button>
-            </div>
-          </div>
+        {/* Center Column: Chat Interface */}
+        <section className="flex-1 flex flex-col bg-slate-50 relative">
+          
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 scroll-smooth">
+             {messages.map((message) => {
+               const isUser = message.sender === "user";
 
-          {/* Chat Flow */}
-          <div
-            ref={chatContainerRef}
-            className="flex-1 overflow-y-auto p-8 space-y-8 scroll-smooth"
-          >
-            {messages.map((message) => {
-              const isUser = message.sender === "user";
+               if (isUser) {
+                 return (
+                   <div key={message.id} className="flex flex-col items-end gap-1 animate-fade-in">
+                     <div className="max-w-[75%] bg-blue-600 text-white px-5 py-3.5 rounded-3xl rounded-tr-sm shadow-sm">
+                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     </div>
+                     <span className="text-xs text-slate-400 px-2 font-medium">You • {message.timestamp}</span>
+                   </div>
+                 );
+               }
 
-              if (isUser) {
-                return (
-                  <div key={message.id} className="flex flex-col items-end gap-2 animate-fade-in">
-                    <div className="max-w-[80%] bg-surface-container-high p-4 rounded-2xl rounded-tr-none text-on-surface">
-                      <p className="font-body-md text-body-md whitespace-pre-wrap">{message.text}</p>
-                    </div>
-                    <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest px-2 select-none">
-                      User • {message.timestamp}
-                    </span>
-                  </div>
-                );
-              }
+               return (
+                 <div key={message.id} className="flex flex-col items-start gap-1 animate-fade-in">
+                   {message.agent && (
+                     <div className="flex items-center gap-1.5 ml-2 mb-0.5">
+                       <span className="material-symbols-outlined text-[14px] text-blue-600">
+                           {message.agent === "Verification Agent" ? "verified_user" : 
+                            message.agent === "Preference Agent" ? "psychology" : 
+                            message.agent === "Booking Agent" ? "event_available" : "notifications_active"}
+                       </span>
+                       <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide">
+                         {message.agent}
+                       </span>
+                     </div>
+                   )}
+                   <div className="max-w-[75%] bg-white border border-slate-100 px-5 py-3.5 rounded-3xl rounded-tl-sm shadow-sm text-slate-700">
+                     <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
 
-              return (
-                <div key={message.id} className="flex flex-col items-start gap-2 animate-fade-in">
-                  {message.agent && (
-                    <div className="flex items-center gap-2 mb-1 select-none">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                        <span className="material-symbols-outlined text-[14px] text-primary">
-                          {message.agent === "Verification Agent"
-                            ? "verified"
-                            : message.agent === "Preference Agent"
-                            ? "psychology"
-                            : message.agent === "Booking Agent"
-                            ? "calendar_today"
-                            : "notifications_active"}
-                        </span>
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
-                          {message.agent}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="max-w-[80%] bg-white border border-outline-variant p-4 rounded-2xl rounded-tl-none shadow-sm text-on-surface">
-                    <p className="font-body-md text-body-md whitespace-pre-wrap">{message.text}</p>
-
-                    {message.propertyCard && (
-                      <div className="mt-4 border border-outline-variant rounded-xl overflow-hidden bg-surface-container-lowest">
-                        <div className="h-32 w-full overflow-hidden bg-slate-100">
-                          <img
-                            className="w-full h-full object-cover"
-                            alt={message.propertyCard.title}
-                            src={message.propertyCard.image}
-                          />
-                        </div>
-                        <div className="p-3 flex justify-between items-center">
-                          <div>
-                            <h4 className="font-label-md text-label-md text-on-surface font-semibold">
-                              {message.propertyCard.title}
-                            </h4>
-                            <p className="text-label-sm text-on-surface-variant">
-                              {message.propertyCard.suite}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-primary font-bold">{message.propertyCard.price}</span>
-                            <p className="text-[10px] text-on-surface-variant">per night</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest px-2 select-none">
-                    GovStay AI • {message.timestamp}
-                  </span>
-                </div>
-              );
-            })}
+                     {message.propertyCard && (
+                       <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-shadow">
+                         <div className="h-40 w-full overflow-hidden relative">
+                           <img
+                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             alt={message.propertyCard.title}
+                             src={message.propertyCard.image}
+                           />
+                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                           <div className="absolute bottom-3 left-3 text-white">
+                              <h4 className="font-bold text-lg leading-tight">{message.propertyCard.title}</h4>
+                              <p className="text-xs text-white/90 font-medium flex items-center gap-1">
+                                 <span className="material-symbols-outlined text-[12px]">location_on</span>
+                                 Nuwara Eliya
+                              </p>
+                           </div>
+                         </div>
+                         <div className="p-4 flex justify-between items-center bg-white">
+                           <div>
+                             <p className="text-sm font-medium text-slate-800">{message.propertyCard.suite}</p>
+                           </div>
+                           <div className="text-right">
+                             <span className="text-blue-600 font-bold text-lg">{message.propertyCard.price}</span>
+                             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">per night</p>
+                           </div>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                   <span className="text-xs text-slate-400 px-2 font-medium">GovSewana Assistant • {message.timestamp}</span>
+                 </div>
+               );
+             })}
           </div>
 
           {/* Chat Input */}
-          <div className="p-6 bg-surface-container-low border-t border-outline-variant">
-            <div className="relative max-w-3xl mx-auto flex items-center bg-white border border-outline rounded-xl p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
-              <button className="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                <span className="material-symbols-outlined">attach_file</span>
-              </button>
-              <input
-                className="flex-1 border-none focus:ring-0 bg-transparent text-body-md px-3 py-2 text-on-surface outline-none"
-                placeholder="Type a message or ask the agent to book..."
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
-              <button
-                onClick={() => handleSendMessage()}
-                className="bg-primary text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors shadow-sm cursor-pointer"
-              >
-                <span className="material-symbols-outlined">send</span>
-              </button>
-            </div>
-            <div className="flex justify-center gap-4 mt-3 select-none">
-              <button
-                onClick={() => handleSendMessage("Tell me more about the amenities")}
-                className="text-label-sm font-label-sm text-on-surface-variant border border-outline-variant px-3 py-1 rounded-full hover:bg-white bg-transparent transition-colors cursor-pointer"
-              >
-                "Tell me more about the amenities"
-              </button>
-              <button
-                onClick={() => handleSendMessage("Any other bungalows nearby?")}
-                className="text-label-sm font-label-sm text-on-surface-variant border border-outline-variant px-3 py-1 rounded-full hover:bg-white bg-transparent transition-colors cursor-pointer"
-              >
-                "Any other bungalows nearby?"
-              </button>
+          <div className="p-4 md:p-6 bg-white border-t border-slate-200">
+            <div className="max-w-3xl mx-auto">
+               <div className="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
+                  <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
+                     ✨ Tell me about amenities
+                  </button>
+                  <button onClick={() => handleSendMessage("Any other bungalows nearby?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
+                     🔍 Show alternatives
+                  </button>
+               </div>
+               <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full p-1.5 pr-2 focus-within:bg-white focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100 transition-all">
+                 <button className="w-10 h-10 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer">
+                    <span className="material-symbols-outlined text-[22px]">add_circle</span>
+                 </button>
+                 <input
+                   className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 py-2"
+                   placeholder="Type your message..."
+                   type="text"
+                   value={inputText}
+                   onChange={(e) => setInputText(e.target.value)}
+                   onKeyDown={handleKeyPress}
+                 />
+                 <button
+                   onClick={() => handleSendMessage()}
+                   disabled={!inputText.trim()}
+                   className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm cursor-pointer"
+                 >
+                   <span className="material-symbols-outlined text-[18px]">send</span>
+                 </button>
+               </div>
             </div>
           </div>
         </section>
 
-        {/* Right Column: Session Context & Draft State */}
-        <aside className="w-80 border-l border-outline-variant bg-surface-container-low flex flex-col select-none">
-          <div className="p-6 border-b border-outline-variant">
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-1">
-              Session Context
-            </h2>
-            <p className="font-label-sm text-label-sm text-on-surface-variant">
-              Real-time Draft State
-            </p>
-          </div>
-          <div className="p-4 space-y-6 flex-1 overflow-y-auto">
-            {/* Context Items */}
-            <div className="space-y-4">
-              <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="material-symbols-outlined text-primary text-[18px]">
-                    account_circle
-                  </span>
-                  <span className="font-label-md text-label-md text-on-surface-variant">
-                    Verified User ID
-                  </span>
-                </div>
-                <p className="font-headline-md text-[18px] text-on-surface font-mono">
-                  STU-2026-001
-                </p>
-              </div>
-              <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="material-symbols-outlined text-primary text-[18px]">
-                    location_on
-                  </span>
-                  <span className="font-label-md text-label-md text-on-surface-variant">
-                    Selected Accommodation
-                  </span>
-                </div>
-                <p className="font-body-md text-body-md text-on-surface font-semibold">
-                  Nuwara Eliya Rest House
-                </p>
-                <div className="mt-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-on-surface-variant text-[18px]">
-                    event
-                  </span>
-                  <span className="text-label-sm font-label-sm text-on-surface">
-                    Sept 14 - Sept 16, 2024
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Card */}
-            <div className="bg-inverse-surface text-surface-bright p-5 rounded-2xl shadow-xl space-y-4">
-              <h3 className="font-label-md text-label-md flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    bookingStatus === "confirmed"
-                      ? "bg-emerald-400 ai-pulse"
-                      : bookingStatus === "confirming"
-                      ? "bg-amber-400 animate-pulse"
-                      : "bg-primary-fixed"
-                  }`}
-                ></span>
-                {bookingStatus === "confirmed"
-                  ? "Booking Confirmed"
-                  : bookingStatus === "confirming"
-                  ? "Finalizing..."
-                  : "Ready to Finalize"}
-              </h3>
-              <div className="py-2 border-y border-on-surface-variant/20 space-y-2">
-                <div className="flex justify-between text-label-sm">
-                  <span className="text-surface-variant">2 Nights × Rs. 18,500</span>
-                  <span>Rs. 37,000</span>
-                </div>
-                <div className="flex justify-between text-label-sm">
-                  <span className="text-surface-variant">Service Fee</span>
-                  <span>Rs. 1,200</span>
-                </div>
-                <div className="flex justify-between font-bold text-label-md mt-1">
-                  <span>Total</span>
-                  <span className="text-primary-fixed">Rs. 38,200</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <label className="text-label-sm text-surface-variant cursor-pointer" htmlFor="whatsapp-toggle">
-                  Send WhatsApp notification
-                </label>
-                <div className="relative inline-block w-10 h-5">
-                  <input
-                    checked={whatsappEnabled}
-                    onChange={(e) => setWhatsappEnabled(e.target.checked)}
-                    disabled={bookingStatus !== "draft"}
-                    className="sr-only peer disabled:opacity-50"
-                    id="whatsapp-toggle"
-                    type="checkbox"
-                  />
-                  <div className="w-full h-full bg-on-surface-variant/30 rounded-full peer peer-checked:bg-primary-fixed transition-colors cursor-pointer"></div>
-                  <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5 cursor-pointer"></div>
-                </div>
+        {/* Right Column: Booking Details */}
+        <aside className="w-80 bg-white border-l border-slate-200 flex flex-col">
+           <div className="p-5 border-b border-slate-100 flex items-center gap-2">
+             <span className="material-symbols-outlined text-slate-400">receipt_long</span>
+             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Your Selection</h2>
+           </div>
+           
+           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-6">
+              
+              {/* Selected Accommodation info */}
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                 <h3 className="font-bold text-slate-800 text-lg mb-1">Nuwara Eliya Rest House</h3>
+                 <p className="text-sm text-slate-500 mb-4">Superior Garden Suite</p>
+                 
+                 <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-slate-700">
+                       <span className="material-symbols-outlined text-slate-400 text-[20px]">calendar_month</span>
+                       <div>
+                          <p className="font-medium">Sept 14 - Sept 16</p>
+                          <p className="text-xs text-slate-500">2 Nights</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-slate-700">
+                       <span className="material-symbols-outlined text-slate-400 text-[20px]">group</span>
+                       <p className="font-medium">2 Guests</p>
+                    </div>
+                 </div>
               </div>
 
-              {bookingStatus === "draft" ? (
-                <button
-                  onClick={triggerConfirmBooking}
-                  className="w-full py-3 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer font-bold"
-                >
-                  Confirm Booking
-                </button>
-              ) : bookingStatus === "confirming" ? (
-                <button
-                  disabled
-                  className="w-full py-3 bg-primary-container/70 text-on-primary-container font-label-md text-label-md rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-wait"
-                >
-                  <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
-                  Securing Booking...
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="w-full py-3 bg-emerald-600 text-white font-label-md text-label-md rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 select-none cursor-default"
-                >
-                  <span className="material-symbols-outlined text-[18px]">verified</span>
-                  Booking Confirmed
-                </button>
-              )}
-              <p className="text-[10px] text-center text-surface-variant opacity-70">
-                Secured via Gov-Gateway Encryption
-              </p>
-            </div>
-          </div>
+              {/* Action / Checkout Card */}
+              <div className="bg-slate-800 text-white p-5 rounded-3xl shadow-lg mt-auto flex flex-col gap-4">
+                 
+                 <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                    <span className="text-white/70 text-sm">Status</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' : bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                       {bookingStatus}
+                    </span>
+                 </div>
+
+                 <div className="space-y-2 text-sm">
+                    <div className="flex justify-between text-white/80">
+                       <span>Rs. 18,500 x 2 nights</span>
+                       <span>Rs. 37,000</span>
+                    </div>
+                    <div className="flex justify-between text-white/80">
+                       <span>Service Fee</span>
+                       <span>Rs. 1,200</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-white/10">
+                       <span>Total</span>
+                       <span className="text-emerald-400">Rs. 38,200</span>
+                    </div>
+                 </div>
+
+                 <div className="flex items-center justify-between py-2 mt-2">
+                   <label className="text-sm text-white/80 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
+                     <span className="material-symbols-outlined text-[18px]">chat</span>
+                     WhatsApp Updates
+                   </label>
+                   <div className="relative inline-block w-11 h-6">
+                     <input
+                       checked={whatsappEnabled}
+                       onChange={(e) => setWhatsappEnabled(e.target.checked)}
+                       disabled={bookingStatus !== "draft"}
+                       className="sr-only peer disabled:opacity-50"
+                       id="whatsapp-toggle"
+                       type="checkbox"
+                     />
+                     <div className="w-full h-full bg-white/20 rounded-full peer peer-checked:bg-blue-500 transition-colors cursor-pointer"></div>
+                     <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 cursor-pointer shadow-sm"></div>
+                   </div>
+                 </div>
+
+                 {bookingStatus === "draft" ? (
+                   <button
+                     onClick={triggerConfirmBooking}
+                     className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                   >
+                     Confirm Booking
+                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                   </button>
+                 ) : bookingStatus === "confirming" ? (
+                   <button
+                     disabled
+                     className="w-full py-3.5 bg-blue-500/50 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-wait"
+                   >
+                     <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                     Processing...
+                   </button>
+                 ) : (
+                   <button
+                     disabled
+                     className="w-full py-3.5 bg-emerald-500 text-white font-bold rounded-2xl shadow-md mt-2 flex items-center justify-center gap-2"
+                   >
+                     <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                     Confirmed
+                   </button>
+                 )}
+              </div>
+           </div>
         </aside>
       </main>
-    </>
+    </div>
   );
 }

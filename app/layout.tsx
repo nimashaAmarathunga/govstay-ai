@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navigation from "@/components/layout/Navigation";
 
 export const metadata: Metadata = {
   title: "GovStay AI - Government Accommodation Booking & Verification",
@@ -17,7 +18,8 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet" />
       </head>
-      <body className="h-full bg-background text-on-surface overflow-hidden flex flex-col antialiased">
+      <body className="h-full bg-slate-50 font-sans text-slate-900 overflow-hidden flex flex-col antialiased">
+        <Navigation />
         {children}
       </body>
     </html>
