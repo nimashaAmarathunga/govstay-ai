@@ -1,0 +1,148 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum WorkStatus {
+  WORKING
+  RETIRED
+}
+
+enum Role {
+  PUBLIC_USER
+  GOV_EMPLOYEE
+  DEPT_ADMIN
+  SUPER_ADMIN
+}
+
+enum RoomType {
+  AC
+  NON_AC
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+model User {
+  id          String      @id @default(uuid())
+  name        String
+  empId       String?     @unique
+  status      WorkStatus  @default(WORKING)
+  placeOfWork String?
+  position    String?
+  username    String      @unique
+  password    String
+  empIdPhoto  String?
+  role        Role        @default(GOV_EMPLOYEE)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  bookings    Booking[]   @relation("UserBookings")
+  sessions    AgentSession[]
+
+  @@map("users")
+}
+
+model CircuitBungalow {
+  id          String     @id @default(uuid())
+  name        String
+  location    String
+  noOfRooms   Int
+  department  String
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  caretaker   Caretaker?
+  rooms       Room[]
+  bookings    Booking[]
+
+  @@map("circuit_bungalows")
+}
+
+model Caretaker {
+  id                String          @id @default(uuid())
+  name              String
+  address           String
+  telephoneNo       String
+  emailAddress      String?
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  circuitBungalowId String          @unique
+  circuitBungalow   CircuitBungalow @relation(fields: [circuitBungalowId], references: [id], onDelete: Cascade)
+
+  @@map("caretakers")
+}
+
+model Room {
+  id                String          @id @default(uuid())
+  roomNumber        String
+  roomType          RoomType        @default(NON_AC)
+  items             String[]
+  noOfBeds          Int
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  circuitBungalowId String
+  circuitBungalow   CircuitBungalow @relation(fields: [circuitBungalowId], references: [id], onDelete: Cascade)
+
+  bookings          Booking[]
+
+  @@map("rooms")
+}
+
+model Booking {
+  id                String          @id @default(uuid())
+  bookingId         String          @unique @default(cuid())
+
+  userId            String
+  user              User            @relation("UserBookings", fields: [userId], references: [id], onDelete: Cascade)
+
+  circuitBungalowId String
+  circuitBungalow   CircuitBungalow @relation(fields: [circuitBungalowId], references: [id], onDelete: Cascade)
+
+  roomId            String
+  room              Room            @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  fromDate          DateTime
+  toDate            DateTime
+  status            BookingStatus   @default(CONFIRMED)
+  totalCost         Float?
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@map("bookings")
+}
+
+model AgentSession {
+  id            String   @id @default(uuid())
+  sessionId     String   @unique
+
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  sessionMemory Json
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("agent_sessions")
+}
