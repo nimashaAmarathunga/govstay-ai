@@ -11,6 +11,7 @@ export default function Navigation() {
     { name: "Browse", href: "/browse" },
     { name: "Map View", href: "/map" },
     { name: "My Bookings", href: "/bookings" },
+    { name: "Admin Panel", href: "/admin" },
     { name: "My Profile", href: "/profile" },
   ];
 
