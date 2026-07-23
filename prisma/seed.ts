@@ -63,9 +63,17 @@ async function main() {
   const bungalow1 = await prisma.circuitBungalow.create({
     data: {
       name: 'Nuwara Eliya Rest House',
+      slug: 'nuwara-eliya-rest-house',
       location: 'Nuwara Eliya, Central Province',
       noOfRooms: 3,
       department: 'Ministry of Public Administration',
+      price: 18500.0,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ',
+      rating: 4.8,
+      amenities: ['Garden View', 'Fireplace', 'Steward Service'],
+      highlights: ['Quiet garden setting', 'Classic fireplace lounge', 'Close to Gregory Lake'],
+      description: 'Set among the cool hills of Nuwara Eliya, this welcoming government rest house combines classic colonial character with peaceful garden views. It is a comfortable base for exploring the town, tea country, and nearby walking trails.',
+      capacity: 6,
     },
   });
 
@@ -113,9 +121,17 @@ async function main() {
   const bungalow2 = await prisma.circuitBungalow.create({
     data: {
       name: 'Galle Fort Heritage Bungalow',
+      slug: 'galle-fort-heritage-bungalow',
       location: 'Galle, Southern Province',
       noOfRooms: 2,
       department: 'Ministry of Cultural Affairs',
+      price: 22000.0,
+      image: 'https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      rating: 4.8,
+      amenities: ['Ocean View', 'Historical', 'AC'],
+      highlights: ['Walkable to Galle Fort', 'Heritage architecture', 'Air-conditioned rooms'],
+      description: "Stay close to the ramparts and ocean breeze in a heritage bungalow shaped by Galle's unmistakable coastal history. Restored details, cool interiors, and an easy walk to the fort make this a memorable southern escape.",
+      capacity: 4,
     },
   });
 
@@ -153,9 +169,17 @@ async function main() {
   const bungalow3 = await prisma.circuitBungalow.create({
     data: {
       name: 'Kandy Lake View Circuit',
+      slug: 'kandy-lake-view-circuit',
       location: 'Kandy, Central Province',
       noOfRooms: 2,
       department: 'Ministry of Tourism',
+      price: 15000.0,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      rating: 4.8,
+      amenities: ['Lake View', 'AC', 'WiFi'],
+      highlights: ['Panoramic lake outlook', 'Fast WiFi included', 'Near Temple of the Tooth'],
+      description: 'Enjoy an elevated view over Kandy Lake from this centrally located circuit bungalow. With practical modern comforts and quick access to the city\'s cultural landmarks, it suits both short visits and relaxed family stays.',
+      capacity: 4,
     },
   });
 
@@ -193,9 +217,17 @@ async function main() {
   const bungalow4 = await prisma.circuitBungalow.create({
     data: {
       name: 'Yala Safari Lodge (Gov)',
+      slug: 'yala-safari-lodge',
       location: 'Yala, Southern Province',
       noOfRooms: 3,
       department: 'Department of Wildlife Conservation',
+      price: 25000.0,
+      image: 'https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      rating: 4.8,
+      amenities: ['Safari Access', 'Full Board', 'Guide'],
+      highlights: ['Easy park access', 'Full-board stay', 'Experienced local guide'],
+      description: 'Make an early start for Yala National Park from this government safari lodge. Full-board hospitality, guided excursions, and generous outdoor spaces make it an ideal base for a focused wildlife break.',
+      capacity: 6,
     },
   });
 

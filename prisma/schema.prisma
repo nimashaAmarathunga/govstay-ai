@@ -59,10 +59,18 @@ model User {
 
 model CircuitBungalow {
   id          String     @id @default(uuid())
+  slug        String     @unique
   name        String
   location    String
   noOfRooms   Int
   department  String
+  price       Float
+  image       String
+  description String     @db.Text
+  rating      Float      @default(4.8)
+  amenities   String[]
+  highlights  String[]
+  capacity    Int
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
