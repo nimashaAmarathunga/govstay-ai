@@ -3,8 +3,8 @@ import { prisma } from '../lib/prisma';
 import { WorkStatus, Role, RoomType, BookingStatus } from '@prisma/client';
 
 async function main() {
-  console.log('Clearing existing data...');
-  // Delete in order of dependencies (child tables first)
+  console.log('🧹 Clearing existing database records...');
+  // Delete child records first to respect foreign key constraints
   await prisma.booking.deleteMany({});
   await prisma.agentSession.deleteMany({});
   await prisma.room.deleteMany({});
@@ -12,309 +12,532 @@ async function main() {
   await prisma.circuitBungalow.deleteMany({});
   await prisma.user.deleteMany({});
 
-  console.log('Seeding Users...');
-  const adminUser = await prisma.user.create({
+  console.log('👤 Seeding System Users...');
+
+  const superAdmin = await prisma.user.create({
     data: {
-      name: 'Super Admin User',
+      name: 'Dr. K. L. Perera',
       username: 'superadmin',
-      password: 'adminpassword123', // In a real app, this would be hashed
+      password: 'adminpassword123',
       role: Role.SUPER_ADMIN,
       placeOfWork: 'Ministry of Public Administration',
-      position: 'Director IT',
+      position: 'Director General',
     },
   });
 
-  const deptAdminUser = await prisma.user.create({
+  const deptAdminPublicAdmin = await prisma.user.create({
     data: {
-      name: 'Department Admin',
-      username: 'deptadmin',
+      name: 'Sunil Wickramasinghe',
+      username: 'pubadmin_admin',
       password: 'deptpassword123',
       role: Role.DEPT_ADMIN,
-      placeOfWork: 'Ministry of Tourism',
-      position: 'Administrative Officer',
+      placeOfWork: 'Ministry of Public Administration',
+      position: 'Senior Administrative Officer',
     },
   });
 
-  const govEmployeeUser = await prisma.user.create({
+  const deptAdminLands = await prisma.user.create({
     data: {
-      name: 'Nimal Fernando',
-      username: 'nimal_fernando',
-      password: 'nimalpassword123',
-      empId: 'GOV-2024-8891',
+      name: 'Kamani Jayawardena',
+      username: 'lands_admin',
+      password: 'deptpassword123',
+      role: Role.DEPT_ADMIN,
+      placeOfWork: "Land Commissioner General's Department",
+      position: 'Assistant Commissioner',
+    },
+  });
+
+  // Government Employees with requested format (2455__Letter)
+  const govEmp1 = await prisma.user.create({
+    data: {
+      name: 'Ravidu Rajapaksha',
+      username: 'ravidu_245503b',
+      password: 'userpassword123',
+      empId: '245503B',
       role: Role.GOV_EMPLOYEE,
       status: WorkStatus.WORKING,
       placeOfWork: 'Department of Wildlife Conservation',
-      position: 'Field Officer',
+      position: 'Software Engineer',
+    },
+  });
+
+  const govEmp2 = await prisma.user.create({
+    data: {
+      name: 'Anura Fernando',
+      username: 'anura_245548p',
+      password: 'userpassword123',
+      empId: '245548P',
+      role: Role.GOV_EMPLOYEE,
+      status: WorkStatus.WORKING,
+      placeOfWork: 'Survey Department of Sri Lanka',
+      position: 'Senior Surveyor',
+    },
+  });
+
+  const govEmp3 = await prisma.user.create({
+    data: {
+      name: 'Champa De Silva',
+      username: 'champa_245516r',
+      password: 'userpassword123',
+      empId: '245516R',
+      role: Role.GOV_EMPLOYEE,
+      status: WorkStatus.RETIRED,
+      placeOfWork: 'Department of Agrarian Development',
+      position: 'Former Divisional Officer',
+    },
+  });
+
+  const govEmp4 = await prisma.user.create({
+    data: {
+      name: 'Lalith Gunawardena',
+      username: 'lalith_245506l',
+      password: 'userpassword123',
+      empId: '245506L',
+      role: Role.GOV_EMPLOYEE,
+      status: WorkStatus.WORKING,
+      placeOfWork: 'Department of Irrigation',
+      position: 'Executive Engineer',
     },
   });
 
   const publicUser = await prisma.user.create({
     data: {
-      name: 'Suresh Perera',
-      username: 'suresh_perera',
-      password: 'sureshpassword123',
+      name: 'Kasun Rathnayake',
+      username: 'kasun_public',
+      password: 'publicpassword123',
       role: Role.PUBLIC_USER,
     },
   });
 
-  console.log('Seeding Circuit Bungalows, Rooms, and Caretakers...');
+  console.log('🏡 Seeding Circuit Bungalows, Caretakers, and Rooms...');
 
-  // 1. Nuwara Eliya Rest House
-  const bungalow1 = await prisma.circuitBungalow.create({
+  // =========================================================================
+  // CATEGORY 1: MINISTRY OF PUBLIC ADMINISTRATION
+  // =========================================================================
+
+  // 1. Nuwara Eliya - Old
+  const neOld = await prisma.circuitBungalow.create({
     data: {
-      name: 'Nuwara Eliya Rest House',
-      slug: 'nuwara-eliya-rest-house',
-      location: 'Nuwara Eliya, Central Province',
+      name: 'Public Admin Holiday Bungalow - Nuwara Eliya (Old)',
+      slug: 'pubadmin-nuwaraeliya-old',
+      location: 'Near Economic Centre, Nuwara Eliya, Central Province',
+      latitude: 6.9562,
+      longitude: 80.7811,
       noOfRooms: 3,
       department: 'Ministry of Public Administration',
-      price: 18500.0,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ',
-      rating: 4.8,
-      amenities: ['Garden View', 'Fireplace', 'Steward Service'],
-      highlights: ['Quiet garden setting', 'Classic fireplace lounge', 'Close to Gregory Lake'],
-      description: 'Set among the cool hills of Nuwara Eliya, this welcoming government rest house combines classic colonial character with peaceful garden views. It is a comfortable base for exploring the town, tea country, and nearby walking trails.',
-      capacity: 6,
+      price: 3000.0,
+      capacity: 10,
+      image: 'https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?auto=format&fit=crop&w=800&q=80',
+      description: 'Traditional holiday bungalow near Nuwara Eliya Dedicated Economic Centre. Features spacious living quarters, fireplace, and scenic garden views.',
+      rating: 4.6,
+      amenities: ['Fireplace', 'Garden', 'Kitchen Facilities', 'Hot Water', 'Steward Service'],
+      highlights: ['Near Economic Centre & Market', 'Gregory Lake (1.5 km)', 'Victoria Park access'],
     },
   });
 
   await prisma.caretaker.create({
     data: {
-      name: 'Sunil Perera',
-      address: 'No 45, Unique View Road, Nuwara Eliya',
-      telephoneNo: '+94 77 123 4567',
-      emailAddress: 'sunil@govstay.lk',
-      circuitBungalowId: bungalow1.id,
+      name: 'Bungalow In-charge',
+      address: 'Near Economic Centre, Nuwara Eliya',
+      telephoneNo: '+94 52 2222363',
+      emailAddress: 'pubadmin.ne@govstay.lk',
+      circuitBungalowId: neOld.id,
     },
   });
 
-  const b1r1 = await prisma.room.create({
-    data: {
-      roomNumber: 'NE-01',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['King Bed', 'Heater', 'TV', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow1.id,
-    },
+  const neOldR1 = await prisma.room.create({
+    data: { roomNumber: 'OLD-101', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], circuitBungalowId: neOld.id },
+  });
+  await prisma.room.create({
+    data: { roomNumber: 'OLD-102', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Wardrobe', 'Shared Bathroom'], circuitBungalowId: neOld.id },
+  });
+  await prisma.room.create({
+    data: { roomNumber: 'OLD-103', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Twin Single Beds', 'Shared Bathroom'], circuitBungalowId: neOld.id },
   });
 
-  const b1r2 = await prisma.room.create({
+  // 2. Diyatalawa - Bungalow A
+  const diyaA = await prisma.circuitBungalow.create({
     data: {
-      roomNumber: 'NE-02',
-      roomType: RoomType.NON_AC,
-      noOfBeds: 2,
-      items: ['Double Bed', 'Heater', 'Wardrobe', 'Shared Bathroom'],
-      circuitBungalowId: bungalow1.id,
-    },
-  });
-
-  const b1r3 = await prisma.room.create({
-    data: {
-      roomNumber: 'NE-03',
-      roomType: RoomType.NON_AC,
-      noOfBeds: 2,
-      items: ['Double Bed', 'Heater', 'Shared Bathroom'],
-      circuitBungalowId: bungalow1.id,
-    },
-  });
-
-  // 2. Galle Fort Heritage Bungalow
-  const bungalow2 = await prisma.circuitBungalow.create({
-    data: {
-      name: 'Galle Fort Heritage Bungalow',
-      slug: 'galle-fort-heritage-bungalow',
-      location: 'Galle, Southern Province',
-      noOfRooms: 2,
-      department: 'Ministry of Cultural Affairs',
-      price: 22000.0,
-      image: 'https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      rating: 4.8,
-      amenities: ['Ocean View', 'Historical', 'AC'],
-      highlights: ['Walkable to Galle Fort', 'Heritage architecture', 'Air-conditioned rooms'],
-      description: "Stay close to the ramparts and ocean breeze in a heritage bungalow shaped by Galle's unmistakable coastal history. Restored details, cool interiors, and an easy walk to the fort make this a memorable southern escape.",
-      capacity: 4,
+      name: 'Public Admin Holiday Bungalow - Diyatalawa (A)',
+      slug: 'pubadmin-diyatalawa-a',
+      location: 'Near Railway Station, Diyatalawa, Uva Province',
+      latitude: 6.8197,
+      longitude: 80.9575,
+      noOfRooms: 4,
+      department: 'Ministry of Public Administration',
+      price: 3000.0,
+      capacity: 11,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
+      description: 'Located in the cool garrison town of Diyatalawa, a short walk from the railway station.',
+      rating: 4.7,
+      amenities: ['Hot Water', 'Mountain Views', 'Dining Area', 'Kitchen'],
+      highlights: ['300m from Diyatalawa Railway Station', 'Fox Hill Ground proximity', 'Near Adisham Monastery'],
     },
   });
 
   await prisma.caretaker.create({
     data: {
-      name: 'Kamal Silva',
-      address: 'No 12, Rampart Street, Galle Fort',
-      telephoneNo: '+94 71 987 6543',
-      emailAddress: 'kamal@govstay.lk',
-      circuitBungalowId: bungalow2.id,
+      name: 'Diyatalawa Station In-charge',
+      address: 'Near Railway Station, Diyatalawa',
+      telephoneNo: '+94 57 2229068',
+      circuitBungalowId: diyaA.id,
     },
   });
 
-  const b2r1 = await prisma.room.create({
-    data: {
-      roomNumber: 'GF-01',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['King Bed', 'AC', 'TV', 'Ocean View balcony', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow2.id,
-    },
-  });
+  for (let i = 1; i <= 4; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `DIY-A0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Armchair'], circuitBungalowId: diyaA.id },
+    });
+  }
 
-  const b2r2 = await prisma.room.create({
+  // 3. Bandarawela - Bungalow 1
+  const ban1 = await prisma.circuitBungalow.create({
     data: {
-      roomNumber: 'GF-02',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['Queen Bed', 'AC', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow2.id,
-    },
-  });
-
-  // 3. Kandy Lake View Circuit
-  const bungalow3 = await prisma.circuitBungalow.create({
-    data: {
-      name: 'Kandy Lake View Circuit',
-      slug: 'kandy-lake-view-circuit',
-      location: 'Kandy, Central Province',
-      noOfRooms: 2,
-      department: 'Ministry of Tourism',
-      price: 15000.0,
-      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      rating: 4.8,
-      amenities: ['Lake View', 'AC', 'WiFi'],
-      highlights: ['Panoramic lake outlook', 'Fast WiFi included', 'Near Temple of the Tooth'],
-      description: 'Enjoy an elevated view over Kandy Lake from this centrally located circuit bungalow. With practical modern comforts and quick access to the city\'s cultural landmarks, it suits both short visits and relaxed family stays.',
-      capacity: 4,
-    },
-  });
-
-  await prisma.caretaker.create({
-    data: {
-      name: 'Anura Bandara',
-      address: 'No 88, Lake Round Road, Kandy',
-      telephoneNo: '+94 72 234 5678',
-      emailAddress: 'anura@govstay.lk',
-      circuitBungalowId: bungalow3.id,
-    },
-  });
-
-  const b3r1 = await prisma.room.create({
-    data: {
-      roomNumber: 'KY-01',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['Double Bed', 'AC', 'TV', 'Lake View Window', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow3.id,
-    },
-  });
-
-  const b3r2 = await prisma.room.create({
-    data: {
-      roomNumber: 'KY-02',
-      roomType: RoomType.NON_AC,
-      noOfBeds: 2,
-      items: ['Double Bed', 'Fan', 'Shared Bathroom'],
-      circuitBungalowId: bungalow3.id,
-    },
-  });
-
-  // 4. Yala Safari Lodge
-  const bungalow4 = await prisma.circuitBungalow.create({
-    data: {
-      name: 'Yala Safari Lodge (Gov)',
-      slug: 'yala-safari-lodge',
-      location: 'Yala, Southern Province',
+      name: 'Public Admin Holiday Bungalow - Bandarawela 1',
+      slug: 'pubadmin-bandarawela-1',
+      location: 'Bindunuwewa Road, Bandarawela, Badulla District',
+      latitude: 6.8322,
+      longitude: 80.9856,
       noOfRooms: 3,
-      department: 'Department of Wildlife Conservation',
-      price: 25000.0,
-      image: 'https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      rating: 4.8,
-      amenities: ['Safari Access', 'Full Board', 'Guide'],
-      highlights: ['Easy park access', 'Full-board stay', 'Experienced local guide'],
-      description: 'Make an early start for Yala National Park from this government safari lodge. Full-board hospitality, guided excursions, and generous outdoor spaces make it an ideal base for a focused wildlife break.',
-      capacity: 6,
+      department: 'Ministry of Public Administration',
+      price: 3000.0,
+      capacity: 7,
+      image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80',
+      description: 'Situated along Bindunuwewa Road, offering convenient access to Bandarawela town and surrounding tea country.',
+      rating: 4.5,
+      amenities: ['Living Lounge', 'Garden', 'Hot Water', 'Caretaker Services'],
+      highlights: ['Located on Bindunuwewa Road', 'Near Bandarawela Town (1.2 km)', 'Easy travel to Lipton’s Seat'],
     },
   });
 
   await prisma.caretaker.create({
     data: {
-      name: 'Ranjith Kumara',
-      address: 'Near Park Entrance, Yala',
-      telephoneNo: '+94 75 345 6789',
-      emailAddress: 'ranjith@govstay.lk',
-      circuitBungalowId: bungalow4.id,
+      name: 'Bindunuwewa Caretaker',
+      address: 'Bindunuwewa Road, Bandarawela',
+      telephoneNo: '+94 57 2222553',
+      circuitBungalowId: ban1.id,
     },
   });
 
-  const b4r1 = await prisma.room.create({
+  await prisma.room.create({
+    data: { roomNumber: 'BAN-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], circuitBungalowId: ban1.id },
+  });
+
+  // 4. Jaffna Holiday Rest
+  const jafRest = await prisma.circuitBungalow.create({
     data: {
-      roomNumber: 'YL-01',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['King Bed', 'AC', 'Mini Fridge', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow4.id,
+      name: 'Jaffna Holiday Rest',
+      slug: 'pubadmin-jaffna-holiday-rest',
+      location: 'Nagadeepa Road, Velanai, Jaffna',
+      latitude: 9.6469,
+      longitude: 79.9181,
+      noOfRooms: 25,
+      department: 'Ministry of Public Administration',
+      price: 2000.0,
+      capacity: 50,
+      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+      description: '25-room holiday rest located on Velanai Island along Nagadeepa Road leading to Kurikadduwan Jetty.',
+      rating: 4.5,
+      amenities: ['AC Rooms', 'Dining Hall', 'Large Parking Lot', 'Security'],
+      highlights: ['Direct route to Nagadeepa Jetty (KKD Jetty)', 'Kayts Causeway', 'Jaffna Fort (15 min drive)'],
     },
   });
 
-  const b4r2 = await prisma.room.create({
+  await prisma.caretaker.create({
     data: {
-      roomNumber: 'YL-02',
-      roomType: RoomType.AC,
-      noOfBeds: 2,
-      items: ['Twin Beds', 'AC', 'Ensuite Bathroom'],
-      circuitBungalowId: bungalow4.id,
+      name: 'Rest Manager',
+      address: 'Nagadeepa Road, Velanai, Jaffna',
+      telephoneNo: '+94 21 3004353 / 0774979252',
+      circuitBungalowId: jafRest.id,
     },
   });
 
-  const b4r3 = await prisma.room.create({
+  const jafR1 = await prisma.room.create({
+    data: { roomNumber: 'JAF-VIP-01', roomType: RoomType.AC, noOfBeds: 2, items: ['King Size Bed', 'AC', 'TV', 'Mini Fridge'], circuitBungalowId: jafRest.id },
+  });
+  await prisma.room.create({
+    data: { roomNumber: 'JAF-AC-02', roomType: RoomType.AC, noOfBeds: 2, items: ['Queen Bed', 'AC', 'Attached Bath'], circuitBungalowId: jafRest.id },
+  });
+  await prisma.room.create({
+    data: { roomNumber: 'JAF-STD-03', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Two Single Beds', 'Ceiling Fan'], circuitBungalowId: jafRest.id },
+  });
+
+  // 5. Katharagama Holiday Rest (PubAdmin)
+  const katRest = await prisma.circuitBungalow.create({
     data: {
-      roomNumber: 'YL-03',
-      roomType: RoomType.NON_AC,
-      noOfBeds: 3,
-      items: ['Three Single Beds', 'Fan', 'Shared Bathroom'],
-      circuitBungalowId: bungalow4.id,
+      name: 'Katharagama Holiday Rest',
+      slug: 'pubadmin-katharagama-holiday-rest',
+      location: 'Kawantissaapura, Tissamaharama Road, Kataragama',
+      latitude: 6.4181,
+      longitude: 81.3328,
+      noOfRooms: 27,
+      department: 'Ministry of Public Administration',
+      price: 2000.0,
+      capacity: 60,
+      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+      description: 'Rest complex situated in Kawantissaapura, serving pilgrims visiting Kataragama Sacred City.',
+      rating: 4.6,
+      amenities: ['AC / Non-AC Rooms', 'Dining Hall', 'Bus Parking', '24/7 Gate Guard'],
+      highlights: ['Located in Kawantissaapura', '2 km to Kataragama Sacred City', 'Near Yala Safari gates'],
     },
   });
 
-  console.log('Seeding Bookings...');
-  
-  // Future booking for Gov Employee
-  const nextWeek = new Date();
-  nextWeek.setDate(nextWeek.getDate() + 7);
-  const nextWeekEnd = new Date(nextWeek);
-  nextWeekEnd.setDate(nextWeekEnd.getDate() + 3);
+  await prisma.caretaker.create({
+    data: {
+      name: 'Manager - Katharagama Rest',
+      address: 'Kawantissaapura, Tissamaharama',
+      telephoneNo: '+94 47 3220999 / 0764666127',
+      circuitBungalowId: katRest.id,
+    },
+  });
+
+  const katR1 = await prisma.room.create({
+    data: { roomNumber: 'KAT-AC-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: katRest.id },
+  });
+
+  // 6. Monaragala Holiday Rest
+  const monRest = await prisma.circuitBungalow.create({
+    data: {
+      name: 'Monaragala Holiday Rest',
+      slug: 'pubadmin-monaragala-holiday-rest',
+      location: 'Kumbukkana Junction, Kumbukkana, Monaragala',
+      latitude: 6.8831,
+      longitude: 81.3852,
+      noOfRooms: 8,
+      department: 'Ministry of Public Administration',
+      price: 2000.0,
+      capacity: 16,
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      description: 'Situated at Kumbukkana Junction along the Monaragala main road.',
+      rating: 4.4,
+      amenities: ['Air Conditioned Rooms', 'Parking', 'Dining Area'],
+      highlights: ['Kumbukkana Junction', 'Kumbukkan Oya river bath spot', 'Monaragala Town (5 km)'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'Kumbukkana Caretaker',
+      address: 'Kumbukkana Junction, Monaragala',
+      telephoneNo: '+94 55 2270701 / 0702817576',
+      circuitBungalowId: monRest.id,
+    },
+  });
+
+  await prisma.room.create({
+    data: { roomNumber: 'MON-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: monRest.id },
+  });
+
+  // =========================================================================
+  // CATEGORY 2: LAND COMMISSIONER GENERAL'S DEPARTMENT (LCGD)
+  // =========================================================================
+
+  // 7. LCGD Nuwara Eliya (Meepilimana)
+  const lcgdNE = await prisma.circuitBungalow.create({
+    data: {
+      name: "LCGD Circuit Bungalow - Nuwara Eliya (Meepilimana)",
+      slug: 'lcgd-nuwaraeliya-meepilimana',
+      location: 'Meepilimana, Nuwara Eliya',
+      latitude: 6.9189,
+      longitude: 80.8031,
+      noOfRooms: 3,
+      department: "Land Commissioner General's Department",
+      price: 1100.0,
+      capacity: 8,
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      description: 'LCGD government bungalow in Meepilimana near Ambewela farm region.',
+      rating: 4.8,
+      amenities: ['Hot Water', 'Kitchen Facilities', 'Scenic Vistas'],
+      highlights: ['Meepilimana Junction', 'Ambewela Dairy Farm (3 km)', 'Moon Plains viewpoint'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'Mr. Pradeep',
+      address: "Gov. Circuit Bungalow LCGD, Meepilimana, Nuwara Eliya",
+      telephoneNo: '077-3030366 / 074-3449283',
+      circuitBungalowId: lcgdNE.id,
+    },
+  });
+
+  const lcgdNeR1 = await prisma.room.create({
+    data: { roomNumber: 'MEEP-01', roomType: RoomType.NON_AC, noOfBeds: 3, items: ['1 Double + 1 Single Bed', 'Geyser'], circuitBungalowId: lcgdNE.id },
+  });
+
+  // 8. LCGD Katharagama
+  const lcgdKat = await prisma.circuitBungalow.create({
+    data: {
+      name: "LCGD Circuit Bungalow - Katharagama",
+      slug: 'lcgd-katharagama',
+      location: 'New Kirivehera Road, Katharagama',
+      latitude: 6.4225,
+      longitude: 81.3321,
+      noOfRooms: 3,
+      department: "Land Commissioner General's Department",
+      price: 800.0,
+      capacity: 12,
+      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+      description: 'Conveniently situated along New Kirivehera Road, providing walking access to Kirivehera Stupa.',
+      rating: 4.7,
+      amenities: ['AC Room Available', 'Kitchen', 'Gated Parking Yard'],
+      highlights: ['New Kirivehera Road', 'Walking distance to Kirivehera Stupa', 'Menik Ganga river walk'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'Mr. Anushka',
+      address: "Gov. Circuit Bungalow LCGD, New Kirivehera Road, Katharagama",
+      telephoneNo: '047-3487165 / 070-7777183',
+      circuitBungalowId: lcgdKat.id,
+    },
+  });
+
+  const lcgdKatR1 = await prisma.room.create({
+    data: { roomNumber: 'KAT-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: lcgdKat.id },
+  });
+
+  // 9. LCGD Polonnaruwa
+  const lcgdPol = await prisma.circuitBungalow.create({
+    data: {
+      name: "LCGD Circuit Bungalow - Polonnaruwa",
+      slug: 'lcgd-polonnaruwa',
+      location: 'Pothgul Place, New Town, Polonnaruwa',
+      latitude: 7.9231,
+      longitude: 81.0012,
+      noOfRooms: 4,
+      department: "Land Commissioner General's Department",
+      price: 1500.0,
+      capacity: 12,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
+      description: 'Located at Pothgul Place in New Town Polonnaruwa near Parakrama Samudra embankment.',
+      rating: 4.6,
+      amenities: ['AC Room Option', 'Garden', 'Spacious Veranda'],
+      highlights: ['Pothgul Place, New Town', 'Parakrama Samudra bund (500m)', 'Pothgul Vehera ruins'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'Mr. Shantha',
+      address: "Gov. Circuit Bungalow LCGD, Pothgul Place, New Town, Polonnaruwa",
+      telephoneNo: '027-3274956 / 077-3030650',
+      circuitBungalowId: lcgdPol.id,
+    },
+  });
+
+  await prisma.room.create({
+    data: { roomNumber: 'POL-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC'], circuitBungalowId: lcgdPol.id },
+  });
+
+  // =========================================================================
+  // CATEGORY 3: STATE TIMBER CORPORATION (STC)
+  // =========================================================================
+
+  // 10. STC Udawalawa
+  const stcUda = await prisma.circuitBungalow.create({
+    data: {
+      name: 'STC Circuit Bungalow - Udawalawa (Thimbolketiya)',
+      slug: 'stc-udawalawa-thimbolketiya',
+      location: 'Thimbolketiya, Udawalawa, Sabaragamuwa Province',
+      latitude: 6.4428,
+      longitude: 80.8419,
+      noOfRooms: 3,
+      department: 'State Timber Corporation',
+      price: 2500.0,
+      capacity: 8,
+      image: 'https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?auto=format&fit=crop&w=800&q=80',
+      description: 'Shaded circuit bungalow located at Thimbolketiya near timber reserves, short drive from Udawalawe National Park.',
+      rating: 4.6,
+      amenities: ['Shaded Garden', 'Dining Area', 'Caretaker Cook'],
+      highlights: ['Thimbolketiya Junction', 'Udawalawe Reservoir', 'Elephant Transit Home (10 min)'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'STC Circuit Caretaker',
+      address: 'STC Circuit Bungalow, Thimbolketiya, Udawalawa',
+      telephoneNo: '011-2866601',
+      circuitBungalowId: stcUda.id,
+    },
+  });
+
+  await prisma.room.create({
+    data: { roomNumber: 'STC-UDA-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Mosquito Net'], circuitBungalowId: stcUda.id },
+  });
+
+  // 11. STC Nuwara Eliya (Kandapola)
+  const stcKanda = await prisma.circuitBungalow.create({
+    data: {
+      name: 'STC Circuit Bungalow - Kandapola',
+      slug: 'stc-kandapola-nuwaraeliya',
+      location: 'Kandapola, Nuwara Eliya',
+      latitude: 6.9882,
+      longitude: 80.8251,
+      noOfRooms: 3,
+      department: 'State Timber Corporation',
+      price: 3500.0,
+      capacity: 10,
+      image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80',
+      description: 'High-altitude bungalow set in Kandapola amidst pine plantations.',
+      rating: 4.8,
+      amenities: ['Fireplace', 'Pine Plantation', 'Hot Water'],
+      highlights: ['Kandapola Forest Reserve', 'Pedro Tea Estate nearby', 'High elevation town view'],
+    },
+  });
+
+  await prisma.caretaker.create({
+    data: {
+      name: 'STC Kandapola Caretaker',
+      address: 'STC Plantation, Kandapola, Nuwara Eliya',
+      telephoneNo: '011-2866601',
+      circuitBungalowId: stcKanda.id,
+    },
+  });
+
+  await prisma.room.create({
+    data: { roomNumber: 'KAND-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['King Bed', 'Heater'], circuitBungalowId: stcKanda.id },
+  });
+
+  console.log('📅 Seeding Active Sample Bookings...');
+
+  const futureFrom = new Date();
+  futureFrom.setDate(futureFrom.getDate() + 7);
+  const futureTo = new Date(futureFrom);
+  futureTo.setDate(futureTo.getDate() + 2);
 
   await prisma.booking.create({
     data: {
-      userId: govEmployeeUser.id,
-      circuitBungalowId: bungalow1.id,
-      roomId: b1r1.id,
-      fromDate: nextWeek,
-      toDate: nextWeekEnd,
+      userId: govEmp1.id, // 245503B
+      circuitBungalowId: neOld.id,
+      roomId: neOldR1.id,
+      fromDate: futureFrom,
+      toDate: futureTo,
       status: BookingStatus.CONFIRMED,
-      totalCost: 37000.0,
+      totalCost: 6000.0,
     },
   });
-
-  // Past booking for Public User
-  const lastMonth = new Date();
-  lastMonth.setDate(lastMonth.getDate() - 30);
-  const lastMonthEnd = new Date(lastMonth);
-  lastMonthEnd.setDate(lastMonthEnd.getDate() + 2);
 
   await prisma.booking.create({
     data: {
-      userId: publicUser.id,
-      circuitBungalowId: bungalow2.id,
-      roomId: b2r1.id,
-      fromDate: lastMonth,
-      toDate: lastMonthEnd,
+      userId: govEmp2.id, // 245548P
+      circuitBungalowId: lcgdKat.id,
+      roomId: lcgdKatR1.id,
+      fromDate: futureFrom,
+      toDate: futureTo,
       status: BookingStatus.CONFIRMED,
-      totalCost: 44000.0,
+      totalCost: 1600.0,
     },
   });
 
-  console.log('Seeding completed successfully!');
+  console.log('✅ Database seeding finished successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('Error during seeding:', e);
+    console.error('❌ Error executing seed:', e);
     process.exit(1);
   })
   .finally(async () => {

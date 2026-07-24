@@ -62,6 +62,8 @@ model CircuitBungalow {
   slug        String     @unique
   name        String
   location    String
+  latitude    Float?   
+  longitude   Float?   
   noOfRooms   Int
   department  String
   price       Float
