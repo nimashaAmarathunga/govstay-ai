@@ -58,6 +58,7 @@ async function main() {
       status: WorkStatus.WORKING,
       placeOfWork: 'Department of Wildlife Conservation',
       position: 'Software Engineer',
+      phoneNumber: '0703009464',
     },
   });
 

@@ -11,11 +11,15 @@ const dbUrl = new URL(process.env.DATABASE_URL!);
 dbUrl.searchParams.delete('sslmode');
 dbUrl.searchParams.delete('sslaccept');
 
+const isLocal = dbUrl.hostname === 'localhost';
+
 const pool = new Pool({
     connectionString: dbUrl.toString(),
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    ...(isLocal ? {} : {
+        ssl: {
+            rejectUnauthorized: false,
+        }
+    }),
 });
 
 const adapter = new PrismaPg(pool);
