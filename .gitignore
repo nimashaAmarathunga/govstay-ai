@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# Ignore agent-kernel entirely but track our agent
+agent-kernel/*
+!agent-kernel/use-cases/
+agent-kernel/use-cases/*
+!agent-kernel/use-cases/govstay-agent/

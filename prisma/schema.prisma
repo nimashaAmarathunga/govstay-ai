@@ -28,8 +28,10 @@ enum RoomType {
 }
 
 enum BookingStatus {
+  PENDING
   CONFIRMED
   CANCELLED
+  REJECTED
 }
 
 // ==========================================
@@ -45,6 +47,7 @@ model User {
   position    String?
   username    String      @unique
   password    String
+  phoneNumber String?
   empIdPhoto  String?
   role        Role        @default(GOV_EMPLOYEE)
 
@@ -135,6 +138,12 @@ model Booking {
   toDate            DateTime
   status            BookingStatus   @default(CONFIRMED)
   totalCost         Float?
+
+  approvalReason    String?
+  rejectionReason   String?
+  confidenceScore   Float?
+  auditTrace        Json?
+  documentUrl       String?
 
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
