@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { BungalowMarker } from "./InteractiveMap";
 
 // Dynamically import the Leaflet map so it only renders on the client
@@ -19,11 +20,24 @@ const InteractiveMap = dynamic(() => import("./InteractiveMap"), {
 
 import { useState, useMemo } from "react";
 
+export type Attraction = {
+  id: number;
+  title: string;
+  lat: number;
+  lon: number;
+  thumbnail?: string;
+  extract?: string;
+};
+
 export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [maxPrice, setMaxPrice] = useState<number>(30000);
   const [selectedArea, setSelectedArea] = useState<string>("All");
+  
+  const [selectedBungalow, setSelectedBungalow] = useState<BungalowMarker | null>(null);
+  const [nearbyAttractions, setNearbyAttractions] = useState<Attraction[]>([]);
+  const [isLoadingAttractions, setIsLoadingAttractions] = useState(false);
 
   // Standard 25 Districts of Sri Lanka for Area Filtering
   const uniqueAreas = [
@@ -33,6 +47,65 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
     "Matale", "Matara", "Monaragala", "Mullaitivu", "Nuwara Eliya", 
     "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"
   ];
+
+  const fetchNearbyAttractions = async (bungalow: BungalowMarker) => {
+    setSelectedBungalow(bungalow);
+    setIsLoadingAttractions(true);
+    setNearbyAttractions([]);
+    
+    try {
+      const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=20&format=json&origin=*`;
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
+      
+      const allPlaces = geoData.query?.geosearch || [];
+      
+      // Filter out non-tourist locations like schools and hospitals
+      const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
+      const places = allPlaces.filter((p: any) => {
+        const title = p.title.toLowerCase();
+        return !excludeKeywords.some(keyword => title.includes(keyword));
+      });
+
+      if (places.length === 0) {
+        setIsLoadingAttractions(false);
+        return;
+      }
+      
+      // Take only the top 10 after filtering
+      const topPlaces = places.slice(0, 10);
+      const pageIds = topPlaces.map((p: any) => p.pageid).join('|');
+      
+      const detailsUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=200&exsentences=2&explaintext=true&pageids=${pageIds}&format=json&origin=*`;
+      const detailsRes = await fetch(detailsUrl);
+      const detailsData = await detailsRes.json();
+      
+      const pages = detailsData.query?.pages || {};
+      
+      const attractions: Attraction[] = topPlaces.map((p: any) => {
+        const page = pages[p.pageid];
+        return {
+          id: p.pageid,
+          title: p.title,
+          lat: p.lat,
+          lon: p.lon,
+          thumbnail: page?.thumbnail?.source,
+          extract: page?.extract,
+        };
+      });
+      
+      setNearbyAttractions(attractions);
+    } catch (error) {
+      console.error("Error fetching attractions:", error);
+    } finally {
+      setIsLoadingAttractions(false);
+    }
+  };
+
+  const clearAttractions = () => {
+    setSelectedBungalow(null);
+    setNearbyAttractions([]);
+  };
 
   // Client-side filtering
   const filteredBungalows = useMemo(() => {
@@ -125,10 +198,47 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             </div>
           )}
         </div>
-
       </div>
 
-      <InteractiveMap bungalows={filteredBungalows} />
+      {/* Attractions Overlay */}
+      {selectedBungalow && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+          <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-2xl border border-slate-200 flex items-center gap-4">
+            <div className="flex items-center gap-2 text-slate-700 font-semibold text-sm">
+              <span className="material-symbols-outlined text-purple-600">explore</span>
+              {isLoadingAttractions ? (
+                "Finding nearby attractions..."
+              ) : (
+                `Found ${nearbyAttractions.length} attractions near ${selectedBungalow.name}`
+              )}
+            </div>
+            {!isLoadingAttractions && (
+              <>
+                <Link 
+                  href={`/browse/${selectedBungalow.slug}`}
+                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors ml-2"
+                >
+                  Book Bungalow
+                </Link>
+                <button 
+                  onClick={clearAttractions}
+                  className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full cursor-pointer transition-colors"
+                  title="Clear Attractions"
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <InteractiveMap 
+        bungalows={filteredBungalows} 
+        onBungalowClick={fetchNearbyAttractions}
+        attractions={nearbyAttractions}
+        selectedBungalow={selectedBungalow}
+      />
     </>
   );
 }
