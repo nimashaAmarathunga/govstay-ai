@@ -8,14 +8,17 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 const dbUrl = new URL(process.env.DATABASE_URL!);
+const sslMode = dbUrl.searchParams.get('sslmode');
 dbUrl.searchParams.delete('sslmode');
 dbUrl.searchParams.delete('sslaccept');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const pool = new Pool({
     connectionString: dbUrl.toString(),
-    ssl: {
+    ssl: (isProduction || sslMode === 'require') ? {
         rejectUnauthorized: false,
-    },
+    } : undefined,
 });
 
 const adapter = new PrismaPg(pool);
