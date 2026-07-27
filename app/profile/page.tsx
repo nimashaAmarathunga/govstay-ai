@@ -58,7 +58,7 @@ export default function ProfilePage() {
                 </label>
                 <label>
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Email address</span>
-                  <input required name="email" type="email" placeholder="name@example.com" className={inputClassName} />
+                  <input required name="email" type="email" placeholder="name@gmail.com" className={inputClassName} />
                 </label>
               </div>
             </section>
@@ -85,6 +85,10 @@ export default function ProfilePage() {
                     <option>Kandy</option>
                     <option>Nuwara Eliya</option>
                     <option>Ratnapura</option>
+                    <option>Anuradhapura</option>
+                    <option>Polonnaruwa</option>
+                    <option>Jaffna</option>
+                    <option>Trincomalee</option>
                     <option>Other</option>
                   </select>
                 </label>

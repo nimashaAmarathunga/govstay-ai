@@ -179,6 +179,23 @@ body {
   background: var(--color-background);
   color: var(--color-on-surface);
   font-family: 'Inter', sans-serif;
-  overflow: hidden;
-  height: 100vh;
+  min-height: 100vh;
+}
+
+/* Leaflet Map overrides */
+.custom-popup .leaflet-popup-content-wrapper {
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 0;
+  border: 1px solid #e2e8f0;
+}
+.custom-popup .leaflet-popup-content {
+  margin: 0;
+  width: 100% !important;
+}
+.custom-popup .leaflet-popup-tip {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-left: none;
 }

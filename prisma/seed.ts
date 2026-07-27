@@ -125,7 +125,6 @@ async function main() {
       longitude: 80.7811,
       noOfRooms: 3,
       department: 'Ministry of Public Administration',
-      price: 3000.0,
       capacity: 10,
       image: 'https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?auto=format&fit=crop&w=800&q=80',
       description: 'Traditional holiday bungalow near Nuwara Eliya Dedicated Economic Centre. Features spacious living quarters, fireplace, and scenic garden views.',
@@ -146,13 +145,13 @@ async function main() {
   });
 
   const neOldR1 = await prisma.room.create({
-    data: { roomNumber: 'OLD-101', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], circuitBungalowId: neOld.id },
+    data: { roomNumber: 'OLD-101', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], price: 3000.0, circuitBungalowId: neOld.id },
   });
   await prisma.room.create({
-    data: { roomNumber: 'OLD-102', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Wardrobe', 'Shared Bathroom'], circuitBungalowId: neOld.id },
+    data: { roomNumber: 'OLD-102', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Wardrobe', 'Shared Bathroom'], price: 3000.0, circuitBungalowId: neOld.id },
   });
   await prisma.room.create({
-    data: { roomNumber: 'OLD-103', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Twin Single Beds', 'Shared Bathroom'], circuitBungalowId: neOld.id },
+    data: { roomNumber: 'OLD-103', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Twin Single Beds', 'Shared Bathroom'], price: 2500.0, circuitBungalowId: neOld.id },
   });
 
   // 2. Diyatalawa - Bungalow A
@@ -165,7 +164,6 @@ async function main() {
       longitude: 80.9575,
       noOfRooms: 4,
       department: 'Ministry of Public Administration',
-      price: 3000.0,
       capacity: 11,
       image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
       description: 'Located in the cool garrison town of Diyatalawa, a short walk from the railway station.',
@@ -186,7 +184,7 @@ async function main() {
 
   for (let i = 1; i <= 4; i++) {
     await prisma.room.create({
-      data: { roomNumber: `DIY-A0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Armchair'], circuitBungalowId: diyaA.id },
+      data: { roomNumber: `DIY-A0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Armchair'], price: 3000.0, circuitBungalowId: diyaA.id },
     });
   }
 
@@ -200,7 +198,6 @@ async function main() {
       longitude: 80.9856,
       noOfRooms: 3,
       department: 'Ministry of Public Administration',
-      price: 3000.0,
       capacity: 7,
       image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80',
       description: 'Situated along Bindunuwewa Road, offering convenient access to Bandarawela town and surrounding tea country.',
@@ -220,7 +217,7 @@ async function main() {
   });
 
   await prisma.room.create({
-    data: { roomNumber: 'BAN-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], circuitBungalowId: ban1.id },
+    data: { roomNumber: 'BAN-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], price: 3000.0, circuitBungalowId: ban1.id },
   });
 
   // 4. Jaffna Holiday Rest
@@ -233,7 +230,6 @@ async function main() {
       longitude: 79.9181,
       noOfRooms: 25,
       department: 'Ministry of Public Administration',
-      price: 2000.0,
       capacity: 50,
       image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
       description: '25-room holiday rest located on Velanai Island along Nagadeepa Road leading to Kurikadduwan Jetty.',
@@ -253,13 +249,13 @@ async function main() {
   });
 
   const jafR1 = await prisma.room.create({
-    data: { roomNumber: 'JAF-VIP-01', roomType: RoomType.AC, noOfBeds: 2, items: ['King Size Bed', 'AC', 'TV', 'Mini Fridge'], circuitBungalowId: jafRest.id },
+    data: { roomNumber: 'JAF-VIP-01', roomType: RoomType.AC, noOfBeds: 2, items: ['King Size Bed', 'AC', 'TV', 'Mini Fridge'], price: 3000.0, circuitBungalowId: jafRest.id },
   });
   await prisma.room.create({
-    data: { roomNumber: 'JAF-AC-02', roomType: RoomType.AC, noOfBeds: 2, items: ['Queen Bed', 'AC', 'Attached Bath'], circuitBungalowId: jafRest.id },
+    data: { roomNumber: 'JAF-AC-02', roomType: RoomType.AC, noOfBeds: 2, items: ['Queen Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: jafRest.id },
   });
   await prisma.room.create({
-    data: { roomNumber: 'JAF-STD-03', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Two Single Beds', 'Ceiling Fan'], circuitBungalowId: jafRest.id },
+    data: { roomNumber: 'JAF-STD-03', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Two Single Beds', 'Ceiling Fan'], price: 1500.0, circuitBungalowId: jafRest.id },
   });
 
   // 5. Katharagama Holiday Rest (PubAdmin)
@@ -272,7 +268,6 @@ async function main() {
       longitude: 81.3328,
       noOfRooms: 27,
       department: 'Ministry of Public Administration',
-      price: 2000.0,
       capacity: 60,
       image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
       description: 'Rest complex situated in Kawantissaapura, serving pilgrims visiting Kataragama Sacred City.',
@@ -292,7 +287,7 @@ async function main() {
   });
 
   const katR1 = await prisma.room.create({
-    data: { roomNumber: 'KAT-AC-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: katRest.id },
+    data: { roomNumber: 'KAT-AC-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: katRest.id },
   });
 
   // 6. Monaragala Holiday Rest
@@ -305,7 +300,6 @@ async function main() {
       longitude: 81.3852,
       noOfRooms: 8,
       department: 'Ministry of Public Administration',
-      price: 2000.0,
       capacity: 16,
       image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
       description: 'Situated at Kumbukkana Junction along the Monaragala main road.',
@@ -325,7 +319,7 @@ async function main() {
   });
 
   await prisma.room.create({
-    data: { roomNumber: 'MON-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: monRest.id },
+    data: { roomNumber: 'MON-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: monRest.id },
   });
 
   // =========================================================================
@@ -342,7 +336,6 @@ async function main() {
       longitude: 80.8031,
       noOfRooms: 3,
       department: "Land Commissioner General's Department",
-      price: 1100.0,
       capacity: 8,
       image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
       description: 'LCGD government bungalow in Meepilimana near Ambewela farm region.',
@@ -362,7 +355,7 @@ async function main() {
   });
 
   const lcgdNeR1 = await prisma.room.create({
-    data: { roomNumber: 'MEEP-01', roomType: RoomType.NON_AC, noOfBeds: 3, items: ['1 Double + 1 Single Bed', 'Geyser'], circuitBungalowId: lcgdNE.id },
+    data: { roomNumber: 'MEEP-01', roomType: RoomType.NON_AC, noOfBeds: 3, items: ['1 Double + 1 Single Bed', 'Geyser'], price: 1100.0, circuitBungalowId: lcgdNE.id },
   });
 
   // 8. LCGD Katharagama
@@ -375,7 +368,6 @@ async function main() {
       longitude: 81.3321,
       noOfRooms: 3,
       department: "Land Commissioner General's Department",
-      price: 800.0,
       capacity: 12,
       image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
       description: 'Conveniently situated along New Kirivehera Road, providing walking access to Kirivehera Stupa.',
@@ -395,7 +387,7 @@ async function main() {
   });
 
   const lcgdKatR1 = await prisma.room.create({
-    data: { roomNumber: 'KAT-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], circuitBungalowId: lcgdKat.id },
+    data: { roomNumber: 'KAT-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 800.0, circuitBungalowId: lcgdKat.id },
   });
 
   // 9. LCGD Polonnaruwa
@@ -408,7 +400,6 @@ async function main() {
       longitude: 81.0012,
       noOfRooms: 4,
       department: "Land Commissioner General's Department",
-      price: 1500.0,
       capacity: 12,
       image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
       description: 'Located at Pothgul Place in New Town Polonnaruwa near Parakrama Samudra embankment.',
@@ -428,7 +419,7 @@ async function main() {
   });
 
   await prisma.room.create({
-    data: { roomNumber: 'POL-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC'], circuitBungalowId: lcgdPol.id },
+    data: { roomNumber: 'POL-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC'], price: 1500.0, circuitBungalowId: lcgdPol.id },
   });
 
   // =========================================================================
@@ -445,7 +436,6 @@ async function main() {
       longitude: 80.8419,
       noOfRooms: 3,
       department: 'State Timber Corporation',
-      price: 2500.0,
       capacity: 8,
       image: 'https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?auto=format&fit=crop&w=800&q=80',
       description: 'Shaded circuit bungalow located at Thimbolketiya near timber reserves, short drive from Udawalawe National Park.',
@@ -465,7 +455,7 @@ async function main() {
   });
 
   await prisma.room.create({
-    data: { roomNumber: 'STC-UDA-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Mosquito Net'], circuitBungalowId: stcUda.id },
+    data: { roomNumber: 'STC-UDA-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Mosquito Net'], price: 2500.0, circuitBungalowId: stcUda.id },
   });
 
   // 11. STC Nuwara Eliya (Kandapola)
@@ -478,7 +468,6 @@ async function main() {
       longitude: 80.8251,
       noOfRooms: 3,
       department: 'State Timber Corporation',
-      price: 3500.0,
       capacity: 10,
       image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80',
       description: 'High-altitude bungalow set in Kandapola amidst pine plantations.',
@@ -498,7 +487,7 @@ async function main() {
   });
 
   await prisma.room.create({
-    data: { roomNumber: 'KAND-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['King Bed', 'Heater'], circuitBungalowId: stcKanda.id },
+    data: { roomNumber: 'KAND-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['King Bed', 'Heater'], price: 3500.0, circuitBungalowId: stcKanda.id },
   });
 
   console.log('📅 Seeding Active Sample Bookings...');

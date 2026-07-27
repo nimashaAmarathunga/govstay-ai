@@ -1,0 +1,518 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+
+export type DbRoom = {
+  id: string;
+  roomNumber: string;
+  roomType: "AC" | "NON_AC";
+  items: string[];
+  noOfBeds: number;
+};
+
+export type DbCaretaker = {
+  id: string;
+  name: string;
+  address: string;
+  telephoneNo: string;
+  emailAddress?: string | null;
+};
+
+export type DbBungalowDetails = {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  noOfRooms: number;
+  department: string;
+  price: number;
+  image: string;
+  description: string;
+  rating: number;
+  amenities: string[];
+  highlights: string[];
+  capacity: number;
+  caretaker?: DbCaretaker | null;
+  rooms: DbRoom[];
+};
+
+interface BungalowDetailClientProps {
+  bungalow: DbBungalowDetails;
+}
+
+export default function BungalowDetailClient({ bungalow }: BungalowDetailClientProps) {
+  const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [roomFilter, setRoomFilter] = useState<"ALL" | "AC" | "NON_AC">("ALL");
+  const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
+  const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
+
+  const formatPrice = (price: number) => {
+    return `Rs. ${price.toLocaleString()}`;
+  };
+
+  const filteredRooms = bungalow.rooms.filter((room) => {
+    if (roomFilter === "AC") return room.roomType === "AC";
+    if (roomFilter === "NON_AC") return room.roomType === "NON_AC";
+    return true;
+  });
+
+  const toggleRoomSelection = (roomId: string) => {
+    setSelectedRoomIds((prev) =>
+      prev.includes(roomId) ? prev.filter((id) => id !== roomId) : [...prev, roomId]
+    );
+  };
+
+  const selectAllRooms = () => {
+    if (selectedRoomIds.length === bungalow.rooms.length) {
+      setSelectedRoomIds([]);
+    } else {
+      setSelectedRoomIds(bungalow.rooms.map((r) => r.id));
+    }
+  };
+
+  const handleBooking = () => {
+    setBookingStatus("booking");
+    setTimeout(() => {
+      setBookingStatus("success");
+      const selectedRoomNums = bungalow.rooms
+        .filter((r) => selectedRoomIds.includes(r.id))
+        .map((r) => r.roomNumber);
+      setBookedRoomNumbers(selectedRoomNums.length > 0 ? selectedRoomNums : ["Entire Bungalow"]);
+    }, 1200);
+  };
+
+  const resetBooking = () => {
+    setBookingStatus("idle");
+    setSelectedRoomIds([]);
+  };
+
+  const acRoomsCount = bungalow.rooms.filter((r) => r.roomType === "AC").length;
+  const nonAcRoomsCount = bungalow.rooms.filter((r) => r.roomType === "NON_AC").length;
+
+  return (
+    <main className="flex-1 overflow-y-auto bg-slate-50">
+      <div className="max-w-6xl mx-auto px-6 py-8 md:px-8 md:py-10">
+        
+        {/* Navigation Breadcrumb */}
+        <div className="flex justify-between items-center">
+          <Link
+            href="/browse"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            Back to browse
+          </Link>
+          <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
+            {bungalow.department}
+          </span>
+        </div>
+
+        {/* Hero Card */}
+        <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="relative h-72 sm:h-96 lg:h-[28rem]">
+            <img src={bungalow.image} alt={bungalow.name} className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+            
+            <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 shadow-md backdrop-blur-md">
+              <span className="material-symbols-outlined text-[18px] text-amber-500">star</span>
+              <span className="text-sm font-bold text-slate-800">{bungalow.rating}</span>
+            </div>
+
+            <div className="absolute bottom-6 left-6 right-6 text-white">
+              <span className="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase tracking-wider bg-blue-600/90 backdrop-blur-sm rounded-md text-white">
+                {bungalow.department}
+              </span>
+              <h1 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl drop-shadow-sm">
+                {bungalow.name}
+              </h1>
+              <p className="mt-2 flex items-center gap-2 text-sm text-slate-200 font-medium">
+                <span className="material-symbols-outlined text-[18px] text-blue-400">location_on</span>
+                {bungalow.location}
+              </p>
+            </div>
+          </div>
+
+          {/* Details Content Grid */}
+          <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[1fr_22rem] lg:gap-12">
+            
+            {/* Main Info Column */}
+            <div>
+              {/* Description */}
+              <section className="mb-8">
+                <h2 className="text-xl font-bold text-slate-800 mb-3">About this Circuit Bungalow</h2>
+                <p className="text-base leading-7 text-slate-600">{bungalow.description}</p>
+              </section>
+
+              {/* Caretaker Contact Information */}
+              {bungalow.caretaker && (
+                <section className="mb-8 rounded-2xl border border-slate-200 bg-blue-50/50 p-5 md:p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[22px]">contact_phone</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-800">Caretaker Information</h3>
+                      <p className="text-xs text-slate-500">Official bungalow in-charge & key contact</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-start gap-2.5">
+                      <span className="material-symbols-outlined text-[18px] text-blue-600 mt-0.5">person</span>
+                      <div>
+                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">In-Charge Name</span>
+                        <span className="font-semibold text-slate-700">{bungalow.caretaker.name}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <span className="material-symbols-outlined text-[18px] text-blue-600 mt-0.5">call</span>
+                      <div>
+                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Telephone</span>
+                        <a
+                          href={`tel:${bungalow.caretaker.telephoneNo}`}
+                          className="font-semibold text-blue-600 hover:underline"
+                        >
+                          {bungalow.caretaker.telephoneNo}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <span className="material-symbols-outlined text-[18px] text-blue-600 mt-0.5">home</span>
+                      <div>
+                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Caretaker Address</span>
+                        <span className="font-semibold text-slate-700">{bungalow.caretaker.address}</span>
+                      </div>
+                    </div>
+
+                    {bungalow.caretaker.emailAddress && (
+                      <div className="flex items-start gap-2.5">
+                        <span className="material-symbols-outlined text-[18px] text-blue-600 mt-0.5">mail</span>
+                        <div>
+                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Email Address</span>
+                          <a
+                            href={`mailto:${bungalow.caretaker.emailAddress}`}
+                            className="font-semibold text-blue-600 hover:underline"
+                          >
+                            {bungalow.caretaker.emailAddress}
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* Highlights */}
+              <section className="mb-8 border-t border-slate-100 pt-7">
+                <h2 className="text-xl font-bold text-slate-800 mb-4">What makes this stay special</h2>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {bungalow.highlights.map((highlight) => (
+                    <div
+                      key={highlight}
+                      className="flex items-start gap-3 rounded-xl bg-slate-50 border border-slate-100 p-4 text-sm font-medium text-slate-700"
+                    >
+                      <span className="material-symbols-outlined text-[20px] text-emerald-600 shrink-0 mt-0.5">
+                        check_circle
+                      </span>
+                      <span>{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Bungalow Amenities */}
+              <section className="mb-8 border-t border-slate-100 pt-7">
+                <h2 className="text-xl font-bold text-slate-800 mb-4">Property Amenities</h2>
+                <div className="flex flex-wrap gap-2">
+                  {bungalow.amenities.map((amenity) => (
+                    <span
+                      key={amenity}
+                      className="rounded-lg bg-blue-50/80 px-3.5 py-2 text-sm font-semibold text-blue-700 border border-blue-100 flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">done</span>
+                      {amenity}
+                    </span>
+                  ))}
+                </div>
+              </section>
+
+              {/* SPECIFIC ROOMS AVAILABLE INSIDE THIS BUNGALOW */}
+              <section className="mt-10 border-t border-slate-200 pt-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-extrabold text-slate-800">Rooms Available Inside</h2>
+                      <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-blue-600 text-white">
+                        {bungalow.rooms.length} {bungalow.rooms.length === 1 ? "Room" : "Rooms"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      (Guests can reserve individual rooms or book the whole bungalow)
+                    </p>
+                  </div>
+
+                  {/* Room Filters */}
+                  <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                    <button
+                      onClick={() => setRoomFilter("ALL")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        roomFilter === "ALL"
+                          ? "bg-white text-blue-600 shadow-sm"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      All ({bungalow.rooms.length})
+                    </button>
+                    {acRoomsCount > 0 && (
+                      <button
+                        onClick={() => setRoomFilter("AC")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                          roomFilter === "AC"
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">ac_unit</span>
+                        AC ({acRoomsCount})
+                      </button>
+                    )}
+                    {nonAcRoomsCount > 0 && (
+                      <button
+                        onClick={() => setRoomFilter("NON_AC")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                          roomFilter === "NON_AC"
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">air</span>
+                        Non-AC ({nonAcRoomsCount})
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Selection Actions */}
+                <div className="flex justify-between items-center mb-4 text-xs font-semibold text-slate-500">
+                  <span>Select specific rooms to rent:</span>
+                  <button
+                    onClick={selectAllRooms}
+                    className="text-blue-600 hover:underline cursor-pointer font-bold"
+                  >
+                    {selectedRoomIds.length === bungalow.rooms.length
+                      ? "Deselect All Rooms"
+                      : "Select All Rooms"}
+                  </button>
+                </div>
+
+                {/* Rooms Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredRooms.map((room) => {
+                    const isSelected = selectedRoomIds.includes(room.id);
+                    return (
+                      <div
+                        key={room.id}
+                        onClick={() => toggleRoomSelection(room.id)}
+                        className={`rounded-2xl border p-5 transition-all cursor-pointer relative flex flex-col justify-between ${
+                          isSelected
+                            ? "border-blue-600 bg-blue-50/40 shadow-md ring-2 ring-blue-600/20"
+                            : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                        }`}
+                      >
+                        <div>
+                          {/* Room Header */}
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-blue-600 text-[20px]">
+                                meeting_room
+                              </span>
+                              <h3 className="font-bold text-slate-800 text-base">
+                                Room {room.roomNumber}
+                              </h3>
+                            </div>
+
+                            {/* Room Type Badge */}
+                            <span
+                              className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${
+                                room.roomType === "AC"
+                                  ? "bg-cyan-100 text-cyan-800"
+                                  : "bg-slate-100 text-slate-700"
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[14px]">
+                                {room.roomType === "AC" ? "ac_unit" : "mode_fan"}
+                              </span>
+                              {room.roomType === "AC" ? "AC Room" : "Non-AC"}
+                            </span>
+                          </div>
+
+                          {/* Bed Count */}
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-3">
+                            <span className="material-symbols-outlined text-[16px] text-slate-400">
+                              bed
+                            </span>
+                            <span>{room.noOfBeds} Beds available</span>
+                          </div>
+
+                          {/* In-Room Items */}
+                          <div className="mb-4">
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                              Room Features & Items
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {room.items.map((item) => (
+                                <span
+                                  key={item}
+                                  className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium border border-slate-200/60"
+                                >
+                                  {item}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Room Selection Footer */}
+                        <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-2">
+                          <span className="text-xs text-slate-500 font-medium">
+                            {isSelected ? "Selected for booking" : "Click to select"}
+                          </span>
+                          <button
+                            type="button"
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                              isSelected
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600"
+                            }`}
+                          >
+                            {isSelected ? "Selected ✓" : "Select Room"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            </div>
+
+            {/* Sidebar Column */}
+            <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sticky top-6">
+              <div className="flex items-baseline justify-between border-b border-slate-100 pb-4 mb-6">
+                <div>
+                  <span className="text-xs uppercase tracking-wider font-bold text-slate-400 block">
+                    Base Rate
+                  </span>
+                  <span className="text-3xl font-extrabold text-blue-600">
+                    {formatPrice(bungalow.price)}
+                  </span>
+                </div>
+                <span className="text-xs uppercase font-semibold text-slate-500">/ night</span>
+              </div>
+
+              {/* Property Quick Summary */}
+              <div className="space-y-3.5 mb-6 text-sm">
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-slate-400">group</span>
+                    Total Capacity
+                  </span>
+                  <span className="font-semibold text-slate-800">{bungalow.capacity} guests</span>
+                </div>
+
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-slate-400">door_open</span>
+                    Total Rooms
+                  </span>
+                  <span className="font-semibold text-slate-800">{bungalow.noOfRooms} rooms</span>
+                </div>
+
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+                    Check-in
+                  </span>
+                  <span className="font-semibold text-slate-800">From 2:00 PM</span>
+                </div>
+              </div>
+
+              {/* Selected Rooms Box */}
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  Selected Rooms ({selectedRoomIds.length})
+                </span>
+
+                {selectedRoomIds.length === 0 ? (
+                  <p className="text-xs text-slate-500 italic">
+                    No specific rooms selected. Clicking book will reserve based on entire bungalow availability.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {bungalow.rooms
+                      .filter((r) => selectedRoomIds.includes(r.id))
+                      .map((r) => (
+                        <span
+                          key={r.id}
+                          className="px-2.5 py-1 bg-blue-600 text-white rounded-md text-xs font-bold"
+                        >
+                          Room {r.roomNumber}
+                        </span>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Booking Actions */}
+              {bookingStatus === "idle" && (
+                <button
+                  onClick={handleBooking}
+                  className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {selectedRoomIds.length > 0
+                    ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
+                    : "Book Entire Bungalow"}
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              )}
+
+              {bookingStatus === "booking" && (
+                <button
+                  disabled
+                  className="w-full py-4 bg-blue-400 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-wait"
+                >
+                  <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
+                  Processing Reservation...
+                </button>
+              )}
+
+              {bookingStatus === "success" && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                  <span className="material-symbols-outlined text-3xl text-emerald-600 mb-1">
+                    check_circle
+                  </span>
+                  <h4 className="font-bold text-emerald-900 text-sm">Reservation Confirmed!</h4>
+                  <p className="text-xs text-emerald-700 mt-1">
+                    Booked: {bookedRoomNumbers.join(", ")}
+                  </p>
+                  <button
+                    onClick={resetBooking}
+                    className="mt-3 text-xs font-bold text-blue-600 underline cursor-pointer"
+                  >
+                    Make another selection
+                  </button>
+                </div>
+              )}
+
+              <p className="mt-4 text-center text-xs text-slate-400 leading-relaxed">
+                Verification & official quota applied automatically during checkout.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
