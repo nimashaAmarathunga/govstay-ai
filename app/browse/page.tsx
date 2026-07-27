@@ -10,39 +10,32 @@ export default async function BrowsePage() {
       caretaker: true,
     },
     orderBy: { name: "asc" },
+    include: {
+      rooms: {
+        select: { price: true }
+      }
+    }
   });
 
-  const bungalows: DbBungalow[] = bungalowsFromDb.map((b) => ({
-    id: b.id,
-    slug: b.slug,
-    name: b.name,
-    location: b.location,
-    noOfRooms: b.noOfRooms,
-    department: b.department,
-    price: b.price,
-    image: b.image,
-    description: b.description,
-    rating: b.rating,
-    amenities: b.amenities,
-    highlights: b.highlights,
-    capacity: b.capacity,
-    caretaker: b.caretaker
-      ? {
-          id: b.caretaker.id,
-          name: b.caretaker.name,
-          address: b.caretaker.address,
-          telephoneNo: b.caretaker.telephoneNo,
-          emailAddress: b.caretaker.emailAddress,
-        }
-      : null,
-    rooms: b.rooms.map((r) => ({
-      id: r.id,
-      roomNumber: r.roomNumber,
-      roomType: r.roomType as "AC" | "NON_AC",
-      items: r.items,
-      noOfBeds: r.noOfBeds,
-    })),
-  }));
+  const bungalows: DbBungalow[] = bungalowsFromDb.map((b) => {
+    const startingPrice = b.rooms.length > 0 ? Math.min(...b.rooms.map(r => r.price)) : 0;
+    
+    return {
+      id: b.id,
+      slug: b.slug,
+      name: b.name,
+      location: b.location,
+      noOfRooms: b.noOfRooms,
+      department: b.department,
+      price: startingPrice,
+      image: b.image,
+      description: b.description,
+      rating: b.rating,
+      amenities: b.amenities,
+      highlights: b.highlights,
+      capacity: b.capacity,
+    };
+  });
 
   return <BrowseBungalowsClient bungalows={bungalows} />;
 }

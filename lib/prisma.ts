@@ -12,11 +12,9 @@ const sslMode = dbUrl.searchParams.get('sslmode');
 dbUrl.searchParams.delete('sslmode');
 dbUrl.searchParams.delete('sslaccept');
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 const pool = new Pool({
     connectionString: dbUrl.toString(),
-    ssl: (isProduction || sslMode === 'require') ? {
+    ssl: sslMode === 'require' ? {
         rejectUnauthorized: false,
     } : undefined,
 });
