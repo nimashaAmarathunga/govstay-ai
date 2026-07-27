@@ -179,6 +179,5 @@ body {
   background: var(--color-background);
   color: var(--color-on-surface);
   font-family: 'Inter', sans-serif;
-  overflow: hidden;
-  height: 100vh;
+  min-height: 100vh;
 }
