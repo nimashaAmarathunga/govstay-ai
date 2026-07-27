@@ -5,6 +5,10 @@ export const dynamic = "force-dynamic";
 
 export default async function BrowsePage() {
   const bungalowsFromDb = await prisma.circuitBungalow.findMany({
+    include: {
+      rooms: true,
+      caretaker: true,
+    },
     orderBy: { name: "asc" },
     include: {
       rooms: {

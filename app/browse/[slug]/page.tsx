@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import BungalowDetailClient, { DbBungalowDetails } from "./BungalowDetailClient";
 
 type BungalowDetailsPageProps = {
   params: Promise<{ slug: string }>;
@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 
 export default async function BungalowDetailsPage({ params }: BungalowDetailsPageProps) {
   const { slug } = await params;
-  
+
   const bungalow = await prisma.circuitBungalow.findUnique({
     where: { slug },
     include: {
