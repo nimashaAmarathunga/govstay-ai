@@ -12,6 +12,7 @@ export default function Navigation() {
     { name: "Map View", href: "/map" },
     { name: "My Bookings", href: "/bookings" },
     { name: "My Profile", href: "/profile" },
+    { name: "Admin Panel", href: "/admin" },
   ];
 
   return (
