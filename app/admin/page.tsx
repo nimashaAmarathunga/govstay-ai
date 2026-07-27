@@ -162,7 +162,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50 relative">
+    <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative">
       
       {/* Admin Header & Tabs */}
       <div className="bg-white border-b border-slate-200 px-8 pt-8">
@@ -453,7 +453,7 @@ export default function AdminPage() {
       {/* Keeper Modal */}
       {isKeeperModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
               <h3 className="font-bold text-lg text-slate-800">{editingKeeperId ? "Edit Keeper" : "Add New Keeper"}</h3>
               <button onClick={() => setIsKeeperModalOpen(false)} className="text-slate-400 hover:text-slate-800 cursor-pointer">
@@ -461,7 +461,7 @@ export default function AdminPage() {
               </button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1 space-y-4">
+            <div className="p-6 space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Name</label>
                   <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={keeperForm.name || ""} onChange={e => setKeeperForm({...keeperForm, name: e.target.value})} />

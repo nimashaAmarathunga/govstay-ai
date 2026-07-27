@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GovStay-AI
 
-## Getting Started
+GovStay-AI is a Next.js application for discoverability and booking of government-owned rest houses and circuit bungalows across Sri Lanka.
 
-First, run the development server:
+## Developer Quick Start Guide
 
+Welcome! If you are a developer joining the team, follow these simple steps to set up your local workspace and connect to the existing database.
+
+---
+
+### Step-by-Step Setup
+
+#### 1. Clone the repository and install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### 2. Configure Environment Variables
+Since `.env` is ignored by Git, you will need to set it up locally:
+1. Copy the `.env.example` file to create your own `.env` file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Populate the `.env` file with the shared database connection strings (ask the team/administrator for the credentials).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### 3. Generate the Prisma Client
+You **must** generate the local Prisma Client types inside your `node_modules` so TypeScript can resolve them:
+```bash
+npx prisma generate
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### 4. Start the Development Server
+You do **not** need to run database pushes or seeds since the shared database is already set up and populated. Simply run:
+```bash
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) in your browser to view and interact with the application.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Advanced / New Database Setup (Optional)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If you are setting up a brand new/private database and need to initialize it from scratch:
 
-## Deploy on Vercel
+1. **Push the Schema:** Pushes the tables and relations defined in `schema.prisma` directly to your database:
+   ```bash
+   npx prisma db push
+   ```
+2. **Seed Initial Data:** Populates your database with test users, bungalows, rooms, and bookings:
+   ```bash
+   npx prisma db seed
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Seeding Accounts Reference
+When the database is seeded, the following test users are created:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Name | Username | Password | Role |
+| :--- | :--- | :--- | :--- |
+| **Super Admin User** | `superadmin` | `adminpassword123` | `SUPER_ADMIN` |
+| **Department Admin** | `deptadmin` | `deptpassword123` | `DEPT_ADMIN` |
+| **Nimal Fernando** | `nimal_fernando` | `nimalpassword123` | `GOV_EMPLOYEE` |
+| **Suresh Perera** | `suresh_perera` | `sureshpassword123` | `PUBLIC_USER` |

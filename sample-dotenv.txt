@@ -1,0 +1,5 @@
+# Connect to Postgres via the shared transaction-mode pooler (IPv4-only)
+DATABASE_URL="postgresql://postgres.jcogzodipzjchvpcmqnu:password@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require&sslaccept=accept_invalid_certs"
+
+# Connect to Postgres via the shared session-mode pooler (used for migrations)
+DIRECT_URL="postgresql://postgres.jcogzodipzjchvpcmqnu:password@aws-0-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require&sslaccept=accept_invalid_certs"
