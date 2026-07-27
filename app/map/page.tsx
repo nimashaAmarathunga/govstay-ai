@@ -13,24 +13,35 @@ export default async function MapPage() {
       location: true,
       latitude: true,
       longitude: true,
-      price: true,
       image: true,
       department: true,
+      rooms: {
+        select: {
+          price: true,
+        },
+      },
     },
   });
 
   // Map to the format expected by the InteractiveMap component
-  const bungalows: BungalowMarker[] = circuitBungalows.map((b) => ({
-    id: b.id,
-    name: b.name,
-    slug: b.slug,
-    location: b.location,
-    latitude: b.latitude,
-    longitude: b.longitude,
-    price: b.price,
-    image: b.image,
-    department: b.department,
-  }));
+  const bungalows: BungalowMarker[] = circuitBungalows.map((b) => {
+    // Calculate the lowest starting price among all rooms in the bungalow
+    const startingPrice = b.rooms.length > 0 
+      ? Math.min(...b.rooms.map((r) => r.price)) 
+      : 0;
+
+    return {
+      id: b.id,
+      name: b.name,
+      slug: b.slug,
+      location: b.location,
+      latitude: b.latitude,
+      longitude: b.longitude,
+      price: startingPrice,
+      image: b.image,
+      department: b.department,
+    };
+  });
 
   return (
     <div className="flex-1 flex flex-col h-full bg-slate-50 relative">

@@ -66,7 +66,7 @@ model CircuitBungalow {
   longitude   Float?   
   noOfRooms   Int
   department  String
-  price       Float
+  gmapLink    String?
   image       String
   description String     @db.Text
   rating      Float      @default(4.8)
@@ -106,6 +106,7 @@ model Room {
   roomType          RoomType        @default(NON_AC)
   items             String[]
   noOfBeds          Int
+  price             Float
 
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
