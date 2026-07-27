@@ -103,7 +103,7 @@ export default function InteractiveMap({ bungalows }: { bungalows: BungalowMarke
                 <h3 className="font-bold text-sm text-slate-800 leading-tight mb-1 px-1">{bungalow.name}</h3>
                 <p className="text-xs text-slate-500 mb-2 truncate px-1">{bungalow.location}</p>
                 <div className="flex justify-between items-end mb-1 px-1">
-                  <p className="font-bold text-blue-600 text-sm">Rs. {bungalow.price.toLocaleString()}</p>
+                  <p className="font-bold text-blue-600 text-sm">from Rs. {bungalow.price.toLocaleString()}</p>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-100 text-emerald-700">
                     Available
                   </span>
