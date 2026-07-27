@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import DateRangePicker from "@/components/booking/DateRangePicker";
 
 export type DbRoom = {
   id: string;
@@ -9,6 +10,7 @@ export type DbRoom = {
   roomType: "AC" | "NON_AC";
   items: string[];
   noOfBeds: number;
+  price: number;
 };
 
 export type DbCaretaker = {
@@ -42,6 +44,22 @@ interface BungalowDetailClientProps {
 }
 
 export default function BungalowDetailClient({ bungalow }: BungalowDetailClientProps) {
+  const getTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const getDayAfterTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const [checkIn, setCheckIn] = useState<Date | null>(getTomorrow());
+  const [checkOut, setCheckOut] = useState<Date | null>(getDayAfterTomorrow());
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [roomFilter, setRoomFilter] = useState<"ALL" | "AC" | "NON_AC">("ALL");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
@@ -50,6 +68,32 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const formatPrice = (price: number) => {
     return `Rs. ${price.toLocaleString()}`;
   };
+
+  const formatDateString = (date: Date | null) => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  let nights = 0;
+  let days = 0;
+  if (checkIn && checkOut) {
+    const diff = checkOut.getTime() - checkIn.getTime();
+    nights = Math.round(diff / (1000 * 60 * 60 * 24));
+    days = nights + 1;
+  }
+
+  const selectedRooms = bungalow.rooms.filter((r) => selectedRoomIds.includes(r.id));
+  const isEntireBungalow = selectedRooms.length === 0;
+
+  const pricePerNight = isEntireBungalow
+    ? bungalow.rooms.reduce((sum, r) => sum + r.price, 0)
+    : selectedRooms.reduce((sum, r) => sum + r.price, 0);
+
+  const totalCost = pricePerNight * nights;
 
   const filteredRooms = bungalow.rooms.filter((room) => {
     if (roomFilter === "AC") return room.roomType === "AC";
@@ -377,9 +421,10 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                         {/* Room Selection Footer */}
                         <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-2">
-                          <span className="text-xs text-slate-500 font-medium">
-                            {isSelected ? "Selected for booking" : "Click to select"}
-                          </span>
+                          <div>
+                            <span className="text-[10px] text-slate-400 uppercase font-bold block leading-none">Rate / Night</span>
+                            <span className="text-sm font-bold text-blue-600">Rs. {room.price.toLocaleString()}</span>
+                          </div>
                           <button
                             type="button"
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
@@ -439,6 +484,21 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 </div>
               </div>
 
+              {/* Date Selection Section */}
+              <div className="mb-6">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  Select Dates
+                </h4>
+                <DateRangePicker 
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  onChange={(start, end) => {
+                    setCheckIn(start);
+                    setCheckOut(end);
+                  }}
+                />
+              </div>
+
               {/* Selected Rooms Box */}
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
@@ -447,7 +507,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                 {selectedRoomIds.length === 0 ? (
                   <p className="text-xs text-slate-500 italic">
-                    No specific rooms selected. Clicking book will reserve based on entire bungalow availability.
+                    No specific rooms selected. Booking will reserve the Entire Bungalow.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
@@ -465,11 +525,36 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 )}
               </div>
 
+              {/* Dynamic Pricing Breakdown */}
+              {checkIn && checkOut && (
+                <div className="border-t border-slate-100 pt-4 mb-6 space-y-2 text-xs">
+                  <div className="flex justify-between items-center text-slate-500">
+                    <span>
+                      {isEntireBungalow ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRooms.length})`}
+                    </span>
+                    <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+                  </div>
+                  <div className="flex justify-between items-center text-slate-500">
+                    <span>Duration</span>
+                    <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"}</span>
+                  </div>
+                  <div className="border-t border-slate-100/60 pt-2 flex justify-between items-center text-sm font-bold">
+                    <span className="text-slate-800">Total Price</span>
+                    <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
+                  </div>
+                </div>
+              )}
+
               {/* Booking Actions */}
               {bookingStatus === "idle" && (
                 <button
                   onClick={handleBooking}
-                  className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  disabled={!checkIn || !checkOut}
+                  className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    checkIn && checkOut
+                      ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                      : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                  }`}
                 >
                   {selectedRoomIds.length > 0
                     ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
@@ -497,9 +582,16 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   <p className="text-xs text-emerald-700 mt-1">
                     Booked: {bookedRoomNumbers.join(", ")}
                   </p>
+                  {checkIn && checkOut && (
+                    <div className="mt-1.5 p-2 bg-white/60 border border-emerald-100 rounded-lg text-left text-[11px] text-emerald-800 space-y-0.5">
+                      <p><strong>Dates:</strong> {formatDateString(checkIn)} to {formatDateString(checkOut)}</p>
+                      <p><strong>Duration:</strong> {nights} {nights === 1 ? "Night" : "Nights"} ({days} Days)</p>
+                      <p><strong>Total Paid:</strong> {formatPrice(totalCost)}</p>
+                    </div>
+                  )}
                   <button
                     onClick={resetBooking}
-                    className="mt-3 text-xs font-bold text-blue-600 underline cursor-pointer"
+                    className="mt-3.5 text-xs font-bold text-blue-600 underline cursor-pointer"
                   >
                     Make another selection
                   </button>

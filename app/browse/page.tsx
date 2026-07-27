@@ -7,7 +7,7 @@ export default async function BrowsePage() {
   const bungalowsFromDb = await prisma.circuitBungalow.findMany({
     include: {
       rooms: {
-        select: { price: true }
+        orderBy: { roomNumber: 'asc' }
       },
       caretaker: true,
     },
@@ -31,6 +31,15 @@ export default async function BrowsePage() {
       amenities: b.amenities,
       highlights: b.highlights,
       capacity: b.capacity,
+      caretaker: b.caretaker,
+      rooms: b.rooms.map(r => ({
+        id: r.id,
+        roomNumber: r.roomNumber,
+        roomType: r.roomType,
+        items: r.items,
+        noOfBeds: r.noOfBeds,
+        price: r.price
+      }))
     };
   });
 
