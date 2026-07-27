@@ -5,6 +5,10 @@ export const dynamic = "force-dynamic";
 
 export default async function BrowsePage() {
   const bungalowsFromDb = await prisma.circuitBungalow.findMany({
+    include: {
+      rooms: true,
+      caretaker: true,
+    },
     orderBy: { name: "asc" },
   });
 
@@ -22,6 +26,22 @@ export default async function BrowsePage() {
     amenities: b.amenities,
     highlights: b.highlights,
     capacity: b.capacity,
+    caretaker: b.caretaker
+      ? {
+          id: b.caretaker.id,
+          name: b.caretaker.name,
+          address: b.caretaker.address,
+          telephoneNo: b.caretaker.telephoneNo,
+          emailAddress: b.caretaker.emailAddress,
+        }
+      : null,
+    rooms: b.rooms.map((r) => ({
+      id: r.id,
+      roomNumber: r.roomNumber,
+      roomType: r.roomType as "AC" | "NON_AC",
+      items: r.items,
+      noOfBeds: r.noOfBeds,
+    })),
   }));
 
   return <BrowseBungalowsClient bungalows={bungalows} />;
