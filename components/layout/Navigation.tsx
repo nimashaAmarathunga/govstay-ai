@@ -13,7 +13,6 @@ export default function Navigation() {
     { name: "My Bookings", href: "/bookings" },
     { name: "Admin Panel", href: "/admin" },
     { name: "My Profile", href: "/profile" },
-    { name: "Admin Panel", href: "/admin" },
   ];
 
   return (
