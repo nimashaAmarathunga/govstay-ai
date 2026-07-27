@@ -1,22 +1,30 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BUNGALOWS, getBungalowBySlug } from "@/lib/bungalows";
+import { prisma } from "@/lib/prisma";
 
 type BungalowDetailsPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return BUNGALOWS.map((bungalow) => ({ slug: bungalow.slug }));
+export async function generateStaticParams() {
+  const bungalows = await prisma.circuitBungalow.findMany({
+    select: { slug: true },
+  });
+  return bungalows.map((bungalow) => ({ slug: bungalow.slug }));
 }
 
 export default async function BungalowDetailsPage({ params }: BungalowDetailsPageProps) {
   const { slug } = await params;
-  const bungalow = getBungalowBySlug(slug);
+  
+  const bungalow = await prisma.circuitBungalow.findUnique({
+    where: { slug },
+  });
 
   if (!bungalow) {
     notFound();
   }
+
+  const formattedPrice = `Rs. ${bungalow.price.toLocaleString()}`;
 
   return (
     <main className="flex-1 overflow-y-auto bg-slate-50">
@@ -28,7 +36,7 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="relative h-64 sm:h-80 lg:h-[26rem]">
-            <img src={bungalow.image} alt={bungalow.title} className="h-full w-full object-cover" />
+            <img src={bungalow.image} alt={bungalow.name} className="h-full w-full object-cover" />
             <div className="absolute right-4 top-4 flex items-center gap-1 rounded-md bg-white/90 px-3 py-2 shadow-sm backdrop-blur-sm">
               <span className="material-symbols-outlined text-[18px] text-amber-500">star</span>
               <span className="text-sm font-bold text-slate-700">{bungalow.rating}</span>
@@ -37,8 +45,8 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
 
           <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[1fr_20rem] lg:gap-12">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-blue-600">{bungalow.propertyType}</p>
-              <h1 className="text-3xl font-bold text-slate-800 md:text-4xl">{bungalow.title}</h1>
+              <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-blue-600">{bungalow.department}</p>
+              <h1 className="text-3xl font-bold text-slate-800 md:text-4xl">{bungalow.name}</h1>
               <p className="mt-3 flex items-center gap-2 text-slate-500">
                 <span className="material-symbols-outlined text-[20px]">location_on</span>
                 {bungalow.location}
@@ -70,22 +78,22 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
 
             <aside className="h-fit rounded-xl border border-slate-200 bg-slate-50 p-5">
               <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold text-blue-600">{bungalow.price}</span>
+                <span className="text-2xl font-bold text-blue-600">{formattedPrice}</span>
                 <span className="text-xs uppercase tracking-wide text-slate-400">/ night</span>
               </div>
 
               <div className="mt-6 divide-y divide-slate-200 border-y border-slate-200">
                 <div className="flex items-center justify-between py-4 text-sm">
                   <span className="text-slate-500">Guests</span>
-                  <span className="font-semibold text-slate-700">{bungalow.capacity}</span>
+                  <span className="font-semibold text-slate-700">Up to {bungalow.capacity} guests</span>
                 </div>
                 <div className="flex items-center justify-between py-4 text-sm">
                   <span className="text-slate-500">Rooms</span>
-                  <span className="font-semibold text-slate-700">{bungalow.rooms}</span>
+                  <span className="font-semibold text-slate-700">{bungalow.noOfRooms} bedrooms</span>
                 </div>
                 <div className="flex items-center justify-between py-4 text-sm">
                   <span className="text-slate-500">Check-in</span>
-                  <span className="font-semibold text-slate-700">{bungalow.checkIn}</span>
+                  <span className="font-semibold text-slate-700">From 2:00 PM</span>
                 </div>
               </div>
 
