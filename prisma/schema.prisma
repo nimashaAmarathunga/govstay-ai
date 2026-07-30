@@ -28,7 +28,9 @@ enum RoomType {
 }
 
 enum BookingStatus {
+  PENDING
   CONFIRMED
+  REJECTED
   CANCELLED
 }
 
@@ -134,8 +136,11 @@ model Booking {
 
   fromDate          DateTime
   toDate            DateTime
-  status            BookingStatus   @default(CONFIRMED)
+  status            BookingStatus   @default(PENDING)
   totalCost         Float?
+
+  approvalReason    String?         @db.Text
+  confidenceScore   Float?
 
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
@@ -151,6 +156,7 @@ model AgentSession {
   user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   sessionMemory Json
+  auditTrace    Json?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

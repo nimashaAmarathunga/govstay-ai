@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import DateRangePicker from "@/components/booking/DateRangePicker";
 
 export type DbRoom = {
   id: string;
@@ -9,6 +10,7 @@ export type DbRoom = {
   roomType: "AC" | "NON_AC";
   items: string[];
   noOfBeds: number;
+  price: number;
 };
 
 export type DbCaretaker = {
@@ -42,10 +44,54 @@ interface BrowseBungalowsClientProps {
 }
 
 export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClientProps) {
+  const getTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const getDayAfterTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const [checkIn, setCheckIn] = useState<Date | null>(getTomorrow());
+  const [checkOut, setCheckOut] = useState<Date | null>(getDayAfterTomorrow());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBungalow, setSelectedBungalow] = useState<DbBungalow | null>(null);
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+
+  const formatDateString = (date: Date | null) => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  let nights = 0;
+  let days = 0;
+  if (checkIn && checkOut) {
+    const diff = checkOut.getTime() - checkIn.getTime();
+    nights = Math.round(diff / (1000 * 60 * 60 * 24));
+    days = nights + 1;
+  }
+
+  const selectedRooms = selectedBungalow?.rooms?.filter((r) => selectedRoomIds.includes(r.id)) || [];
+  const isEntireBungalow = selectedRooms.length === 0;
+
+  const pricePerNight = selectedBungalow?.rooms 
+    ? (isEntireBungalow 
+        ? selectedBungalow.rooms.reduce((sum, r) => sum + r.price, 0)
+        : selectedRooms.reduce((sum, r) => sum + r.price, 0))
+    : (selectedBungalow?.price || 0);
+
+  const totalCost = pricePerNight * nights;
 
   const filteredBungalows = bungalows.filter((b) =>
     b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -284,6 +330,21 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                 </div>
               )}
 
+              {/* Date Selection Section */}
+              <div className="mb-5">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  Select Dates
+                </span>
+                <DateRangePicker
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  onChange={(start, end) => {
+                    setCheckIn(start);
+                    setCheckOut(end);
+                  }}
+                />
+              </div>
+
               {/* AVAILABLE ROOMS SECTION */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
@@ -324,10 +385,13 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                                     : "bg-slate-200 text-slate-700"
                                 }`}
                               >
-                                {room.roomType === "AC" ? "AC Room" : "Non-AC"}
+                                {room.roomType === "AC" ? "AC" : "Non-AC"}
                               </span>
                               <span className="text-xs text-slate-500 font-medium">
                                 ({room.noOfBeds} Beds)
+                              </span>
+                              <span className="text-xs font-bold text-blue-600">
+                                • {formatPrice(room.price)}/night
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-500 mt-1">
@@ -357,6 +421,25 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
 
               {/* Action Buttons */}
               <div className="mt-auto border-t border-slate-100 pt-5">
+                {checkIn && checkOut && (
+                  <div className="mb-4 bg-slate-50 rounded-xl p-3 border border-slate-200/60 text-xs space-y-1.5 animate-fade-in">
+                    <div className="flex justify-between items-center text-slate-500">
+                      <span>
+                        {selectedRoomIds.length === 0 ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRoomIds.length})`}
+                      </span>
+                      <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-500">
+                      <span>Duration</span>
+                      <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"} ({days} Days)</span>
+                    </div>
+                    <div className="border-t border-slate-100/60 pt-1.5 flex justify-between items-center text-sm font-bold">
+                      <span className="text-slate-800">Total Cost</span>
+                      <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-slate-500 font-medium">Rooms starting from</span>
                   <span className="text-2xl font-bold text-blue-600">{formatPrice(selectedBungalow.price)} <span className="text-sm font-normal text-slate-500 uppercase">/ night</span></span>
@@ -365,7 +448,12 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                 {bookingStatus === "idle" && (
                   <button
                     onClick={handleBookNow}
-                    className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all cursor-pointer flex justify-center items-center gap-2 text-sm"
+                    disabled={!checkIn || !checkOut}
+                    className={`w-full py-3.5 font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-sm ${
+                      checkIn && checkOut
+                        ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
                   >
                     {selectedRoomIds.length > 0
                       ? `Book Selected Rooms (${selectedRoomIds.length})`
@@ -383,13 +471,15 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                   </button>
                 )}
                 {bookingStatus === "success" && (
-                  <button
-                    disabled
-                    className="w-full py-3.5 bg-emerald-500 text-white font-bold rounded-xl shadow-lg flex justify-center items-center gap-2 text-sm"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                    Booking Confirmed!
-                  </button>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-center w-full">
+                    <span className="material-symbols-outlined text-3xl text-emerald-600 mb-1">check_circle</span>
+                    <h4 className="font-bold text-emerald-900 text-sm animate-fade-in">Booking Confirmed!</h4>
+                    {checkIn && checkOut && (
+                      <p className="text-xs text-emerald-700 mt-1 font-medium animate-fade-in">
+                        {formatDateString(checkIn)} - {formatDateString(checkOut)} • {nights} {nights === 1 ? 'Night' : 'Nights'} • {formatPrice(totalCost)}
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

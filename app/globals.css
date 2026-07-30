@@ -199,3 +199,14 @@ body {
   border-top: none;
   border-left: none;
 }
+
+/* Glass Tooltip Overrides */
+.glass-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.glass-tooltip::before,
+.glass-tooltip::after {
+  display: none !important;
+}
