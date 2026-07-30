@@ -12,7 +12,7 @@ interface PropertyCard {
 interface Message {
   id: string;
   sender: "user" | "ai";
-  agent?: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent";
+  agent?: string;
   text: string;
   timestamp: string;
   propertyCard?: PropertyCard;
@@ -36,7 +36,7 @@ export default function Page() {
     {
       id: "3",
       sender: "ai",
-      agent: "Preference Agent",
+      agent: "Search Agent",
       text: "Based on your preference for garden views, I've found the Nuwara Eliya Rest House. It offers a secluded setting with colonial architecture and extensive landscaped grounds.",
       timestamp: "10:43 AM",
       propertyCard: {
@@ -49,6 +49,8 @@ export default function Page() {
   ]);
 
   const [inputText, setInputText] = useState("");
+  const [attachment, setAttachment] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
 
@@ -71,13 +73,28 @@ export default function Page() {
     return `${hours}:${minutes} ${ampm}`;
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      const base64Data = base64.split(',')[1] || base64;
+      setAttachment(base64Data);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend !== undefined ? textToSend.trim() : inputText.trim();
-    if (!text) return;
+    if (!text && !attachment) return;
 
     if (textToSend === undefined) {
       setInputText("");
     }
+    
+    const currentAttachment = attachment;
+    setAttachment(null); // clear after sending
 
     const time = formatTime();
 
@@ -87,69 +104,86 @@ export default function Page() {
       {
         id: Date.now().toString(),
         sender: "user",
-        text,
+        text: currentAttachment ? `[Attachment Uploaded]\n${text}` : text,
         timestamp: time,
       },
     ]);
-
-    // 2. Add AI reply simulation
-    setTimeout(() => {
-      const lowerText = text.toLowerCase();
-      let replyText = "";
-      let activeAgent: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent" = "Preference Agent";
-
-      if (lowerText.includes("amenities") || lowerText.includes("tell me more")) {
-        replyText = "The Nuwara Eliya Rest House features a scenic garden veranda, fireplace heating, premium Ceylon tea lounge access, high-speed Wi-Fi, and personalized steward service.";
-      } else if (lowerText.includes("other") || lowerText.includes("nearby") || lowerText.includes("bungalow")) {
-        replyText = "Other nearby government options: Nuwara Eliya General Bungalow (Rs. 15,000) and Sri Lanka Post Heritage Suite (Rs. 16,500). Let me know if you want me to search them.";
-      } else if (lowerText.includes("confirm") || lowerText.includes("book")) {
-        triggerConfirmBooking();
-        return;
-      } else {
-        replyText = `I have noted: "${text}". Feel free to confirm your booking or ask for more details.`;
-      }
-
-      setMessages((prev) => [
+    
+    // Add empty AI message to stream into
+    const aiMessageId = (Date.now() + 1).toString();
+    setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: aiMessageId,
           sender: "ai",
-          agent: activeAgent,
-          text: replyText,
+          text: "",
           timestamp: formatTime(),
         },
-      ]);
-    }, 800);
+    ]);
+
+    try {
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                text, 
+                session_id: "demo-session-govstay",
+                attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
+            })
+        });
+
+        if (!res.body) return;
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunkStr = decoder.decode(value, { stream: true });
+            const lines = chunkStr.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        
+                        // Small hack: if agent says "booking created successfully" or "confirmed", update UI right column
+                        if (data.text?.toLowerCase().includes("pending (awaiting approval)")) {
+                          setBookingStatus("confirming");
+                        }
+                        if (data.text?.toLowerCase().includes("confirmed")) {
+                          setBookingStatus("confirmed");
+                        }
+                        
+                        setMessages((prev) => 
+                            prev.map(m => m.id === aiMessageId ? {
+                                ...m,
+                                text: m.text + (data.text || ""),
+                                agent: data.agent || m.agent
+                            } : m)
+                        );
+                    } catch (e) {
+                        setMessages((prev) => 
+                            prev.map(m => m.id === aiMessageId ? {
+                                ...m,
+                                text: m.text + line.slice(6)
+                            } : m)
+                        );
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Chat error", err);
+    }
   };
 
   const triggerConfirmBooking = () => {
     if (bookingStatus !== "draft") return;
-
     setBookingStatus("confirming");
-
     setTimeout(() => {
       setBookingStatus("confirmed");
-      const time = formatTime();
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          sender: "ai",
-          agent: "Booking Agent",
-          text: "Booking finalized. Your reservation at Nuwara Eliya Rest House is locked in.",
-          timestamp: time,
-        },
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "ai",
-          agent: "Notification Agent",
-          text: whatsappEnabled
-            ? "WhatsApp confirmation sent to your registered number."
-            : "Booking confirmation sent to your email.",
-          timestamp: time,
-        },
-      ]);
     }, 1500);
   };
 
@@ -241,12 +275,13 @@ export default function Page() {
                    {message.agent && (
                      <div className="flex items-center gap-1.5 ml-2 mb-0.5">
                        <span className="material-symbols-outlined text-[14px] text-blue-600">
-                           {message.agent === "Verification Agent" ? "verified_user" : 
-                            message.agent === "Preference Agent" ? "psychology" : 
-                            message.agent === "Booking Agent" ? "event_available" : "notifications_active"}
+                           {message.agent.toLowerCase().includes("verification") ? "verified_user" : 
+                            message.agent.toLowerCase().includes("document") ? "description" : 
+                            message.agent.toLowerCase().includes("approval") ? "fact_check" : 
+                            message.agent.toLowerCase().includes("booking") ? "event_available" : "psychology"}
                        </span>
                        <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide">
-                         {message.agent}
+                         {message.agent.replace(/\[|\]/g, "").trim()}
                        </span>
                      </div>
                    )}
@@ -295,13 +330,14 @@ export default function Page() {
                   <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
                      ✨ Tell me about amenities
                   </button>
-                  <button onClick={() => handleSendMessage("Any other bungalows nearby?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
-                     🔍 Show alternatives
+                  <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
+                     🔍 Search bungalows
                   </button>
                </div>
                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full p-1.5 pr-2 focus-within:bg-white focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100 transition-all">
-                 <button className="w-10 h-10 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-[22px]">add_circle</span>
+                 <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
+                 <button onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${attachment ? 'text-blue-600 bg-blue-100' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}>
+                    <span className="material-symbols-outlined text-[22px]">attach_file</span>
                  </button>
                  <input
                    className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 py-2"
@@ -313,7 +349,7 @@ export default function Page() {
                  />
                  <button
                    onClick={() => handleSendMessage()}
-                   disabled={!inputText.trim()}
+                   disabled={(!inputText.trim() && !attachment)}
                    className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm cursor-pointer"
                  >
                    <span className="material-symbols-outlined text-[18px]">send</span>
