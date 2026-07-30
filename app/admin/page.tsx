@@ -25,13 +25,7 @@ type Booking = {
   totalCost: string;
 };
 
-type Keeper = {
-  id: string;
-  name: string;
-  bungalow: string;
-  phone: string;
-  status: "Active" | "Inactive";
-};
+
 
 const INITIAL_BUNGALOWS: Bungalow[] = [
   {
@@ -77,10 +71,7 @@ const INITIAL_BOOKINGS: Booking[] = [
   }
 ];
 
-const INITIAL_KEEPERS: Keeper[] = [
-  { id: "K-1", name: "Sunil Perera", bungalow: "Nuwara Eliya Rest House", phone: "+94 77 123 4567", status: "Active" },
-  { id: "K-2", name: "Kamal Silva", bungalow: "Galle Fort Heritage Bungalow", phone: "+94 71 987 6543", status: "Active" },
-];
+
 
 
 export default function AdminPage() {
@@ -89,17 +80,14 @@ export default function AdminPage() {
   // State for data
   const [bungalows, setBungalows] = useState<Bungalow[]>(INITIAL_BUNGALOWS);
   const [bookings] = useState<Booking[]>(INITIAL_BOOKINGS); // Bookings are view-only here as requested
-  const [keepers, setKeepers] = useState<Keeper[]>(INITIAL_KEEPERS);
+
 
   // Form State for Bungalow
   const [isBungalowModalOpen, setIsBungalowModalOpen] = useState(false);
   const [editingBungalowId, setEditingBungalowId] = useState<string | null>(null);
   const [bungalowForm, setBungalowForm] = useState<Partial<Bungalow>>({});
 
-  // Form State for Keeper
-  const [isKeeperModalOpen, setIsKeeperModalOpen] = useState(false);
-  const [editingKeeperId, setEditingKeeperId] = useState<string | null>(null);
-  const [keeperForm, setKeeperForm] = useState<Partial<Keeper>>({});
+
 
   // --- Bungalow Handlers ---
   const handleAddBungalow = () => {
@@ -134,47 +122,28 @@ export default function AdminPage() {
     setIsBungalowModalOpen(false);
   };
 
-  // --- Keeper Handlers ---
-  const handleAddKeeper = () => {
-    setKeeperForm({ name: "", bungalow: "", phone: "", status: "Active" });
-    setEditingKeeperId(null);
-    setIsKeeperModalOpen(true);
-  };
 
-  const handleEditKeeper = (k: Keeper) => {
-    setKeeperForm({ ...k });
-    setEditingKeeperId(k.id);
-    setIsKeeperModalOpen(true);
-  };
 
-  const handleDeleteKeeper = (id: string) => {
-    setKeepers(keepers.filter(k => k.id !== id));
-  };
 
-  const saveKeeper = () => {
-    if (editingKeeperId) {
-      setKeepers(keepers.map(k => k.id === editingKeeperId ? { ...k, ...keeperForm } as Keeper : k));
-    } else {
-      const newKeeper = { ...keeperForm, id: `K-${Date.now()}` } as Keeper;
-      setKeepers([...keepers, newKeeper]);
-    }
-    setIsKeeperModalOpen(false);
-  };
+
+
+
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative">
-      
+
       {/* Admin Header & Tabs */}
       <div className="bg-white border-b border-slate-200 px-8 pt-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">Admin Dashboard</h1>
         <p className="text-slate-500 mb-8">Manage properties, view confirmed bookings, and update staff assignments.</p>
-        
+
         {/* Weekly Bookings Dashboard */}
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 mb-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
           <div className="flex-1">
             <h3 className="text-lg font-bold text-slate-800 mb-1">Upcoming Week Bookings</h3>
             <p className="text-sm text-slate-500 mb-6">Distribution of reservations for the next 7 days.</p>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -198,61 +167,56 @@ export default function AdminPage() {
                 <span className="text-sm font-bold text-slate-800">12 bookings</span>
               </div>
             </div>
-            
+
             <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
               <span className="text-sm font-medium text-slate-500">Total upcoming</span>
               <span className="text-xl font-bold text-slate-800">35</span>
             </div>
           </div>
-          
+
           {/* Pie Chart Visualization (CSS Conic Gradient) */}
           <div className="relative w-48 h-48 shrink-0 flex items-center justify-center">
-             <div 
-               className="absolute inset-0 rounded-full shadow-inner"
-               style={{
-                 background: 'conic-gradient(#3b82f6 0% 43%, #10b981 43% 66%, #f59e0b 66% 100%)'
-               }}
-             ></div>
-             {/* Inner circle to make it a donut chart for a modern look */}
-             <div className="absolute inset-4 bg-slate-50 rounded-full shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total</span>
-                <span className="text-3xl font-bold text-slate-800">35</span>
-             </div>
+            <div
+              className="absolute inset-0 rounded-full shadow-inner"
+              style={{
+                background: 'conic-gradient(#3b82f6 0% 43%, #10b981 43% 66%, #f59e0b 66% 100%)'
+              }}
+            ></div>
+            {/* Inner circle to make it a donut chart for a modern look */}
+            <div className="absolute inset-4 bg-slate-50 rounded-full shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total</span>
+              <span className="text-3xl font-bold text-slate-800">35</span>
+            </div>
           </div>
         </div>
-        
+
         <div className="flex gap-2 bg-slate-100 p-1 rounded-xl inline-flex mb-2">
-          <button 
+          <button
             onClick={() => setActiveTab("bungalows")}
             className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "bungalows" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
           >
             Circuit Bungalows
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab("bookings")}
             className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "bookings" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
           >
             Confirmed Bookings
           </button>
-          <button 
-            onClick={() => setActiveTab("keepers")}
-            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "keepers" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
-          >
-            Physical Keepers
-          </button>
+
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-6xl mx-auto">
-          
+
           {/* TAB: BUNGALOWS */}
           {activeTab === "bungalows" && (
             <div className="animate-fade-in">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-slate-800">Manage Circuit Bungalows</h2>
-                <button 
+                <button
                   onClick={handleAddBungalow}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-semibold text-sm cursor-pointer"
                 >
@@ -330,54 +294,6 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* TAB: KEEPERS */}
-          {activeTab === "keepers" && (
-            <div className="animate-fade-in">
-               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Physical Keepers Directory</h2>
-                <button 
-                  onClick={handleAddKeeper}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-semibold text-sm cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">person_add</span>
-                  Add Keeper
-                </button>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  <div className="col-span-3">Keeper Name</div>
-                  <div className="col-span-4">Assigned Bungalow</div>
-                  <div className="col-span-2">Contact Info</div>
-                  <div className="col-span-2">Status</div>
-                  <div className="col-span-1 text-right">Actions</div>
-                </div>
-                <div className="divide-y divide-slate-100">
-                  {keepers.map(k => (
-                    <div key={k.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors">
-                      <div className="col-span-3 text-sm font-bold text-slate-800">{k.name}</div>
-                      <div className="col-span-4 text-sm text-slate-600 font-medium">{k.bungalow}</div>
-                      <div className="col-span-2 text-sm text-slate-600">{k.phone}</div>
-                      <div className="col-span-2">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${k.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                          {k.status}
-                        </span>
-                      </div>
-                      <div className="col-span-1 flex justify-end gap-2">
-                        <button onClick={() => handleEditKeeper(k)} className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">
-                          <span className="material-symbols-outlined text-[18px]">edit</span>
-                        </button>
-                        <button onClick={() => handleDeleteKeeper(k.id)} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer">
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {keepers.length === 0 && <div className="p-8 text-center text-slate-500">No keepers found.</div>}
-                </div>
-              </div>
-            </div>
-          )}
 
         </div>
       </div>
@@ -394,45 +310,45 @@ export default function AdminPage() {
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto flex-1 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Title</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya Rest House" value={bungalowForm.title || ""} onChange={e => setBungalowForm({...bungalowForm, title: e.target.value})} />
+                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya Rest House" value={bungalowForm.title || ""} onChange={e => setBungalowForm({ ...bungalowForm, title: e.target.value })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Location</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya" value={bungalowForm.location || ""} onChange={e => setBungalowForm({...bungalowForm, location: e.target.value})} />
+                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya" value={bungalowForm.location || ""} onChange={e => setBungalowForm({ ...bungalowForm, location: e.target.value })} />
                 </div>
-                
+
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Number of Rooms</label>
-                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.rooms || 1} onChange={e => setBungalowForm({...bungalowForm, rooms: parseInt(e.target.value)})} />
+                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.rooms || 1} onChange={e => setBungalowForm({ ...bungalowForm, rooms: parseInt(e.target.value) })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Persons per Room</label>
-                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.capacityPerRoom || 2} onChange={e => setBungalowForm({...bungalowForm, capacityPerRoom: parseInt(e.target.value)})} />
+                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.capacityPerRoom || 2} onChange={e => setBungalowForm({ ...bungalowForm, capacityPerRoom: parseInt(e.target.value) })} />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Cost for one night (Rs.)</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. 18,500" value={bungalowForm.price || ""} onChange={e => setBungalowForm({...bungalowForm, price: e.target.value})} />
+                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. 18,500" value={bungalowForm.price || ""} onChange={e => setBungalowForm({ ...bungalowForm, price: e.target.value })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Facilities (comma separated)</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. AC, WiFi, Hot Water" value={bungalowForm.facilities?.join(", ") || ""} onChange={e => setBungalowForm({...bungalowForm, facilities: e.target.value.split(",").map(s => s.trim())})} />
+                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. AC, WiFi, Hot Water" value={bungalowForm.facilities?.join(", ") || ""} onChange={e => setBungalowForm({ ...bungalowForm, facilities: e.target.value.split(",").map(s => s.trim()) })} />
                 </div>
 
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Additional Details</label>
-                  <textarea rows={3} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 resize-none" placeholder="Description of the place..." value={bungalowForm.details || ""} onChange={e => setBungalowForm({...bungalowForm, details: e.target.value})} />
+                  <textarea rows={3} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 resize-none" placeholder="Description of the place..." value={bungalowForm.details || ""} onChange={e => setBungalowForm({ ...bungalowForm, details: e.target.value })} />
                 </div>
 
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Photos (URL for now)</label>
                   <div className="flex gap-2">
-                    <input type="text" className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="https://image-url..." value={bungalowForm.image || ""} onChange={e => setBungalowForm({...bungalowForm, image: e.target.value})} />
+                    <input type="text" className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="https://image-url..." value={bungalowForm.image || ""} onChange={e => setBungalowForm({ ...bungalowForm, image: e.target.value })} />
                     <button className="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer">
                       <span className="material-symbols-outlined text-[16px]">upload</span> Upload
                     </button>
@@ -443,58 +359,14 @@ export default function AdminPage() {
             </div>
 
             <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-               <button onClick={() => setIsBungalowModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 cursor-pointer">Cancel</button>
-               <button onClick={saveBungalow} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 cursor-pointer">Save Bungalow</button>
+              <button onClick={() => setIsBungalowModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 cursor-pointer">Cancel</button>
+              <button onClick={saveBungalow} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 cursor-pointer">Save Bungalow</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Keeper Modal */}
-      {isKeeperModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="font-bold text-lg text-slate-800">{editingKeeperId ? "Edit Keeper" : "Add New Keeper"}</h3>
-              <button onClick={() => setIsKeeperModalOpen(false)} className="text-slate-400 hover:text-slate-800 cursor-pointer">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Name</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={keeperForm.name || ""} onChange={e => setKeeperForm({...keeperForm, name: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Assigned Bungalow</label>
-                  <select className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 bg-white" value={keeperForm.bungalow || ""} onChange={e => setKeeperForm({...keeperForm, bungalow: e.target.value})}>
-                    <option value="" disabled>Select a bungalow...</option>
-                    {bungalows.map(b => (
-                      <option key={b.id} value={b.title}>{b.title}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Phone</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={keeperForm.phone || ""} onChange={e => setKeeperForm({...keeperForm, phone: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</label>
-                  <select className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 bg-white" value={keeperForm.status || "Active"} onChange={e => setKeeperForm({...keeperForm, status: e.target.value as "Active" | "Inactive"})}>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-            </div>
 
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-               <button onClick={() => setIsKeeperModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 cursor-pointer">Cancel</button>
-               <button onClick={saveKeeper} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 cursor-pointer">Save Keeper</button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
