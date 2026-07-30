@@ -96,8 +96,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
       const geoData = await geoRes.json();
 
       const allPlaces = geoData.query?.geosearch || [];
-
-      // Filter out non-tourist locations like schools and hospitals
       const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
       const places = allPlaces.filter((p: any) => {
         const title = p.title.toLowerCase();
@@ -109,7 +107,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         return;
       }
 
-      // Take only the top 10 after filtering
       const topPlaces = places.slice(0, 10);
       const pageIds = topPlaces.map((p: any) => p.pageid).join('|');
 
@@ -137,12 +134,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
     } finally {
       setIsLoadingAttractions(false);
     }
-  };
-
-  const clearAttractions = () => {
-    setSelectedBungalow(null);
-    setSelectedAttraction(null);
-    setNearbyAttractions([]);
   };
 
   const handleAttractionClick = (attraction: Attraction) => {
@@ -291,43 +282,44 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         </div>
       </div>
 
-      {/* Nearby Attractions Overlay & Interactive Cards Bar */}
+      {/* Selected Bungalow & Nearby Attractions Overlay */}
       {selectedBungalow && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col items-center gap-3 max-w-4xl w-full px-4">
-
-          {/* Main Status Bar */}
-          <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-2xl border border-slate-200 flex items-center gap-4">
-            <div className="flex items-center gap-2 text-slate-700 font-semibold text-sm">
-              <span className="material-symbols-outlined text-purple-600">explore</span>
-              {isLoadingAttractions ? (
-                "Finding nearby attractions..."
-              ) : (
-                `Found ${nearbyAttractions.length} attractions near ${selectedBungalow.name}`
-              )}
+          <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-2xl shadow-2xl border border-slate-200 flex items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                <span className="material-symbols-outlined text-xl">holiday_village</span>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-800 text-sm truncate">{selectedBungalow.name}</h3>
+                <p className="text-xs text-slate-500 truncate">{selectedBungalow.location} • Rs. {selectedBungalow.price.toLocaleString()}/night</p>
+              </div>
             </div>
-            {!isLoadingAttractions && (
-              <>
-                <Link
-                  href={`/browse/${selectedBungalow.slug}`}
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors ml-2 shrink-0"
-                >
-                  Book Bungalow
-                </Link>
-                <button
-                  onClick={clearAttractions}
-                  className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full cursor-pointer transition-colors shrink-0"
-                  title="Clear Attractions"
-                >
-                  <span className="material-symbols-outlined text-[18px]">close</span>
-                </button>
-              </>
-            )}
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href={`/browse/${selectedBungalow.slug}`}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5"
+              >
+                <span>Book Bungalow</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </Link>
+              <button
+                onClick={() => {
+                  setSelectedBungalow(null);
+                  setSelectedAttraction(null);
+                  setNearbyAttractions([]);
+                }}
+                className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-xl cursor-pointer transition-colors"
+                title="Clear selection"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
           </div>
 
-          {/* Interactive Attraction Cards List with Dynamic Scroll Left/Right Buttons */}
+          {/* Interactive Attraction Cards List (Omits the "Found 10 attractions near" text) */}
           {!isLoadingAttractions && nearbyAttractions.length > 0 && (
             <div className="w-full flex items-center gap-2 relative">
-              {/* Scroll Left Button */}
               {canScrollLeft && (
                 <button
                   onClick={handleScrollLeft}
@@ -338,7 +330,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                 </button>
               )}
 
-              {/* Scrollable Cards Container */}
               <div
                 ref={attractionsScrollRef}
                 onScroll={checkScrollPosition}
@@ -350,10 +341,11 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                     <button
                       key={attraction.id}
                       onClick={() => handleAttractionClick(attraction)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${isSelected
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${
+                        isSelected
                           ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-400 scale-105"
                           : "bg-white/95 backdrop-blur-md text-purple-950 border-purple-100 hover:bg-purple-50 hover:border-purple-300"
-                        }`}
+                      }`}
                       title={`Click to zoom in on ${attraction.title}`}
                     >
                       <span className="material-symbols-outlined text-[16px] text-amber-400">
@@ -365,7 +357,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                 })}
               </div>
 
-              {/* Scroll Right Button */}
               {canScrollRight && (
                 <button
                   onClick={handleScrollRight}
@@ -377,7 +368,6 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
               )}
             </div>
           )}
-
         </div>
       )}
 
