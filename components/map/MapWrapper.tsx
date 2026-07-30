@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { BungalowMarker } from "./InteractiveMap";
+import { useState, useMemo, useRef, useEffect } from "react";
 
 // Dynamically import the Leaflet map so it only renders on the client
 // This prevents "window is not defined" errors during SSR
@@ -18,8 +19,6 @@ const InteractiveMap = dynamic(() => import("./InteractiveMap"), {
   ),
 });
 
-import { useState, useMemo } from "react";
-
 export type Attraction = {
   id: number;
   title: string;
@@ -31,35 +30,73 @@ export type Attraction = {
 
 export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [maxPrice, setMaxPrice] = useState<number>(30000);
   const [selectedArea, setSelectedArea] = useState<string>("All");
-  
+
   const [selectedBungalow, setSelectedBungalow] = useState<BungalowMarker | null>(null);
   const [nearbyAttractions, setNearbyAttractions] = useState<Attraction[]>([]);
+  const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
   const [isLoadingAttractions, setIsLoadingAttractions] = useState(false);
+
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const attractionsScrollRef = useRef<HTMLDivElement>(null);
+
+  const checkScrollPosition = () => {
+    if (attractionsScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = attractionsScrollRef.current;
+      setCanScrollLeft(scrollLeft > 2);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollPosition();
+    const timer = setTimeout(checkScrollPosition, 100);
+    window.addEventListener("resize", checkScrollPosition);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScrollPosition);
+    };
+  }, [nearbyAttractions]);
+
+  const handleScrollLeft = () => {
+    if (attractionsScrollRef.current) {
+      attractionsScrollRef.current.scrollBy({ left: -240, behavior: "smooth" });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (attractionsScrollRef.current) {
+      attractionsScrollRef.current.scrollBy({ left: 240, behavior: "smooth" });
+    }
+  };
 
   // Standard 25 Districts of Sri Lanka for Area Filtering
   const uniqueAreas = [
-    "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", 
-    "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara", 
-    "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", 
-    "Matale", "Matara", "Monaragala", "Mullaitivu", "Nuwara Eliya", 
+    "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo",
+    "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara",
+    "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar",
+    "Matale", "Matara", "Monaragala", "Mullaitivu", "Nuwara Eliya",
     "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"
   ];
 
   const fetchNearbyAttractions = async (bungalow: BungalowMarker) => {
     setSelectedBungalow(bungalow);
+    setSelectedAttraction(null);
     setIsLoadingAttractions(true);
     setNearbyAttractions([]);
-    
+
     try {
       const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=20&format=json&origin=*`;
       const geoRes = await fetch(geoUrl);
       const geoData = await geoRes.json();
-      
+
       const allPlaces = geoData.query?.geosearch || [];
-      
+
       // Filter out non-tourist locations like schools and hospitals
       const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
       const places = allPlaces.filter((p: any) => {
@@ -71,17 +108,17 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         setIsLoadingAttractions(false);
         return;
       }
-      
+
       // Take only the top 10 after filtering
       const topPlaces = places.slice(0, 10);
       const pageIds = topPlaces.map((p: any) => p.pageid).join('|');
-      
+
       const detailsUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=200&exsentences=2&explaintext=true&pageids=${pageIds}&format=json&origin=*`;
       const detailsRes = await fetch(detailsUrl);
       const detailsData = await detailsRes.json();
-      
+
       const pages = detailsData.query?.pages || {};
-      
+
       const attractions: Attraction[] = topPlaces.map((p: any) => {
         const page = pages[p.pageid];
         return {
@@ -93,7 +130,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           extract: page?.extract,
         };
       });
-      
+
       setNearbyAttractions(attractions);
     } catch (error) {
       console.error("Error fetching attractions:", error);
@@ -104,17 +141,22 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
   const clearAttractions = () => {
     setSelectedBungalow(null);
+    setSelectedAttraction(null);
     setNearbyAttractions([]);
+  };
+
+  const handleAttractionClick = (attraction: Attraction) => {
+    setSelectedAttraction(attraction);
   };
 
   // Client-side filtering
   const filteredBungalows = useMemo(() => {
     return bungalows.filter((b) => {
       // 1. Search Query
-      const matchesSearch = 
-        b.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch =
+        b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         b.location.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       // 2. Price Filter
       const matchesPrice = b.price <= maxPrice;
 
@@ -129,22 +171,71 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
     <>
       {/* Map Header / Filters - Top Right */}
       <div className="absolute top-6 right-6 z-10 flex gap-4 pointer-events-none justify-end">
-        
-        {/* Search Box */}
-        <div className="bg-white p-3 rounded-2xl shadow-lg border border-slate-200 pointer-events-auto flex items-center gap-3 w-96 transition-all focus-within:ring-2 focus-within:ring-blue-500">
-          <span className="material-symbols-outlined text-slate-400">search</span>
-          <input 
-            type="text" 
-            placeholder="Search bungalow name (e.g. Visumpaya) or city..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full focus:outline-none text-slate-800 placeholder-slate-400 text-sm bg-transparent"
-          />
+
+        {/* Search Box with Live Dropdown */}
+        <div className="relative pointer-events-auto w-96">
+          <div className="bg-white p-3 rounded-2xl shadow-lg border border-slate-200 flex items-center gap-3 w-full transition-all focus-within:ring-2 focus-within:ring-blue-500">
+            <span className="material-symbols-outlined text-slate-400">search</span>
+            <input
+              type="text"
+              placeholder="Search bungalow name (e.g. Visumpaya) or city..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchDropdown(true);
+              }}
+              onFocus={() => setShowSearchDropdown(true)}
+              className="w-full focus:outline-none text-slate-800 placeholder-slate-400 text-sm bg-transparent"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setShowSearchDropdown(false);
+                }}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            )}
+          </div>
+
+          {/* Search Dropdown Results */}
+          {showSearchDropdown && searchQuery.trim() !== "" && (
+            <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-72 overflow-y-auto z-30 p-2">
+              {filteredBungalows.length > 0 ? (
+                filteredBungalows.map((bungalow) => (
+                  <button
+                    key={bungalow.id}
+                    onClick={() => {
+                      fetchNearbyAttractions(bungalow);
+                      setShowSearchDropdown(false);
+                      setSearchQuery(bungalow.name);
+                    }}
+                    className="w-full text-left p-3 rounded-xl hover:bg-blue-50 flex items-center gap-3 transition-colors group cursor-pointer"
+                  >
+                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100">
+                      <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-sm text-slate-800 group-hover:text-blue-600 truncate">{bungalow.name}</h4>
+                      <p className="text-xs text-slate-500 truncate">{bungalow.location}</p>
+                    </div>
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600 text-lg">chevron_right</span>
+                  </button>
+                ))
+              ) : (
+                <div className="p-4 text-center text-sm text-slate-500 font-medium">
+                  No bungalows matching "{searchQuery}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Filters Button */}
         <div className="flex gap-2 pointer-events-auto relative">
-          <button 
+          <button
             onClick={() => setShowFilters(!showFilters)}
             className={`px-6 py-3 bg-white border border-slate-200 shadow-lg rounded-2xl text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${showFilters ? 'text-blue-600 ring-2 ring-blue-500' : 'text-slate-700 hover:bg-slate-50 hover:text-blue-600'}`}
           >
@@ -155,14 +246,14 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           {/* Filters Dropdown */}
           {showFilters && (
             <div className="absolute top-full mt-3 right-0 w-72 bg-white p-5 rounded-2xl shadow-2xl border border-slate-200 z-20">
-              
+
               {/* Area Filter */}
               <div className="mb-5">
                 <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-2">
                   <span className="material-symbols-outlined text-[16px] text-blue-600">location_on</span>
                   Filter by Area
                 </h3>
-                <select 
+                <select
                   value={selectedArea}
                   onChange={(e) => setSelectedArea(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none cursor-pointer"
@@ -180,10 +271,10 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                   <span className="material-symbols-outlined text-[16px] text-blue-600">payments</span>
                   Max Price (Rs. {maxPrice.toLocaleString()})
                 </h3>
-                <input 
-                  type="range" 
-                  min="500" 
-                  max="30000" 
+                <input
+                  type="range"
+                  min="500"
+                  max="30000"
                   step="500"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
@@ -200,9 +291,11 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         </div>
       </div>
 
-      {/* Attractions Overlay */}
+      {/* Nearby Attractions Overlay & Interactive Cards Bar */}
       {selectedBungalow && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col items-center gap-3 max-w-4xl w-full px-4">
+
+          {/* Main Status Bar */}
           <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-2xl border border-slate-200 flex items-center gap-4">
             <div className="flex items-center gap-2 text-slate-700 font-semibold text-sm">
               <span className="material-symbols-outlined text-purple-600">explore</span>
@@ -214,15 +307,15 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             </div>
             {!isLoadingAttractions && (
               <>
-                <Link 
+                <Link
                   href={`/browse/${selectedBungalow.slug}`}
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors ml-2"
+                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors ml-2 shrink-0"
                 >
                   Book Bungalow
                 </Link>
-                <button 
+                <button
                   onClick={clearAttractions}
-                  className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full cursor-pointer transition-colors"
+                  className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full cursor-pointer transition-colors shrink-0"
                   title="Clear Attractions"
                 >
                   <span className="material-symbols-outlined text-[18px]">close</span>
@@ -230,14 +323,71 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
               </>
             )}
           </div>
+
+          {/* Interactive Attraction Cards List with Dynamic Scroll Left/Right Buttons */}
+          {!isLoadingAttractions && nearbyAttractions.length > 0 && (
+            <div className="w-full flex items-center gap-2 relative">
+              {/* Scroll Left Button */}
+              {canScrollLeft && (
+                <button
+                  onClick={handleScrollLeft}
+                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-purple-600 rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
+                  title="Scroll Left"
+                >
+                  <span className="material-symbols-outlined text-xl">chevron_left</span>
+                </button>
+              )}
+
+              {/* Scrollable Cards Container */}
+              <div
+                ref={attractionsScrollRef}
+                onScroll={checkScrollPosition}
+                className="flex-1 flex items-center gap-2 overflow-x-auto pb-2 pt-1 px-2 no-scrollbar scroll-smooth"
+              >
+                {nearbyAttractions.map((attraction) => {
+                  const isSelected = selectedAttraction?.id === attraction.id;
+                  return (
+                    <button
+                      key={attraction.id}
+                      onClick={() => handleAttractionClick(attraction)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${isSelected
+                          ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-400 scale-105"
+                          : "bg-white/95 backdrop-blur-md text-purple-950 border-purple-100 hover:bg-purple-50 hover:border-purple-300"
+                        }`}
+                      title={`Click to zoom in on ${attraction.title}`}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-amber-400">
+                        {isSelected ? "zoom_in" : "location_on"}
+                      </span>
+                      <span className="truncate max-w-[150px]">{attraction.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Scroll Right Button */}
+              {canScrollRight && (
+                <button
+                  onClick={handleScrollRight}
+                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-purple-600 rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
+                  title="Scroll Right"
+                >
+                  <span className="material-symbols-outlined text-xl">chevron_right</span>
+                </button>
+              )}
+            </div>
+          )}
+
         </div>
       )}
 
-      <InteractiveMap 
-        bungalows={filteredBungalows} 
+      <InteractiveMap
+        bungalows={filteredBungalows}
         onBungalowClick={fetchNearbyAttractions}
         attractions={nearbyAttractions}
         selectedBungalow={selectedBungalow}
+        selectedAttraction={selectedAttraction}
+        onAttractionClick={handleAttractionClick}
       />
     </>
   );
