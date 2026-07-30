@@ -6,17 +6,21 @@ export async function POST(req: NextRequest) {
 
     // Proxy the request to the Agent Kernel local server running on port 8000
     // Agent Kernel provides a streaming endpoint out of the box when using RESTAPI.run()
-    const response = await fetch("http://localhost:8000/v1/agent/stream", {
+    const response = await fetch("http://localhost:8000/api/v1/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       // Ensure we format the payload expected by Agent Kernel
       body: JSON.stringify({
-        agent_id: "govstay", // We registered triage_agent with name="govstay"
-        text: body.text,
+        agent: "govstay", // We registered triage_agent with name="govstay"
+        prompt: body.text,
         session_id: body.session_id, // Pass along to maintain session history
-        attachments: body.attachments || [],
+        images: body.attachments ? body.attachments.map((a: any) => ({
+           image_data: a.data,
+           name: "upload.png",
+           mime_type: a.content_type
+        })) : [],
       }),
     });
 

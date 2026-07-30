@@ -14,13 +14,12 @@ export default async function AdminApprovalsPage() {
     },
   });
 
-  const sessions = await prisma.agentSession.findMany({
-    where: {
-      auditTrace: { not: undefined }, // Only fetch sessions with traces
-    },
+  const allSessions = await prisma.agentSession.findMany({
     orderBy: { updatedAt: "desc" },
-    take: 10,
+    take: 50,
   });
+
+  const sessions = allSessions.filter((s) => s.auditTrace != null).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">

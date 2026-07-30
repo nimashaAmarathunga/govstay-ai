@@ -98,11 +98,14 @@ export default function Page() {
 
     const time = formatTime();
 
+    const userMsgId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const aiMsgId = `ai-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
     // 1. Add User Message
     setMessages((prev) => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: userMsgId,
         sender: "user",
         text: currentAttachment ? `[Attachment Uploaded]\n${text}` : text,
         timestamp: time,
@@ -110,14 +113,13 @@ export default function Page() {
     ]);
     
     // Add empty AI message to stream into
-    const aiMessageId = (Date.now() + 1).toString();
     setMessages((prev) => [
         ...prev,
         {
-          id: aiMessageId,
+          id: aiMsgId,
           sender: "ai",
           text: "",
-          timestamp: formatTime(),
+          timestamp: time,
         },
     ]);
 
@@ -157,7 +159,7 @@ export default function Page() {
                         }
                         
                         setMessages((prev) => 
-                            prev.map(m => m.id === aiMessageId ? {
+                            prev.map(m => m.id === aiMsgId ? {
                                 ...m,
                                 text: m.text + (data.text || ""),
                                 agent: data.agent || m.agent
@@ -165,7 +167,7 @@ export default function Page() {
                         );
                     } catch (e) {
                         setMessages((prev) => 
-                            prev.map(m => m.id === aiMessageId ? {
+                            prev.map(m => m.id === aiMsgId ? {
                                 ...m,
                                 text: m.text + line.slice(6)
                             } : m)
