@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMode } from "@/components/context/ModeContext";
+import { useMode, AppMode } from "@/components/context/ModeContext";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -19,16 +19,21 @@ export default function Navigation() {
   ];
 
   const visibleNavLinks = allNavLinks.filter((link) => {
-    if (mode === "admin" && link.name === "My Profile") return false;
-    if (mode === "user" && link.name === "Admin Panel") return false;
+    if (mode === "admin") {
+      return link.name === "Admin Panel";
+    }
+    if (mode === "user") {
+      return link.name !== "Admin Panel";
+    }
+    // "developer" mode shows all links (both Admin Panel and My Profile)
     return true;
   });
 
-  const handleModeChange = (newMode: "user" | "admin") => {
+  const handleModeChange = (newMode: AppMode) => {
     setMode(newMode);
     if (newMode === "user" && pathname === "/admin") {
       router.push("/");
-    } else if (newMode === "admin" && pathname === "/profile") {
+    } else if (newMode === "admin" && pathname !== "/admin") {
       router.push("/admin");
     }
   };
@@ -64,7 +69,7 @@ export default function Navigation() {
       </div>
       
       <div className="flex items-center gap-4">
-        {/* Admin Mode & User Mode Toggle Buttons */}
+        {/* Mode Toggle Buttons: User, Admin & Developer View */}
         <div className="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 gap-1">
           <button
             onClick={() => handleModeChange("user")}
@@ -90,14 +95,26 @@ export default function Navigation() {
             <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
             <span>Admin Mode</span>
           </button>
+          <button
+            onClick={() => handleModeChange("developer")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              mode === "developer"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+            }`}
+            title="Switch to Developer View"
+          >
+            <span className="material-symbols-outlined text-[16px]">terminal</span>
+            <span>Developer View</span>
+          </button>
         </div>
 
         <button className="text-slate-500 hover:text-slate-800 transition-colors p-2 rounded-full hover:bg-slate-100 cursor-pointer">
            <span className="material-symbols-outlined">help_outline</span>
         </button>
 
-        {/* User Profile avatar section - hidden when in Admin Mode */}
-        {mode === "user" && (
+        {/* User Profile avatar section - shown in User Mode & Developer View */}
+        {(mode === "user" || mode === "developer") && (
           <Link href="/profile" title="My Profile" className="h-8 w-8 rounded-full overflow-hidden border border-slate-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all block">
              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGCXl0kYkpoLHHx0G_49GPuQztc4VopnoiFgKFM_wr71bz39PeikWIGXi8W-a3OIJ4dt9TUW1SrWN4xHp3qxcsHuKPihaTSA4dK6Swgq11R36yHsueOmIDeUDvwe9t0Wb67HkoK87Ka9cWAQHU7o9mb_QM0l9HNZ-A_6zkhW72NfAbO19JnNlWwPkn4-OqnsYMzyWehYs3B2dkVC2vskOW2PoqFPtelLviBm35-TgFZYO1RVt3z15f" alt="Profile" className="w-full h-full object-cover" />
           </Link>

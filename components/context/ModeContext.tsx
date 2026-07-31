@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-export type AppMode = "user" | "admin";
+export type AppMode = "user" | "admin" | "developer";
 
 interface ModeContextType {
   mode: AppMode;
@@ -10,6 +10,7 @@ interface ModeContextType {
   toggleMode: () => void;
   isAdminMode: boolean;
   isUserMode: boolean;
+  isDeveloperMode: boolean;
 }
 
 const ModeContext = createContext<ModeContextType | undefined>(undefined);
@@ -22,7 +23,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const savedMode = localStorage.getItem(STORAGE_KEY) as AppMode;
-      if (savedMode === "user" || savedMode === "admin") {
+      if (savedMode === "user" || savedMode === "admin" || savedMode === "developer") {
         setModeState(savedMode);
       }
     } catch {
@@ -40,7 +41,9 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleMode = () => {
-    setMode(mode === "user" ? "admin" : "user");
+    if (mode === "user") setMode("admin");
+    else if (mode === "admin") setMode("developer");
+    else setMode("user");
   };
 
   return (
@@ -51,6 +54,7 @@ export function ModeProvider({ children }: { children: React.ReactNode }) {
         toggleMode,
         isAdminMode: mode === "admin",
         isUserMode: mode === "user",
+        isDeveloperMode: mode === "developer",
       }}
     >
       {children}

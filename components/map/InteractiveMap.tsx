@@ -1,10 +1,7 @@
-"use client";
-
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Tooltip, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Attraction } from "./MapWrapper";
 
@@ -76,12 +73,12 @@ export default function InteractiveMap({
   selectedAttraction,
   onAttractionClick,
 }: {
-  bungalows: BungalowMarker[],
-  onBungalowClick?: (b: BungalowMarker) => void,
-  attractions?: Attraction[],
-  selectedBungalow?: BungalowMarker | null,
-  selectedAttraction?: Attraction | null,
-  onAttractionClick?: (attraction: Attraction) => void,
+  bungalows: BungalowMarker[];
+  onBungalowClick?: (b: BungalowMarker) => void;
+  attractions?: Attraction[];
+  selectedBungalow?: BungalowMarker | null;
+  selectedAttraction?: Attraction | null;
+  onAttractionClick?: (attraction: Attraction) => void;
 }) {
   const router = useRouter();
 
