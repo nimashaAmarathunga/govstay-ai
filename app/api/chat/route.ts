@@ -28,15 +28,9 @@ export async function POST(req: NextRequest) {
 
     // api.py returns JSON like { "reply": "...", "agent_name": "...", "ui_state": {...} }
     // We convert it into Server-Sent Events (SSE) so the frontend doesn't break
-    const data = await response.json();
-    const ssePayload = JSON.stringify({ 
-      text: data.reply, 
-      agent: data.agent_name,
-      ui_state: data.ui_state
-    });
-    const sseResponse = `data: ${ssePayload}\n\n`;
-
-    return new Response(sseResponse, {
+    // api.py now returns a true Server-Sent Events stream!
+    // We can just proxy this stream directly to the client.
+    return new Response(response.body, {
       status: 200,
       headers: {
         "Content-Type": "text/event-stream",
