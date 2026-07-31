@@ -6,12 +6,14 @@ interface DateRangePickerProps {
   checkIn: Date | null;
   checkOut: Date | null;
   onChange: (checkIn: Date | null, checkOut: Date | null) => void;
+  isDateDisabled?: (date: Date) => boolean;
 }
 
 export default function DateRangePicker({
   checkIn,
   checkOut,
   onChange,
+  isDateDisabled,
 }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -19,6 +21,32 @@ export default function DateRangePicker({
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
   
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Find the first disabled date after checkIn
+  let firstDisabledDateAfterCheckIn: Date | null = null;
+  if (checkIn && !checkOut && isDateDisabled) {
+    const tempDate = new Date(checkIn);
+    tempDate.setDate(tempDate.getDate() + 1);
+    for (let i = 0; i < 90; i++) {
+      if (isDateDisabled(tempDate)) {
+        firstDisabledDateAfterCheckIn = new Date(tempDate);
+        break;
+      }
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
+  }
+
+  const isCellDisabled = (date: Date) => {
+    if (date < today) return true;
+    if (isDateDisabled && isDateDisabled(date)) return true;
+    if (checkIn && !checkOut && firstDisabledDateAfterCheckIn) {
+      if (date > firstDisabledDateAfterCheckIn) return true;
+    }
+    return false;
+  };
 
   // Close calendar if clicking outside
   useEffect(() => {
@@ -32,9 +60,6 @@ export default function DateRangePicker({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   const handleMonthPrev = () => {
     if (currentMonth === 0) {
@@ -70,7 +95,7 @@ export default function DateRangePicker({
   const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
   const handleDateClick = (date: Date) => {
-    if (date < today) return; // Prevent picking past dates
+    if (isCellDisabled(date)) return; // Prevent picking disabled/booked dates
 
     if (!checkIn || (checkIn && checkOut)) {
       // First select or starting over
@@ -240,13 +265,17 @@ export default function DateRangePicker({
             {calendarCells.map(({ date, isCurrentMonth }, index) => {
               const dateType = isSelected(date);
               const isToday = date.getTime() === today.getTime();
-              const isPast = date < today;
+              const isCellDisabledVal = isCellDisabled(date);
               const inRange = isInRange(date);
+              const isBooked = isDateDisabled && isDateDisabled(date);
               
               let cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all relative cursor-pointer ";
               
-              if (isPast) {
+              if (isCellDisabledVal) {
                 cellClass += "text-slate-300 cursor-not-allowed ";
+                if (isBooked) {
+                  cellClass += "bg-red-50/60 line-through text-red-300 ";
+                }
               } else if (!isCurrentMonth) {
                 cellClass += "text-slate-400 hover:bg-slate-100 ";
               } else {
@@ -254,7 +283,7 @@ export default function DateRangePicker({
               }
 
               // Highlight range
-              if (inRange && !isPast) {
+              if (inRange && !isCellDisabledVal) {
                 cellClass += "bg-blue-50 text-blue-700 rounded-none ";
               }
 
@@ -270,7 +299,7 @@ export default function DateRangePicker({
                 <div 
                   key={index} 
                   className="flex items-center justify-center py-0.5 relative"
-                  onMouseEnter={() => !isPast && setHoverDate(date)}
+                  onMouseEnter={() => !isCellDisabledVal && setHoverDate(date)}
                   onMouseLeave={() => setHoverDate(null)}
                   onClick={() => handleDateClick(date)}
                 >

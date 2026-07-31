@@ -10,6 +10,11 @@ export default async function BrowsePage() {
         orderBy: { roomNumber: 'asc' }
       },
       caretaker: true,
+      bookings: {
+        where: {
+          status: { in: ['CONFIRMED', 'PENDING'] }
+        }
+      }
     },
     orderBy: { name: "asc" },
   });
@@ -39,6 +44,13 @@ export default async function BrowsePage() {
         items: r.items,
         noOfBeds: r.noOfBeds,
         price: r.price
+      })),
+      bookings: b.bookings.map(bk => ({
+        id: bk.id,
+        roomId: bk.roomId,
+        fromDate: bk.fromDate.toISOString(),
+        toDate: bk.toDate.toISOString(),
+        status: bk.status
       }))
     };
   });

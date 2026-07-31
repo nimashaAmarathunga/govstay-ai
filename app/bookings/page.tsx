@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const INITIAL_BOOKINGS = [
   {
     id: "BKG-2024-892",
+    bookingId: "BKG-2024-892",
     title: "Nuwara Eliya Rest House",
     date: "Sept 14 - Sept 16, 2024",
     status: "Confirmed",
@@ -13,6 +14,7 @@ const INITIAL_BOOKINGS = [
   },
   {
     id: "BKG-2024-710",
+    bookingId: "BKG-2024-710",
     title: "Galle Fort Heritage Bungalow",
     date: "Aug 02 - Aug 05, 2024",
     status: "Completed",
@@ -21,6 +23,7 @@ const INITIAL_BOOKINGS = [
   },
   {
     id: "BKG-2023-112",
+    bookingId: "BKG-2023-112",
     title: "Kandy Lake View Circuit",
     date: "Dec 10 - Dec 12, 2023",
     status: "Completed",
@@ -30,13 +33,77 @@ const INITIAL_BOOKINGS = [
 ];
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
+  const [bookings, setBookings] = useState<any[]>(INITIAL_BOOKINGS);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 
-  const handleCancelBooking = (id: string) => {
-    // We update the status to "Cancelled" instead of removing it to keep the history
-    setBookings(bookings.map(b => b.id === id ? { ...b, status: "Cancelled" } : b));
-    setMenuOpenId(null);
+  const fetchBookings = async () => {
+    try {
+      const res = await fetch("/api/bookings");
+      if (!res.ok) throw new Error("Failed to fetch bookings");
+      const data = await res.json();
+      
+      const formattedDbBookings = (data || []).map((b: any) => {
+        const from = new Date(b.fromDate);
+        const to = new Date(b.toDate);
+        const dateStr = `${from.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${to.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+        
+        let displayStatus = "Pending";
+        if (b.status === "CONFIRMED") displayStatus = "Confirmed";
+        if (b.status === "CANCELLED") displayStatus = "Cancelled";
+        if (b.status === "REJECTED") displayStatus = "Rejected";
+
+        return {
+          id: b.id,
+          bookingId: b.bookingId || b.id,
+          title: `${b.circuitBungalow.name} (Room ${b.room.roomNumber})`,
+          date: dateStr,
+          status: displayStatus,
+          amount: `Rs. ${b.totalCost?.toLocaleString() || "0"}`,
+          image: b.circuitBungalow.image,
+        };
+      });
+
+      // Merge and show real database bookings first, followed by mock history
+      setBookings([...formattedDbBookings, ...INITIAL_BOOKINGS]);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const handleCancelBooking = async (id: string) => {
+    if (id.startsWith("BKG")) {
+      // Local fallback for mock bookings
+      setBookings(bookings.map(b => b.id === id ? { ...b, status: "Cancelled" } : b));
+      setMenuOpenId(null);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          status: "CANCELLED",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel booking");
+      }
+
+      fetchBookings();
+      setMenuOpenId(null);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to cancel reservation.");
+    }
   };
 
   return (
@@ -64,7 +131,7 @@ export default function BookingsPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-800 text-sm">{booking.title}</h3>
-                    <p className="text-xs text-slate-500 font-mono">{booking.id}</p>
+                    <p className="text-xs text-slate-500 font-mono">{booking.bookingId || booking.id}</p>
                   </div>
                 </div>
                 <div className="col-span-3 text-sm text-slate-600 font-medium">
@@ -76,8 +143,9 @@ export default function BookingsPage() {
                 <div className="col-span-2 flex items-center justify-between relative">
                   <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                     booking.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-700' : 
+                    booking.status === 'Pending' ? 'bg-amber-100 text-amber-700' : 
                     booking.status === 'Completed' ? 'bg-slate-100 text-slate-600' : 
-                    'bg-red-100 text-red-700' // For Cancelled
+                    'bg-red-100 text-red-700' // For Cancelled or Rejected
                   }`}>
                     {booking.status}
                   </span>
@@ -89,7 +157,7 @@ export default function BookingsPage() {
                   >
                     <span className="material-symbols-outlined text-[20px]">more_vert</span>
                   </button>
-
+ 
                   {/* Dropdown Menu */}
                   {menuOpenId === booking.id && (
                     <div className="absolute right-8 top-8 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-fade-in">
@@ -101,7 +169,7 @@ export default function BookingsPage() {
                         <span className="material-symbols-outlined text-[18px]">contact_support</span>
                         Contact Support
                       </button>
-                      {booking.status === "Confirmed" && (
+                      {(booking.status === "Confirmed" || booking.status === "Pending") && (
                         <>
                           <div className="h-px bg-slate-100 my-1"></div>
                           <button 
