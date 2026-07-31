@@ -26,6 +26,9 @@ export default function Page() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
+  
+  const [isBookingMode, setIsBookingMode] = useState(false);
+  const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -97,11 +100,15 @@ export default function Page() {
     ]);
 
     try {
+        const systemContext = isBookingMode 
+          ? `\n\n(System Context - Current Form State: ${JSON.stringify(uiState)})`
+          : "";
+          
         const res = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-                text, 
+                text: text + systemContext, 
                 session_id: "demo-session-govstay",
                 attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
             })
@@ -129,6 +136,12 @@ export default function Page() {
                         }
                         if (data.text?.toLowerCase().includes("confirmed")) {
                           setBookingStatus("confirmed");
+                        }
+                        if (data.agent === "booking_agent" || data.text?.toLowerCase().includes("booking")) {
+                          setIsBookingMode(true);
+                        }
+                        if (data.ui_state) {
+                          setUiState(prev => ({ ...prev, ...data.ui_state }));
                         }
                         
                         setMessages((prev) => 
@@ -342,33 +355,53 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Right Column: Booking Details */}
+        {/* Right Column: Dynamic Booking Form */}
+        {isBookingMode && (
         <aside className="w-80 bg-white border-l border-slate-200 flex flex-col">
            <div className="p-5 border-b border-slate-100 flex items-center gap-2">
-             <span className="material-symbols-outlined text-slate-400">receipt_long</span>
-             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Your Selection</h2>
+             <span className="material-symbols-outlined text-slate-400">edit_document</span>
+             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Booking Form</h2>
            </div>
            
-           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-6">
+           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-4">
               
-              {/* Selected Accommodation info */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                 <h3 className="font-bold text-slate-800 text-lg mb-1">Nuwara Eliya Rest House</h3>
-                 <p className="text-sm text-slate-500 mb-4">Superior Garden Suite</p>
-                 
-                 <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">calendar_month</span>
-                       <div>
-                          <p className="font-medium">Sept 14 - Sept 16</p>
-                          <p className="text-xs text-slate-500">2 Nights</p>
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">group</span>
-                       <p className="font-medium">2 Guests</p>
-                    </div>
-                 </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Employee ID</label>
+                 <input 
+                   type="text" 
+                   value={uiState.emp_id || ""} 
+                   onChange={e => setUiState({...uiState, emp_id: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                   placeholder="e.g. EMP-123"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Room Number</label>
+                 <input 
+                   type="text" 
+                   value={uiState.room_number || ""} 
+                   onChange={e => setUiState({...uiState, room_number: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                   placeholder="e.g. OLD-101"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Check-in Date</label>
+                 <input 
+                   type="date" 
+                   value={uiState.from_date || ""} 
+                   onChange={e => setUiState({...uiState, from_date: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Check-out Date</label>
+                 <input 
+                   type="date" 
+                   value={uiState.to_date || ""} 
+                   onChange={e => setUiState({...uiState, to_date: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                 />
               </div>
 
               {/* Action / Checkout Card */}
@@ -379,21 +412,6 @@ export default function Page() {
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' : bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
                        {bookingStatus}
                     </span>
-                 </div>
-
-                 <div className="space-y-2 text-sm">
-                    <div className="flex justify-between text-white/80">
-                       <span>Rs. 18,500 x 2 nights</span>
-                       <span>Rs. 37,000</span>
-                    </div>
-                    <div className="flex justify-between text-white/80">
-                       <span>Service Fee</span>
-                       <span>Rs. 1,200</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-white/10">
-                       <span>Total</span>
-                       <span className="text-emerald-400">Rs. 38,200</span>
-                    </div>
                  </div>
 
                  <div className="flex items-center justify-between py-2 mt-2">
@@ -420,7 +438,7 @@ export default function Page() {
                      onClick={triggerConfirmBooking}
                      className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                    >
-                     Confirm Booking
+                     Submit Form
                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                    </button>
                  ) : bookingStatus === "confirming" ? (
@@ -443,6 +461,7 @@ export default function Page() {
               </div>
            </div>
         </aside>
+        )}
       </main>
     </div>
   );
