@@ -60,6 +60,7 @@ export default function BookingsPage() {
           status: displayStatus,
           amount: `Rs. ${b.totalCost?.toLocaleString() || "0"}`,
           image: b.circuitBungalow.image,
+          paymentSlipUrl: b.paymentSlipUrl,
         };
       });
 
@@ -131,7 +132,20 @@ export default function BookingsPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-800 text-sm">{booking.title}</h3>
-                    <p className="text-xs text-slate-500 font-mono">{booking.bookingId || booking.id}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-slate-500 font-mono">{booking.bookingId || booking.id}</p>
+                      {booking.paymentSlipUrl && (
+                        <a
+                          href={booking.paymentSlipUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/80 hover:bg-emerald-100 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[13px]">attach_file</span>
+                          Slip Attached
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="col-span-3 text-sm text-slate-600 font-medium">
@@ -161,8 +175,19 @@ export default function BookingsPage() {
                   {/* Dropdown Menu */}
                   {menuOpenId === booking.id && (
                     <div className="absolute right-8 top-8 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-fade-in">
+                      {booking.paymentSlipUrl && (
+                        <a
+                          href={booking.paymentSlipUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                          View Payment Slip
+                        </a>
+                      )}
                       <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer">
-                        <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                        <span className="material-symbols-outlined text-[18px]">description</span>
                         View Receipt
                       </button>
                       <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer">
