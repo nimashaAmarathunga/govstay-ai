@@ -14,16 +14,17 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json(bookings);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Fetch bookings error:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch bookings" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to fetch bookings";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { circuitBungalowId, roomIds, fromDate, toDate, totalCost } = body;
+    const { circuitBungalowId, roomIds, fromDate, toDate, paymentSlipUrl } = body;
 
     if (!circuitBungalowId || !fromDate || !toDate) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
@@ -87,16 +88,18 @@ export async function POST(request: Request) {
           fromDate: checkStart,
           toDate: checkEnd,
           status: 'PENDING', // Default to Pending Booking as required
-          totalCost: roomCost
+          totalCost: roomCost,
+          paymentSlipUrl: paymentSlipUrl || null,
         }
       });
       createdBookings.push(newBooking);
     }
 
     return NextResponse.json({ success: true, bookings: createdBookings });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Booking creation error:", error);
-    return NextResponse.json({ error: error.message || "Failed to create booking" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to create booking";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -108,8 +111,9 @@ export async function PATCH(request: Request) {
       data: { status }
     });
     return NextResponse.json(updatedBooking);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Update booking error:", error);
-    return NextResponse.json({ error: error.message || "Failed to update booking" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to update booking";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

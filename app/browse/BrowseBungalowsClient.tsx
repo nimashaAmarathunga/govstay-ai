@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import DateRangePicker from "@/components/booking/DateRangePicker";
+import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 
 export type DbRoom = {
   id: string;
@@ -73,6 +74,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
   const [selectedBungalow, setSelectedBungalow] = useState<DbBungalow | null>(null);
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
 
   const formatDateString = (date: Date | null) => {
     if (!date) return "";
@@ -193,6 +195,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
           fromDate: checkIn.toISOString(),
           toDate: checkOut.toISOString(),
           totalCost: totalCost,
+          paymentSlipUrl: paymentSlipUrl,
         }),
       });
 
@@ -206,6 +209,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
         setSelectedBungalow(null);
         setBookingStatus("idle");
         setSelectedRoomIds([]);
+        setPaymentSlipUrl(null);
         window.location.reload();
       }, 2000);
       
@@ -559,6 +563,15 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                   <span className="text-slate-500 font-medium">Rooms starting from</span>
                   <span className="text-2xl font-bold text-blue-600">{formatPrice(selectedBungalow.price)} <span className="text-sm font-normal text-slate-500 uppercase">/ night</span></span>
                 </div>
+
+                {bookingStatus === "idle" && (
+                  <div className="mb-4">
+                    <PaymentSlipUpload
+                      onUploadComplete={(url) => setPaymentSlipUrl(url)}
+                      value={paymentSlipUrl}
+                    />
+                  </div>
+                )}
 
                 {bookingStatus === "idle" && (
                   <button

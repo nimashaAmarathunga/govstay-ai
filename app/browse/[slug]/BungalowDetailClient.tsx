@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import DateRangePicker from "@/components/booking/DateRangePicker";
+import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 
 export type DbRoom = {
   id: string;
@@ -73,6 +74,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const [roomFilter, setRoomFilter] = useState<"ALL" | "AC" | "NON_AC">("ALL");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
+  const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return `Rs. ${price.toLocaleString()}`;
@@ -228,6 +230,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
           fromDate: checkIn.toISOString(),
           toDate: checkOut.toISOString(),
           totalCost: totalCost,
+          paymentSlipUrl: paymentSlipUrl,
         }),
       });
 
@@ -256,6 +259,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const resetBooking = () => {
     setBookingStatus("idle");
     setSelectedRoomIds([]);
+    setPaymentSlipUrl(null);
   };
 
   const acRoomsCount = bungalow.rooms.filter((r) => r.roomType === "AC").length;
@@ -670,6 +674,16 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     <span className="text-slate-800">Total Price</span>
                     <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
                   </div>
+                </div>
+              )}
+
+              {/* Payment Slip Upload */}
+              {bookingStatus === "idle" && (
+                <div className="mb-6">
+                  <PaymentSlipUpload
+                    onUploadComplete={(url) => setPaymentSlipUrl(url)}
+                    value={paymentSlipUrl}
+                  />
                 </div>
               )}
 
