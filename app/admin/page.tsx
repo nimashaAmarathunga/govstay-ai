@@ -49,40 +49,22 @@ const INITIAL_BUNGALOWS: Bungalow[] = [
     facilities: ["Ocean View", "Historical", "AC"],
     details: "Experience the history of Galle Fort.",
     image: "https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-  }
+  },
 ];
 
 const INITIAL_BOOKINGS: Booking[] = [
-  {
-    id: "BKG-2024-892",
-    userId: "USR-001",
-    place: "Nuwara Eliya Rest House",
-    rooms: 1,
-    nights: 2,
-    totalCost: "37,000",
-  },
-  {
-    id: "BKG-2024-905",
-    userId: "USR-089",
-    place: "Galle Fort Heritage Bungalow",
-    rooms: 2,
-    nights: 3,
-    totalCost: "132,000",
-  }
+  { id: "BKG-2024-892", userId: "USR-001", place: "Nuwara Eliya Rest House", rooms: 1, nights: 2, totalCost: "37,000" },
+  { id: "BKG-2024-905", userId: "USR-089", place: "Galle Fort Heritage Bungalow", rooms: 2, nights: 3, totalCost: "132,000" },
 ];
 
-
-
-
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<"bungalows" | "bookings" | "keepers">("bungalows");
+  const [activeTab, setActiveTab] = useState<"bungalows" | "bookings">("bungalows");
 
-  // State for data
+  // Bungalow state
   const [bungalows, setBungalows] = useState<Bungalow[]>(INITIAL_BUNGALOWS);
-  const [bookings] = useState<Booking[]>(INITIAL_BOOKINGS); // Bookings are view-only here as requested
+  const [bookings] = useState<Booking[]>(INITIAL_BOOKINGS);
 
-
-  // Form State for Bungalow
+  // Bungalow modal
   const [isBungalowModalOpen, setIsBungalowModalOpen] = useState(false);
   const [editingBungalowId, setEditingBungalowId] = useState<string | null>(null);
   const [bungalowForm, setBungalowForm] = useState<Partial<Bungalow>>({});
@@ -91,9 +73,7 @@ export default function AdminPage() {
 
   // --- Bungalow Handlers ---
   const handleAddBungalow = () => {
-    setBungalowForm({
-      title: "", location: "", rooms: 1, capacityPerRoom: 2, price: "", facilities: [], details: "", image: ""
-    });
+    setBungalowForm({ title: "", location: "", rooms: 1, capacityPerRoom: 2, price: "", facilities: [], details: "", image: "" });
     setEditingBungalowId(null);
     setIsBungalowModalOpen(true);
   };
@@ -105,30 +85,68 @@ export default function AdminPage() {
   };
 
   const handleDeleteBungalow = (id: string) => {
-    setBungalows(bungalows.filter(b => b.id !== id));
+    setBungalows(bungalows.filter((b) => b.id !== id));
   };
 
   const saveBungalow = () => {
     if (editingBungalowId) {
-      setBungalows(bungalows.map(b => b.id === editingBungalowId ? { ...b, ...bungalowForm } as Bungalow : b));
+      setBungalows(bungalows.map((b) => (b.id === editingBungalowId ? { ...b, ...bungalowForm } as Bungalow : b)));
     } else {
       const newBungalow = {
         ...bungalowForm,
         id: `B-${Date.now()}`,
-        image: bungalowForm.image || "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+        image: bungalowForm.image || "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
       } as Bungalow;
       setBungalows([...bungalows, newBungalow]);
     }
     setIsBungalowModalOpen(false);
   };
 
+  // --- User Handlers ---
+  const handleOpenAddUser = () => {
+    setUserForm(EMPTY_USER_FORM);
+    setUserFormError(null);
+    setIsUserModalOpen(true);
+  };
 
+  const handleSaveUser = async () => {
+    setUserFormError(null);
+    if (!userForm.name.trim() || !userForm.username.trim() || !userForm.password.trim()) {
+      setUserFormError("Name, username, and password are required.");
+      return;
+    }
+    setIsSavingUser(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: userForm.name.trim(),
+          username: userForm.username.trim(),
+          password: userForm.password,
+          role: userForm.role,
+          empId: userForm.empId.trim() || undefined,
+          status: userForm.status,
+          placeOfWork: userForm.placeOfWork.trim() || undefined,
+          position: userForm.position.trim() || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setUserFormError(data.error ?? "Failed to create user.");
+        return;
+      }
+      await refreshUsers();
+      setIsUserModalOpen(false);
+    } catch {
+      setUserFormError("Network error. Please try again.");
+    } finally {
+      setIsSavingUser(false);
+    }
+  };
 
-
-
-
-
-
+  const inputCls = "w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200";
+  const labelCls = "block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1";
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative">
@@ -174,15 +192,12 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Pie Chart Visualization (CSS Conic Gradient) */}
+          {/* Pie Chart Visualization */}
           <div className="relative w-48 h-48 shrink-0 flex items-center justify-center">
             <div
               className="absolute inset-0 rounded-full shadow-inner"
-              style={{
-                background: 'conic-gradient(#3b82f6 0% 43%, #10b981 43% 66%, #f59e0b 66% 100%)'
-              }}
+              style={{ background: "conic-gradient(#3b82f6 0% 43%, #10b981 43% 66%, #f59e0b 66% 100%)" }}
             ></div>
-            {/* Inner circle to make it a donut chart for a modern look */}
             <div className="absolute inset-4 bg-slate-50 rounded-full shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total</span>
               <span className="text-3xl font-bold text-slate-800">35</span>
@@ -203,7 +218,6 @@ export default function AdminPage() {
           >
             Confirmed Bookings
           </button>
-
         </div>
       </div>
 
@@ -234,7 +248,7 @@ export default function AdminPage() {
                   <div className="col-span-2 text-right">Actions</div>
                 </div>
                 <div className="divide-y divide-slate-100">
-                  {bungalows.map(b => (
+                  {bungalows.map((b) => (
                     <div key={b.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors">
                       <div className="col-span-4 flex items-center gap-4">
                         <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-slate-200">
@@ -264,7 +278,7 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* TAB: BOOKINGS (CONFIRMED ONLY) */}
+          {/* TAB: BOOKINGS */}
           {activeTab === "bookings" && (
             <div className="animate-fade-in">
               <div className="flex justify-between items-center mb-6">
@@ -280,7 +294,7 @@ export default function AdminPage() {
                   <div className="col-span-2 text-right">Total Cost</div>
                 </div>
                 <div className="divide-y divide-slate-100">
-                  {bookings.map(b => (
+                  {bookings.map((b) => (
                     <div key={b.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors">
                       <div className="col-span-2 text-sm font-mono font-medium text-slate-600">{b.userId}</div>
                       <div className="col-span-4 text-sm font-bold text-slate-800">{b.place}</div>
@@ -293,7 +307,6 @@ export default function AdminPage() {
               </div>
             </div>
           )}
-
 
         </div>
       </div>
@@ -314,47 +327,42 @@ export default function AdminPage() {
             <div className="p-6 overflow-y-auto flex-1 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Title</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya Rest House" value={bungalowForm.title || ""} onChange={e => setBungalowForm({ ...bungalowForm, title: e.target.value })} />
+                  <label className={labelCls}>Title</label>
+                  <input type="text" className={inputCls} placeholder="e.g. Nuwara Eliya Rest House" value={bungalowForm.title || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, title: e.target.value })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Location</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. Nuwara Eliya" value={bungalowForm.location || ""} onChange={e => setBungalowForm({ ...bungalowForm, location: e.target.value })} />
-                </div>
-
-                <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Number of Rooms</label>
-                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.rooms || 1} onChange={e => setBungalowForm({ ...bungalowForm, rooms: parseInt(e.target.value) })} />
+                  <label className={labelCls}>Location</label>
+                  <input type="text" className={inputCls} placeholder="e.g. Nuwara Eliya" value={bungalowForm.location || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, location: e.target.value })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Persons per Room</label>
-                  <input type="number" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" value={bungalowForm.capacityPerRoom || 2} onChange={e => setBungalowForm({ ...bungalowForm, capacityPerRoom: parseInt(e.target.value) })} />
-                </div>
-
-                <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Cost for one night (Rs.)</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. 18,500" value={bungalowForm.price || ""} onChange={e => setBungalowForm({ ...bungalowForm, price: e.target.value })} />
+                  <label className={labelCls}>Number of Rooms</label>
+                  <input type="number" className={inputCls} value={bungalowForm.rooms || 1} onChange={(e) => setBungalowForm({ ...bungalowForm, rooms: parseInt(e.target.value) })} />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Facilities (comma separated)</label>
-                  <input type="text" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="e.g. AC, WiFi, Hot Water" value={bungalowForm.facilities?.join(", ") || ""} onChange={e => setBungalowForm({ ...bungalowForm, facilities: e.target.value.split(",").map(s => s.trim()) })} />
+                  <label className={labelCls}>Persons per Room</label>
+                  <input type="number" className={inputCls} value={bungalowForm.capacityPerRoom || 2} onChange={(e) => setBungalowForm({ ...bungalowForm, capacityPerRoom: parseInt(e.target.value) })} />
                 </div>
-
+                <div className="col-span-2 sm:col-span-1">
+                  <label className={labelCls}>Cost for one night (Rs.)</label>
+                  <input type="text" className={inputCls} placeholder="e.g. 18,500" value={bungalowForm.price || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, price: e.target.value })} />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <label className={labelCls}>Facilities (comma separated)</label>
+                  <input type="text" className={inputCls} placeholder="e.g. AC, WiFi, Hot Water" value={bungalowForm.facilities?.join(", ") || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, facilities: e.target.value.split(",").map((s) => s.trim()) })} />
+                </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Additional Details</label>
-                  <textarea rows={3} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 resize-none" placeholder="Description of the place..." value={bungalowForm.details || ""} onChange={e => setBungalowForm({ ...bungalowForm, details: e.target.value })} />
+                  <label className={labelCls}>Additional Details</label>
+                  <textarea rows={3} className={`${inputCls} resize-none`} placeholder="Description of the place..." value={bungalowForm.details || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, details: e.target.value })} />
                 </div>
-
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Photos (URL for now)</label>
+                  <label className={labelCls}>Photos (URL for now)</label>
                   <div className="flex gap-2">
-                    <input type="text" className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500" placeholder="https://image-url..." value={bungalowForm.image || ""} onChange={e => setBungalowForm({ ...bungalowForm, image: e.target.value })} />
+                    <input type="text" className={`${inputCls} flex-1`} placeholder="https://image-url..." value={bungalowForm.image || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, image: e.target.value })} />
                     <button className="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer">
                       <span className="material-symbols-outlined text-[16px]">upload</span> Upload
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -365,8 +373,6 @@ export default function AdminPage() {
           </div>
         </div>
       )}
-
-
 
     </div>
   );
