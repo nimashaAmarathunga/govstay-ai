@@ -75,6 +75,15 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
+
+  const handleCloseModal = () => {
+    setSelectedBungalow(null);
+    setBookingStatus("idle");
+    setSelectedRoomIds([]);
+    setPaymentSlipUrl(null);
+    setShowPaymentStep(false);
+  };
 
   const formatDateString = (date: Date | null) => {
     if (!date) return "";
@@ -206,10 +215,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
 
       setBookingStatus("success");
       setTimeout(() => {
-        setSelectedBungalow(null);
-        setBookingStatus("idle");
-        setSelectedRoomIds([]);
-        setPaymentSlipUrl(null);
+        handleCloseModal();
         window.location.reload();
       }, 2000);
       
@@ -352,6 +358,8 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                         setSelectedBungalow(bungalow);
                         setBookingStatus("idle");
                         setSelectedRoomIds([]);
+                        setPaymentSlipUrl(null);
+                        setShowPaymentStep(false);
                       }}
                       className="px-4 py-2 bg-blue-50 text-blue-600 font-semibold text-sm rounded-xl hover:bg-blue-600 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
                     >
@@ -381,7 +389,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
               
               <button
-                onClick={() => setSelectedBungalow(null)}
+                onClick={handleCloseModal}
                 className="absolute top-4 left-4 w-9 h-9 bg-white/70 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-slate-800 transition-colors md:hidden cursor-pointer shadow-md"
               >
                 <span className="material-symbols-outlined text-[20px]">arrow_back</span>
@@ -398,220 +406,294 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                 </p>
               </div>
             </div>
-
             {/* Right side Details */}
             <div className="md:w-7/12 p-6 md:p-8 flex flex-col overflow-y-auto">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-800">{selectedBungalow.name}</h2>
-                  <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                    <span className="material-symbols-outlined text-[16px] text-blue-600">
-                      location_on
-                    </span>
-                    {selectedBungalow.location}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedBungalow(null)}
-                  className="hidden md:flex text-slate-400 hover:text-slate-800 cursor-pointer p-1 rounded-lg hover:bg-slate-100"
-                >
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-              </div>
-
-              <p className="text-slate-600 text-sm leading-relaxed mb-5">
-                {selectedBungalow.description}
-              </p>
-
-              {/* Caretaker Info */}
-              {selectedBungalow.caretaker && (
-                <div className="bg-blue-50/60 rounded-xl p-3.5 border border-blue-100 mb-5 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-blue-600 text-[20px]">
-                      contact_phone
-                    </span>
+              {!showPaymentStep ? (
+                <>
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <span className="font-bold text-slate-800 block">
-                        Caretaker: {selectedBungalow.caretaker.name}
-                      </span>
-                      <span className="text-slate-500">
-                        {selectedBungalow.caretaker.telephoneNo}
-                      </span>
+                      <h2 className="text-2xl font-bold text-slate-800">{selectedBungalow.name}</h2>
+                      <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                        <span className="material-symbols-outlined text-[16px] text-blue-600">
+                          location_on
+                        </span>
+                        {selectedBungalow.location}
+                      </p>
                     </div>
+                    <button
+                      onClick={handleCloseModal}
+                      className="hidden md:flex text-slate-400 hover:text-slate-800 cursor-pointer p-1 rounded-lg hover:bg-slate-100"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
                   </div>
-                  <a
-                    href={`tel:${selectedBungalow.caretaker.telephoneNo}`}
-                    className="px-3 py-1 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    Call
-                  </a>
-                </div>
-              )}
 
-              {/* Date Selection Section */}
-              <div className="mb-5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                  Select Dates
-                </span>
-                <DateRangePicker
-                  checkIn={checkIn}
-                  checkOut={checkOut}
-                  onChange={(start, end) => {
-                    setCheckIn(start);
-                    setCheckOut(end);
-                  }}
-                  isDateDisabled={isDateBooked}
-                />
-              </div>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-5">
+                    {selectedBungalow.description}
+                  </p>
 
-              {/* AVAILABLE ROOMS SECTION */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-blue-600 text-[18px]">
-                      door_open
-                    </span>
-                    Rooms Available ({selectedBungalow.rooms?.length || selectedBungalow.noOfRooms})
-                  </h4>
-                  <span className="text-[11px] text-slate-500 font-medium">
-                    (Rent specific rooms or whole stay)
-                  </span>
-                </div>
-
-                {selectedBungalow.rooms && selectedBungalow.rooms.length > 0 ? (
-                  <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                    {selectedBungalow.rooms.map((room) => {
-                      const isSelected = selectedRoomIds.includes(room.id);
-                      return (
-                        <div
-                          key={room.id}
-                          onClick={() => toggleRoomSelection(room.id)}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-                            isSelected
-                              ? "border-blue-600 bg-blue-50/50 shadow-sm"
-                              : "border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300"
-                          }`}
-                        >
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-xs text-slate-800">
-                                Room {room.roomNumber}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                  room.roomType === "AC"
-                                    ? "bg-cyan-100 text-cyan-800"
-                                    : "bg-slate-200 text-slate-700"
-                                }`}
-                              >
-                                {room.roomType === "AC" ? "AC" : "Non-AC"}
-                              </span>
-                              <span className="text-xs text-slate-500 font-medium">
-                                ({room.noOfBeds} Beds)
-                              </span>
-                              <span className="text-xs font-bold text-blue-600">
-                                • {formatPrice(room.price)}/night
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 mt-1">
-                              {room.items.join(" • ")}
-                            </p>
-                          </div>
-
-                          <span
-                            className={`text-xs font-bold px-2.5 py-1 rounded-lg shrink-0 ${
-                              isSelected
-                                ? "bg-blue-600 text-white"
-                                : "bg-white text-slate-600 border border-slate-200"
-                            }`}
-                          >
-                            {isSelected ? "Selected ✓" : "Select"}
+                  {/* Caretaker Info */}
+                  {selectedBungalow.caretaker && (
+                    <div className="bg-blue-50/60 rounded-xl p-3.5 border border-blue-100 mb-5 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2.5">
+                        <span className="material-symbols-outlined text-blue-600 text-[20px]">
+                          contact_phone
+                        </span>
+                        <div>
+                          <span className="font-bold text-slate-800 block">
+                            Caretaker: {selectedBungalow.caretaker.name}
+                          </span>
+                          <span className="text-slate-500">
+                            {selectedBungalow.caretaker.telephoneNo}
                           </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-500 italic">
-                    Contact caretaker for room allocation details.
-                  </p>
-                )}
-              </div>
+                      </div>
+                      <a
+                        href={`tel:${selectedBungalow.caretaker.telephoneNo}`}
+                        className="px-3 py-1 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        Call
+                      </a>
+                    </div>
+                  )}
 
-              {/* Action Buttons */}
-              <div className="mt-auto border-t border-slate-100 pt-5">
-                {checkIn && checkOut && (
-                  <div className="mb-4 bg-slate-50 rounded-xl p-3 border border-slate-200/60 text-xs space-y-1.5 animate-fade-in">
-                    <div className="flex justify-between items-center text-slate-500">
-                      <span>
-                        {selectedRoomIds.length === 0 ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRoomIds.length})`}
+                  {/* Date Selection Section */}
+                  <div className="mb-5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                      Select Dates
+                    </span>
+                    <DateRangePicker
+                      checkIn={checkIn}
+                      checkOut={checkOut}
+                      onChange={(start, end) => {
+                        setCheckIn(start);
+                        setCheckOut(end);
+                      }}
+                      isDateDisabled={isDateBooked}
+                    />
+                  </div>
+
+                  {/* AVAILABLE ROOMS SECTION */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-blue-600 text-[18px]">
+                          door_open
+                        </span>
+                        Rooms Available ({selectedBungalow.rooms?.length || selectedBungalow.noOfRooms})
+                      </h4>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        (Rent specific rooms or whole stay)
                       </span>
-                      <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
                     </div>
-                    <div className="flex justify-between items-center text-slate-500">
-                      <span>Duration</span>
-                      <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"} ({days} Days)</span>
+
+                    {selectedBungalow.rooms && selectedBungalow.rooms.length > 0 ? (
+                      <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                        {selectedBungalow.rooms.map((room) => {
+                          const isSelected = selectedRoomIds.includes(room.id);
+                          return (
+                            <div
+                              key={room.id}
+                              onClick={() => toggleRoomSelection(room.id)}
+                              className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                                isSelected
+                                  ? "border-blue-600 bg-blue-50/50 shadow-sm"
+                                  : "border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300"
+                              }`}
+                            >
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-xs text-slate-800">
+                                    Room {room.roomNumber}
+                                  </span>
+                                  <span
+                                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                      room.roomType === "AC"
+                                        ? "bg-cyan-100 text-cyan-800"
+                                        : "bg-slate-200 text-slate-700"
+                                    }`}
+                                  >
+                                    {room.roomType === "AC" ? "AC" : "Non-AC"}
+                                  </span>
+                                  <span className="text-xs text-slate-500 font-medium">
+                                    ({room.noOfBeds} Beds)
+                                  </span>
+                                  <span className="text-xs font-bold text-blue-600">
+                                    • {formatPrice(room.price)}/night
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 mt-1">
+                                  {room.items.join(" • ")}
+                                </p>
+                              </div>
+
+                              <span
+                                className={`text-xs font-bold px-2.5 py-1 rounded-lg shrink-0 ${
+                                  isSelected
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white text-slate-600 border border-slate-200"
+                                }`}
+                              >
+                                {isSelected ? "Selected ✓" : "Select"}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 italic">
+                        Contact caretaker for room allocation details.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-auto border-t border-slate-100 pt-5">
+                    {checkIn && checkOut && (
+                      <div className="mb-4 bg-slate-50 rounded-xl p-3 border border-slate-200/60 text-xs space-y-1.5 animate-fade-in">
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span>
+                            {selectedRoomIds.length === 0 ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRoomIds.length})`}
+                          </span>
+                          <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span>Duration</span>
+                          <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"} ({days} Days)</span>
+                        </div>
+                        <div className="border-t border-slate-100/60 pt-1.5 flex justify-between items-center text-sm font-bold">
+                          <span className="text-slate-800">Total Cost</span>
+                          <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-slate-500 font-medium">Rooms starting from</span>
+                      <span className="text-2xl font-bold text-blue-600">{formatPrice(selectedBungalow.price)} <span className="text-sm font-normal text-slate-500 uppercase">/ night</span></span>
                     </div>
-                    <div className="border-t border-slate-100/60 pt-1.5 flex justify-between items-center text-sm font-bold">
-                      <span className="text-slate-800">Total Cost</span>
-                      <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
+
+                    <button
+                      onClick={() => setShowPaymentStep(true)}
+                      disabled={!checkIn || !checkOut}
+                      className={`w-full py-3.5 font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-sm ${
+                        checkIn && checkOut
+                          ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                          : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      {selectedRoomIds.length > 0
+                        ? `Book Selected Rooms (${selectedRoomIds.length})`
+                        : "Book Entire Bungalow"}
+                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <button
+                      onClick={() => setShowPaymentStep(false)}
+                      className="p-1 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">arrow_back</span>
+                      Back to details
+                    </button>
+                    <button
+                      onClick={handleCloseModal}
+                      className="text-slate-400 hover:text-slate-800 cursor-pointer p-1 rounded-lg hover:bg-slate-100"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-slate-800 mb-1">Upload Payment Slip</h2>
+                  <p className="text-slate-500 text-xs mb-5">
+                    Please upload your payment slip/receipt to submit this pending booking request.
+                  </p>
+
+                  {/* Booking Summary Card */}
+                  <div className="bg-blue-50/40 rounded-2xl p-4 border border-blue-100/60 mb-5 text-xs space-y-2">
+                    <div className="font-bold text-blue-900 text-sm flex items-center gap-1.5 pb-1 border-b border-blue-100/60 mb-1">
+                      <span className="material-symbols-outlined text-[18px] text-blue-600">summarize</span>
+                      Booking Information Summary
+                    </div>
+                    <div className="space-y-1.5 text-slate-700">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-slate-500">Accommodation:</span>
+                        <span className="font-bold text-slate-800">{selectedBungalow.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium text-slate-500">Rooms:</span>
+                        <span className="font-semibold text-slate-800">
+                          {selectedRoomIds.length === 0 ? "Entire Bungalow" : selectedRooms.map(r => `Room ${r.roomNumber}`).join(", ")}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium text-slate-500">Duration:</span>
+                        <span className="font-semibold text-slate-800">
+                          {formatDateString(checkIn)} - {formatDateString(checkOut)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium text-slate-500">Nights Count:</span>
+                        <span className="font-semibold text-slate-800">{nights} Nights ({days} Days)</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-bold pt-1.5 border-t border-blue-100/60 text-blue-900">
+                        <span>Total Rent Fee:</span>
+                        <span className="text-base text-blue-800 font-extrabold">{formatPrice(totalCost)}</span>
+                      </div>
                     </div>
                   </div>
-                )}
 
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-500 font-medium">Rooms starting from</span>
-                  <span className="text-2xl font-bold text-blue-600">{formatPrice(selectedBungalow.price)} <span className="text-sm font-normal text-slate-500 uppercase">/ night</span></span>
-                </div>
-
-                {bookingStatus === "idle" && (
-                  <div className="mb-4">
+                  {/* Payment Slip Upload Component */}
+                  <div className="mb-6">
                     <PaymentSlipUpload
                       onUploadComplete={(url) => setPaymentSlipUrl(url)}
                       value={paymentSlipUrl}
                     />
                   </div>
-                )}
 
-                {bookingStatus === "idle" && (
-                  <button
-                    onClick={handleBookNow}
-                    disabled={!checkIn || !checkOut}
-                    className={`w-full py-3.5 font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-sm ${
-                      checkIn && checkOut
-                        ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                    }`}
-                  >
-                    {selectedRoomIds.length > 0
-                      ? `Book Selected Rooms (${selectedRoomIds.length})`
-                      : "Book Entire Bungalow"}
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                  </button>
-                )}
-                {bookingStatus === "booking" && (
-                  <button
-                    disabled
-                    className="w-full py-3.5 bg-blue-400 text-white font-bold rounded-xl shadow-lg flex justify-center items-center gap-2 cursor-wait text-sm"
-                  >
-                    <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
-                    Processing Reservation...
-                  </button>
-                )}
-                {bookingStatus === "success" && (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-center w-full">
-                    <span className="material-symbols-outlined text-3xl text-emerald-600 mb-1">check_circle</span>
-                    <h4 className="font-bold text-emerald-900 text-sm animate-fade-in">Booking Confirmed!</h4>
-                    {checkIn && checkOut && (
-                      <p className="text-xs text-emerald-700 mt-1 font-medium animate-fade-in">
-                        {formatDateString(checkIn)} - {formatDateString(checkOut)} • {nights} {nights === 1 ? 'Night' : 'Nights'} • {formatPrice(totalCost)}
-                      </p>
+                  {/* Confirm Submission Action Buttons */}
+                  <div className="mt-auto pt-3">
+                    {bookingStatus === "idle" && (
+                      <button
+                        onClick={handleBookNow}
+                        disabled={!paymentSlipUrl}
+                        className={`w-full py-3.5 font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-sm ${
+                          paymentSlipUrl
+                            ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-blue-500/10 hover:shadow-xl active:scale-[0.99]"
+                            : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                        }`}
+                      >
+                        Submit
+                        <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                      </button>
+                    )}
+                    {bookingStatus === "booking" && (
+                      <button
+                        disabled
+                        className="w-full py-3.5 bg-blue-400 text-white font-bold rounded-xl shadow-lg flex justify-center items-center gap-2 cursor-wait text-sm"
+                      >
+                        <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                        Processing Reservation...
+                      </button>
+                    )}
+                    {bookingStatus === "success" && (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-center w-full">
+                        <span className="material-symbols-outlined text-3xl text-emerald-600 mb-1">check_circle</span>
+                        <h4 className="font-bold text-emerald-900 text-sm">Booking Placed as Pending!</h4>
+                        {checkIn && checkOut && (
+                          <p className="text-xs text-emerald-700 mt-1 font-medium">
+                            {formatDateString(checkIn)} - {formatDateString(checkOut)} • {nights} {nights === 1 ? 'Night' : 'Nights'} • {formatPrice(totalCost)}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
+                </>
+              )}
             </div>
-
           </div>
         </div>
       )}

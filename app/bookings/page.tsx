@@ -42,25 +42,67 @@ export default function BookingsPage() {
       if (!res.ok) throw new Error("Failed to fetch bookings");
       const data = await res.json();
       
-      const formattedDbBookings = (data || []).map((b: any) => {
-        const from = new Date(b.fromDate);
-        const to = new Date(b.toDate);
+      // Group bookings that were created together
+      const groups: { [key: string]: any[] } = {};
+      (data || []).forEach((b: any) => {
+        const fromTime = new Date(b.fromDate).getTime();
+        const toTime = new Date(b.toDate).getTime();
+        const createdTime = new Date(b.createdAt).getTime();
+
+        let foundGroupKey = null;
+        for (const key of Object.keys(groups)) {
+          const firstInGroup = groups[key][0];
+          const grpFromTime = new Date(firstInGroup.fromDate).getTime();
+          const grpToTime = new Date(firstInGroup.toDate).getTime();
+          const grpCreatedTime = new Date(firstInGroup.createdAt).getTime();
+
+          if (
+            firstInGroup.circuitBungalowId === b.circuitBungalowId &&
+            grpFromTime === fromTime &&
+            grpToTime === toTime &&
+            Math.abs(grpCreatedTime - createdTime) < 5000 // 5 seconds margin
+          ) {
+            foundGroupKey = key;
+            break;
+          }
+        }
+
+        if (foundGroupKey) {
+          groups[foundGroupKey].push(b);
+        } else {
+          groups[b.id] = [b];
+        }
+      });
+
+      const formattedDbBookings = Object.values(groups).map((group: any[]) => {
+        const first = group[0];
+        const from = new Date(first.fromDate);
+        const to = new Date(first.toDate);
         const dateStr = `${from.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${to.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
-        
+
         let displayStatus = "Pending";
-        if (b.status === "CONFIRMED") displayStatus = "Confirmed";
-        if (b.status === "CANCELLED") displayStatus = "Cancelled";
-        if (b.status === "REJECTED") displayStatus = "Rejected";
+        if (first.status === "CONFIRMED") displayStatus = "Confirmed";
+        if (first.status === "CANCELLED") displayStatus = "Cancelled";
+        if (first.status === "REJECTED") displayStatus = "Rejected";
+
+        const totalCost = group.reduce((sum, b) => sum + (b.totalCost || 0), 0);
+        const roomNumbers = group.map((b) => b.room.roomNumber).sort().join(", ");
+        
+        const isEntire = group.length === first.circuitBungalow.noOfRooms;
+        const title = isEntire 
+          ? `${first.circuitBungalow.name} (Entire Bungalow)`
+          : `${first.circuitBungalow.name} (Room${group.length > 1 ? "s" : ""}: ${roomNumbers})`;
 
         return {
-          id: b.id,
-          bookingId: b.bookingId || b.id,
-          title: `${b.circuitBungalow.name} (Room ${b.room.roomNumber})`,
+          id: first.id,
+          ids: group.map(b => b.id),
+          bookingId: first.bookingId || first.id,
+          title,
           date: dateStr,
           status: displayStatus,
-          amount: `Rs. ${b.totalCost?.toLocaleString() || "0"}`,
-          image: b.circuitBungalow.image,
-          paymentSlipUrl: b.paymentSlipUrl,
+          amount: `Rs. ${totalCost.toLocaleString()}`,
+          image: first.circuitBungalow.image,
+          paymentSlipUrl: first.paymentSlipUrl,
         };
       });
 
@@ -83,21 +125,22 @@ export default function BookingsPage() {
       return;
     }
 
-    try {
-      const response = await fetch("/api/bookings", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          status: "CANCELLED",
-        }),
-      });
+    const bookingGroup = bookings.find(b => b.id === id);
+    const idsToCancel = bookingGroup && bookingGroup.ids ? bookingGroup.ids : [id];
 
-      if (!response.ok) {
-        throw new Error("Failed to cancel booking");
-      }
+    try {
+      await Promise.all(idsToCancel.map((bookingId: string) => 
+        fetch("/api/bookings", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: bookingId,
+            status: "CANCELLED",
+          }),
+        })
+      ));
 
       fetchBookings();
       setMenuOpenId(null);
