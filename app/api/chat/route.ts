@@ -4,23 +4,16 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Proxy the request to the Agent Kernel local server running on port 8000
-    // Agent Kernel provides a streaming endpoint out of the box when using RESTAPI.run()
-    const response = await fetch("http://localhost:8000/api/v1/chat", {
+    // Proxy the request to the custom Agent Kernel local server running on port 8001
+    const response = await fetch("http://127.0.0.1:8001/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      // Ensure we format the payload expected by Agent Kernel
+      // Ensure we format the payload expected by api.py (ChatRequest)
       body: JSON.stringify({
-        agent: "govstay", // We registered triage_agent with name="govstay"
-        prompt: body.text,
-        session_id: body.session_id, // Pass along to maintain session history
-        images: body.attachments ? body.attachments.map((a: any) => ({
-           image_data: a.data,
-           name: "upload.png",
-           mime_type: a.content_type
-        })) : [],
+        message: body.text,
+        thread_id: body.session_id || "default-session",
       }),
     });
 
@@ -33,9 +26,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Agent Kernel returns Server-Sent Events (SSE)
-    // We can directly proxy the ReadableStream back to the client!
-    return new Response(response.body, {
+    // api.py returns JSON like { "reply": "...", "agent_name": "..." }
+    // We convert it into Server-Sent Events (SSE) so the frontend doesn't break
+    const data = await response.json();
+    const ssePayload = JSON.stringify({ text: data.reply, agent: data.agent_name });
+    const sseResponse = `data: ${ssePayload}\n\n`;
+
+    return new Response(sseResponse, {
       status: 200,
       headers: {
         "Content-Type": "text/event-stream",

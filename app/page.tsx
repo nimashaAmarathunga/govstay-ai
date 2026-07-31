@@ -19,34 +19,7 @@ interface Message {
 }
 
 export default function Page() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "user",
-      text: "Find me a quiet bungalow in Nuwara Eliya for next weekend.",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "2",
-      sender: "ai",
-      agent: "Verification Agent",
-      text: "Identity verified. Accessing government residencies...",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "3",
-      sender: "ai",
-      agent: "Search Agent",
-      text: "Based on your preference for garden views, I've found the Nuwara Eliya Rest House. It offers a secluded setting with colonial architecture and extensive landscaped grounds.",
-      timestamp: "10:43 AM",
-      propertyCard: {
-        title: "Nuwara Eliya Rest House",
-        suite: "Superior Garden Suite",
-        price: "Rs. 18,500",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
-      },
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [inputText, setInputText] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
@@ -288,7 +261,15 @@ export default function Page() {
                      </div>
                    )}
                    <div className="max-w-[75%] bg-white border border-slate-100 px-5 py-3.5 rounded-3xl rounded-tl-sm shadow-sm text-slate-700">
-                     <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     {message.text ? (
+                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     ) : (
+                       <div className="flex gap-1 items-center h-6">
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                       </div>
+                     )}
 
                      {message.propertyCard && (
                        <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-shadow">
