@@ -138,6 +138,7 @@ model Booking {
   toDate            DateTime
   status            BookingStatus   @default(PENDING)
   totalCost         Float?
+  paymentSlipUrl    String?
 
   approvalReason    String?         @db.Text
   confidenceScore   Float?

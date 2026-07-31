@@ -1,379 +1,926 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// --- Types & Initial Data ---
+// --- Types ---
 
-type Bungalow = {
-  id: string;
-  title: string;
+type CaretakerForm = {
+  name: string;
+  address: string;
+  telephoneNo: string;
+  emailAddress: string;
+};
+
+type RoomForm = {
+  id?: string;
+  roomNumber: string;
+  roomType: "AC" | "NON_AC";
+  noOfBeds: number;
+  price: number;
+  items: string; // comma separated string for form handling
+};
+
+type BungalowFormState = {
+  id?: string;
+  slug?: string;
+  name: string;
   location: string;
-  rooms: number;
-  capacityPerRoom: number;
-  price: string;
-  facilities: string[];
-  details: string;
+  department: string;
+  capacity: number;
+  noOfRooms: number;
   image: string;
+  description: string;
+  amenities: string; // comma separated string for form
+  highlights: string; // comma separated string for form
+  latitude?: string;
+  longitude?: string;
+  gmapLink?: string;
+  caretaker: CaretakerForm;
+  rooms: RoomForm[];
 };
 
-type Booking = {
+type DbRoom = {
   id: string;
-  userId: string;
-  place: string;
-  rooms: number;
-  nights: number;
-  totalCost: string;
+  roomNumber: string;
+  roomType: "AC" | "NON_AC";
+  noOfBeds: number;
+  price: number;
+  items: string[];
 };
 
+type DbCaretaker = {
+  id: string;
+  name: string;
+  address: string;
+  telephoneNo: string;
+  emailAddress?: string | null;
+};
 
+type DbBungalow = {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  department: string;
+  capacity: number;
+  noOfRooms: number;
+  image: string;
+  description: string;
+  rating: number;
+  amenities: string[];
+  highlights: string[];
+  latitude?: number | null;
+  longitude?: number | null;
+  gmapLink?: string | null;
+  caretaker?: DbCaretaker | null;
+  rooms: DbRoom[];
+};
 
-const INITIAL_BUNGALOWS: Bungalow[] = [
-  {
-    id: "B-1",
-    title: "Nuwara Eliya Rest House",
-    location: "Nuwara Eliya, Central Province",
-    rooms: 5,
-    capacityPerRoom: 2,
-    price: "18,500",
-    facilities: ["Garden View", "Fireplace", "Steward Service"],
-    details: "A secluded setting with colonial architecture.",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
+type DbBooking = {
+  id: string;
+  bookingId: string;
+  userId: string;
+  fromDate: string;
+  toDate: string;
+  status: string;
+  totalCost: number | null;
+  circuitBungalow?: {
+    name: string;
+    location: string;
+    image: string;
+  };
+  room?: {
+    roomNumber: string;
+    roomType: string;
+    price: number;
+  };
+  user?: {
+    name: string;
+    empId?: string | null;
+    placeOfWork?: string | null;
+  };
+};
+
+const DEFAULT_FORM_STATE: BungalowFormState = {
+  name: "",
+  slug: "",
+  location: "",
+  department: "Ministry of Public Administration",
+  capacity: 6,
+  noOfRooms: 2,
+  image: "https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?auto=format&fit=crop&w=800&q=80",
+  description: "",
+  amenities: "Hot Water, Kitchen Facilities, Garden View",
+  highlights: "Scenic Views, Quiet Atmosphere",
+  caretaker: {
+    name: "",
+    address: "",
+    telephoneNo: "",
+    emailAddress: "",
   },
-  {
-    id: "B-2",
-    title: "Galle Fort Heritage Bungalow",
-    location: "Galle, Southern Province",
-    rooms: 3,
-    capacityPerRoom: 3,
-    price: "22,000",
-    facilities: ["Ocean View", "Historical", "AC"],
-    details: "Experience the history of Galle Fort.",
-    image: "https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-  },
-];
-
-const INITIAL_BOOKINGS: Booking[] = [
-  { id: "BKG-2024-892", userId: "USR-001", place: "Nuwara Eliya Rest House", rooms: 1, nights: 2, totalCost: "37,000" },
-  { id: "BKG-2024-905", userId: "USR-089", place: "Galle Fort Heritage Bungalow", rooms: 2, nights: 3, totalCost: "132,000" },
-];
+  rooms: [
+    {
+      roomNumber: "101",
+      roomType: "NON_AC",
+      noOfBeds: 2,
+      price: 3000,
+      items: "Double Bed, Ensuite Bathroom, Geyser",
+    },
+  ],
+};
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"bungalows" | "bookings">("bungalows");
 
-  // Bungalow state
-  const [bungalows, setBungalows] = useState<Bungalow[]>(INITIAL_BUNGALOWS);
-  const [bookings] = useState<Booking[]>(INITIAL_BOOKINGS);
+  // Data State
+  const [bungalows, setBungalows] = useState<DbBungalow[]>([]);
+  const [bookings, setBookings] = useState<DbBooking[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Bungalow modal
+  // Form State for Bungalow
   const [isBungalowModalOpen, setIsBungalowModalOpen] = useState(false);
   const [editingBungalowId, setEditingBungalowId] = useState<string | null>(null);
-  const [bungalowForm, setBungalowForm] = useState<Partial<Bungalow>>({});
+  const [bungalowForm, setBungalowForm] = useState<BungalowFormState>(DEFAULT_FORM_STATE);
 
+  // Fetch Data from APIs
+  const fetchBungalows = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/admin/bungalows");
+      const json = await res.json();
+      if (json.success) {
+        setBungalows(json.data);
+      } else {
+        setErrorMsg(json.error || "Failed to fetch bungalows");
+      }
+    } catch (err: any) {
+      console.error("Error fetching bungalows:", err);
+      setErrorMsg("Failed to connect to server");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const fetchBookings = async () => {
+    try {
+      const res = await fetch("/api/admin/bookings");
+      const json = await res.json();
+      if (json.success) {
+        setBookings(json.data);
+      }
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    }
+  };
 
-  // --- Bungalow Handlers ---
+  useEffect(() => {
+    fetchBungalows();
+    fetchBookings();
+  }, []);
+
+  // --- Handlers ---
   const handleAddBungalow = () => {
-    setBungalowForm({ title: "", location: "", rooms: 1, capacityPerRoom: 2, price: "", facilities: [], details: "", image: "" });
+    setBungalowForm(DEFAULT_FORM_STATE);
     setEditingBungalowId(null);
     setIsBungalowModalOpen(true);
   };
 
-  const handleEditBungalow = (b: Bungalow) => {
-    setBungalowForm({ ...b });
+  const handleEditBungalow = (b: DbBungalow) => {
     setEditingBungalowId(b.id);
+    setBungalowForm({
+      id: b.id,
+      name: b.name,
+      slug: b.slug,
+      location: b.location,
+      department: b.department,
+      capacity: b.capacity,
+      noOfRooms: b.noOfRooms,
+      image: b.image,
+      description: b.description || "",
+      amenities: b.amenities.join(", "),
+      highlights: b.highlights.join(", "),
+      latitude: b.latitude ? b.latitude.toString() : "",
+      longitude: b.longitude ? b.longitude.toString() : "",
+      gmapLink: b.gmapLink || "",
+      caretaker: {
+        name: b.caretaker?.name || "",
+        address: b.caretaker?.address || "",
+        telephoneNo: b.caretaker?.telephoneNo || "",
+        emailAddress: b.caretaker?.emailAddress || "",
+      },
+      rooms: b.rooms.length > 0
+        ? b.rooms.map((r) => ({
+            id: r.id,
+            roomNumber: r.roomNumber,
+            roomType: r.roomType,
+            noOfBeds: r.noOfBeds,
+            price: r.price,
+            items: r.items.join(", "),
+          }))
+        : [
+            {
+              roomNumber: "101",
+              roomType: "NON_AC",
+              noOfBeds: 2,
+              price: 3000,
+              items: "Double Bed, Hot Water",
+            },
+          ],
+    });
     setIsBungalowModalOpen(true);
   };
 
-  const handleDeleteBungalow = (id: string) => {
-    setBungalows(bungalows.filter((b) => b.id !== id));
-  };
-
-  const saveBungalow = () => {
-    if (editingBungalowId) {
-      setBungalows(bungalows.map((b) => (b.id === editingBungalowId ? { ...b, ...bungalowForm } as Bungalow : b)));
-    } else {
-      const newBungalow = {
-        ...bungalowForm,
-        id: `B-${Date.now()}`,
-        image: bungalowForm.image || "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      } as Bungalow;
-      setBungalows([...bungalows, newBungalow]);
-    }
-    setIsBungalowModalOpen(false);
-  };
-
-  // --- User Handlers ---
-  const handleOpenAddUser = () => {
-    setUserForm(EMPTY_USER_FORM);
-    setUserFormError(null);
-    setIsUserModalOpen(true);
-  };
-
-  const handleSaveUser = async () => {
-    setUserFormError(null);
-    if (!userForm.name.trim() || !userForm.username.trim() || !userForm.password.trim()) {
-      setUserFormError("Name, username, and password are required.");
+  const handleDeleteBungalow = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this circuit bungalow? This will also remove associated room and caretaker records.")) {
       return;
     }
-    setIsSavingUser(true);
+
     try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: userForm.name.trim(),
-          username: userForm.username.trim(),
-          password: userForm.password,
-          role: userForm.role,
-          empId: userForm.empId.trim() || undefined,
-          status: userForm.status,
-          placeOfWork: userForm.placeOfWork.trim() || undefined,
-          position: userForm.position.trim() || undefined,
-        }),
+      const res = await fetch(`/api/admin/bungalows?id=${id}`, {
+        method: "DELETE",
       });
-      if (!res.ok) {
-        const data = await res.json();
-        setUserFormError(data.error ?? "Failed to create user.");
-        return;
+      const json = await res.json();
+      if (json.success) {
+        setBungalows((prev) => prev.filter((b) => b.id !== id));
+      } else {
+        alert(json.error || "Failed to delete bungalow");
       }
-      await refreshUsers();
-      setIsUserModalOpen(false);
-    } catch {
-      setUserFormError("Network error. Please try again.");
-    } finally {
-      setIsSavingUser(false);
+    } catch (err: any) {
+      alert("Error deleting bungalow: " + err.message);
     }
   };
 
-  const inputCls = "w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200";
-  const labelCls = "block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1";
+  const saveBungalow = async () => {
+    if (!bungalowForm.name.trim() || !bungalowForm.location.trim()) {
+      alert("Please fill in required fields: Bungalow Name and Location.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        id: editingBungalowId,
+        name: bungalowForm.name,
+        slug: bungalowForm.slug,
+        location: bungalowForm.location,
+        department: bungalowForm.department,
+        capacity: Number(bungalowForm.capacity),
+        noOfRooms: bungalowForm.rooms.length || Number(bungalowForm.noOfRooms),
+        image: bungalowForm.image,
+        description: bungalowForm.description,
+        amenities: bungalowForm.amenities,
+        highlights: bungalowForm.highlights,
+        latitude: bungalowForm.latitude,
+        longitude: bungalowForm.longitude,
+        gmapLink: bungalowForm.gmapLink,
+        caretaker: bungalowForm.caretaker,
+        rooms: bungalowForm.rooms,
+      };
+
+      const method = editingBungalowId ? "PUT" : "POST";
+      const res = await fetch("/api/admin/bungalows", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        setIsBungalowModalOpen(false);
+        fetchBungalows(); // Refresh list from DB
+      } else {
+        alert(json.error || "Failed to save bungalow");
+      }
+    } catch (err: any) {
+      alert("Error saving bungalow: " + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // --- Dynamic Room Handlers ---
+  const handleAddRoomRow = () => {
+    setBungalowForm((prev) => ({
+      ...prev,
+      rooms: [
+        ...prev.rooms,
+        {
+          roomNumber: `Room-${prev.rooms.length + 1}`,
+          roomType: "NON_AC",
+          noOfBeds: 2,
+          price: 3000,
+          items: "Double Bed, Hot Water",
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveRoomRow = (index: number) => {
+    if (bungalowForm.rooms.length <= 1) {
+      alert("At least one room is required for a bungalow.");
+      return;
+    }
+    setBungalowForm((prev) => ({
+      ...prev,
+      rooms: prev.rooms.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleRoomChange = (index: number, field: keyof RoomForm, value: any) => {
+    setBungalowForm((prev) => {
+      const updatedRooms = [...prev.rooms];
+      updatedRooms[index] = {
+        ...updatedRooms[index],
+        [field]: value,
+      };
+      return { ...prev, rooms: updatedRooms };
+    });
+  };
+
+  // Stats calculation
+  const totalBungalows = bungalows.length;
+  const totalRooms = bungalows.reduce((sum, b) => sum + (b.rooms?.length || b.noOfRooms || 0), 0);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative">
-
-      {/* Admin Header & Tabs */}
+    <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 relative min-h-screen">
+      {/* Admin Header & Stats */}
       <div className="bg-white border-b border-slate-200 px-8 pt-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">Admin Dashboard</h1>
-        <p className="text-slate-500 mb-8">Manage properties, view confirmed bookings, and update staff assignments.</p>
+        <p className="text-slate-500 mb-8">
+          Manage circuit bungalows, caretaker details, room capacities, and view live system reservations.
+        </p>
 
-        {/* Weekly Bookings Dashboard */}
-        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 mb-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-800 mb-1">Upcoming Week Bookings</h3>
-            <p className="text-sm text-slate-500 mb-6">Distribution of reservations for the next 7 days.</p>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-sm font-semibold text-slate-700">Nuwara Eliya Rest House</span>
-                </div>
-                <span className="text-sm font-bold text-slate-800">15 bookings</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                  <span className="text-sm font-semibold text-slate-700">Galle Fort Heritage</span>
-                </div>
-                <span className="text-sm font-bold text-slate-800">8 bookings</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                  <span className="text-sm font-semibold text-slate-700">Kandy Lake View</span>
-                </div>
-                <span className="text-sm font-bold text-slate-800">12 bookings</span>
-              </div>
+        {/* System Overview Dashboard Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+              <span className="material-symbols-outlined">holiday_village</span>
             </div>
-
-            <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
-              <span className="text-sm font-medium text-slate-500">Total upcoming</span>
-              <span className="text-xl font-bold text-slate-800">35</span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Total Bungalows</p>
+              <h3 className="text-2xl font-bold text-slate-800">{loading ? "..." : totalBungalows}</h3>
             </div>
           </div>
 
-          {/* Pie Chart Visualization */}
-          <div className="relative w-48 h-48 shrink-0 flex items-center justify-center">
-            <div
-              className="absolute inset-0 rounded-full shadow-inner"
-              style={{ background: "conic-gradient(#3b82f6 0% 43%, #10b981 43% 66%, #f59e0b 66% 100%)" }}
-            ></div>
-            <div className="absolute inset-4 bg-slate-50 rounded-full shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total</span>
-              <span className="text-3xl font-bold text-slate-800">35</span>
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+              <span className="material-symbols-outlined">meeting_room</span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600">Configured Rooms</p>
+              <h3 className="text-2xl font-bold text-slate-800">{loading ? "..." : totalRooms}</h3>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+              <span className="material-symbols-outlined">confirmation_number</span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Total Bookings</p>
+              <h3 className="text-2xl font-bold text-slate-800">{bookings.length}</h3>
             </div>
           </div>
         </div>
 
+        {/* Tab Selection */}
         <div className="flex gap-2 bg-slate-100 p-1 rounded-xl inline-flex mb-2">
           <button
             onClick={() => setActiveTab("bungalows")}
-            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "bungalows" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+              activeTab === "bungalows" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"
+            }`}
           >
-            Circuit Bungalows
+            Circuit Bungalows ({bungalows.length})
           </button>
           <button
             onClick={() => setActiveTab("bookings")}
-            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === "bookings" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+              activeTab === "bookings" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-800"
+            }`}
           >
-            Confirmed Bookings
+            Database Bookings ({bookings.length})
           </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-6xl mx-auto">
+          {errorMsg && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3">
+              <span className="material-symbols-outlined">error</span>
+              <p className="text-sm font-medium">{errorMsg}</p>
+            </div>
+          )}
 
-          {/* TAB: BUNGALOWS */}
+          {/* TAB: CIRCUIT BUNGALOWS */}
           {activeTab === "bungalows" && (
-            <div className="animate-fade-in">
+            <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Manage Circuit Bungalows</h2>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Manage Circuit Bungalows</h2>
+                  <p className="text-xs text-slate-500">Live data synced with Database (`CircuitBungalow`, `Caretaker`, `Room`)</p>
+                </div>
                 <button
                   onClick={handleAddBungalow}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-semibold text-sm cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm font-semibold text-sm cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  <span className="material-symbols-outlined text-[20px]">add</span>
                   Add Bungalow
                 </button>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  <div className="col-span-4">Place & Location</div>
-                  <div className="col-span-2 text-center">Rooms</div>
-                  <div className="col-span-2 text-center">Persons/Room</div>
-                  <div className="col-span-2">Cost/Night</div>
-                  <div className="col-span-2 text-right">Actions</div>
+              {loading ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-500 flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm font-medium">Loading circuit bungalows from database...</p>
                 </div>
-                <div className="divide-y divide-slate-100">
-                  {bungalows.map((b) => (
-                    <div key={b.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors">
-                      <div className="col-span-4 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-slate-200">
-                          <img src={b.image} alt={b.title} className="w-full h-full object-cover" />
+              ) : bungalows.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-500">
+                  <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">holiday_village</span>
+                  <p className="text-base font-semibold text-slate-700">No Bungalows Found</p>
+                  <p className="text-sm text-slate-500 mb-4">Click "Add Bungalow" to add your first circuit bungalow.</p>
+                  <button
+                    onClick={handleAddBungalow}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+                  >
+                    Add New Bungalow
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+                  <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <div className="col-span-4">Bungalow & Department</div>
+                    <div className="col-span-3">Caretaker Details</div>
+                    <div className="col-span-2 text-center">Rooms / Capacity</div>
+                    <div className="col-span-3 text-right">Actions</div>
+                  </div>
+
+                  {bungalows.map((b) => {
+                    const startingPrice = b.rooms?.length > 0 ? Math.min(...b.rooms.map((r) => r.price)) : 0;
+                    return (
+                      <div key={b.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50/80 transition-colors">
+                        <div className="col-span-4 flex items-center gap-4">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-xs">
+                            <img src={b.image} alt={b.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-800 text-sm leading-tight mb-0.5">{b.name}</h3>
+                            <p className="text-xs text-slate-500">{b.location}</p>
+                            <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold bg-blue-50 text-blue-700 rounded-md">
+                              {b.department}
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-slate-800 text-sm">{b.title}</h3>
-                          <p className="text-xs text-slate-500">{b.location}</p>
+
+                        <div className="col-span-3">
+                          {b.caretaker ? (
+                            <div>
+                              <p className="text-xs font-bold text-slate-800 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[14px] text-slate-400">person</span>
+                                {b.caretaker.name}
+                              </p>
+                              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                                <span className="material-symbols-outlined text-[14px] text-slate-400">call</span>
+                                {b.caretaker.telephoneNo || "N/A"}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-amber-600 font-medium italic">No caretaker assigned</span>
+                          )}
+                        </div>
+
+                        <div className="col-span-2 text-center">
+                          <p className="text-xs font-bold text-slate-800">{b.rooms?.length || b.noOfRooms} Rooms</p>
+                          <p className="text-[11px] text-slate-500">Max {b.capacity} Guests</p>
+                          {startingPrice > 0 && (
+                            <p className="text-[11px] font-semibold text-emerald-600 mt-0.5">From Rs. {startingPrice}</p>
+                          )}
+                        </div>
+
+                        <div className="col-span-3 flex justify-end gap-2">
+                          <button
+                            onClick={() => handleEditBungalow(b)}
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">edit</span>
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBungalow(b.id)}
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                            Delete
+                          </button>
                         </div>
                       </div>
-                      <div className="col-span-2 text-center text-sm font-medium text-slate-700">{b.rooms}</div>
-                      <div className="col-span-2 text-center text-sm font-medium text-slate-700">{b.capacityPerRoom}</div>
-                      <div className="col-span-2 text-sm font-bold text-blue-600">Rs. {b.price}</div>
-                      <div className="col-span-2 flex justify-end gap-2">
-                        <button onClick={() => handleEditBungalow(b)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors bg-white border border-slate-200 rounded-lg shadow-sm cursor-pointer">
-                          <span className="material-symbols-outlined text-[16px]">edit</span>
-                        </button>
-                        <button onClick={() => handleDeleteBungalow(b.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-white border border-slate-200 rounded-lg shadow-sm cursor-pointer">
-                          <span className="material-symbols-outlined text-[16px]">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {bungalows.length === 0 && <div className="p-8 text-center text-slate-500">No bungalows added yet.</div>}
+                    );
+                  })}
                 </div>
-              </div>
+              )}
             </div>
           )}
 
-          {/* TAB: BOOKINGS */}
+          {/* TAB: DATABASE BOOKINGS */}
           {activeTab === "bookings" && (
-            <div className="animate-fade-in">
+            <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Confirmed Bookings Overview</h2>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Database Bookings</h2>
+                  <p className="text-xs text-slate-500">Live booking reservations recorded in `Booking` model</p>
+                </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  <div className="col-span-2">User ID</div>
-                  <div className="col-span-4">Booking Place</div>
-                  <div className="col-span-2 text-center">Rooms</div>
-                  <div className="col-span-2 text-center">Nights</div>
-                  <div className="col-span-2 text-right">Total Cost</div>
+              {bookings.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-500">
+                  <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">event_busy</span>
+                  <p className="text-base font-semibold text-slate-700">No Bookings Found in Database</p>
                 </div>
-                <div className="divide-y divide-slate-100">
+              ) : (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+                  <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <div className="col-span-3">Booking ID & User</div>
+                    <div className="col-span-3">Bungalow & Room</div>
+                    <div className="col-span-3">Stay Dates</div>
+                    <div className="col-span-3 text-right">Status & Total</div>
+                  </div>
+
                   {bookings.map((b) => (
                     <div key={b.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors">
-                      <div className="col-span-2 text-sm font-mono font-medium text-slate-600">{b.userId}</div>
-                      <div className="col-span-4 text-sm font-bold text-slate-800">{b.place}</div>
-                      <div className="col-span-2 text-center text-sm font-medium text-slate-700">{b.rooms}</div>
-                      <div className="col-span-2 text-center text-sm font-medium text-slate-700">{b.nights}</div>
-                      <div className="col-span-2 text-right text-sm font-bold text-emerald-600">Rs. {b.totalCost}</div>
+                      <div className="col-span-3">
+                        <p className="text-xs font-mono font-bold text-blue-600">{b.bookingId}</p>
+                        <p className="text-sm font-bold text-slate-800">{b.user?.name || "Guest User"}</p>
+                        {b.user?.empId && <p className="text-xs text-slate-500">Emp ID: {b.user.empId}</p>}
+                      </div>
+                      <div className="col-span-3">
+                        <p className="text-xs font-bold text-slate-800">{b.circuitBungalow?.name || "Circuit Bungalow"}</p>
+                        <p className="text-xs text-slate-500">
+                          {b.room ? `${b.room.roomNumber} (${b.room.roomType})` : "General Room"}
+                        </p>
+                      </div>
+                      <div className="col-span-3 text-xs text-slate-600">
+                        <p>
+                          <span className="font-semibold text-slate-700">From:</span> {new Date(b.fromDate).toLocaleDateString()}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-700">To:</span> {new Date(b.toDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="col-span-3 text-right">
+                        <span
+                          className={`inline-block px-2.5 py-1 text-xs font-bold rounded-full ${
+                            b.status === "CONFIRMED"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : b.status === "PENDING"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {b.status}
+                        </span>
+                        {b.totalCost && (
+                          <p className="text-sm font-bold text-slate-800 mt-1">Rs. {b.totalCost.toLocaleString()}</p>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* --- MODALS --- */}
-
-      {/* Bungalow Modal */}
+      {/* --- ADD / EDIT BUNGALOW MODAL --- */}
       {isBungalowModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="font-bold text-lg text-slate-800">{editingBungalowId ? "Edit Bungalow" : "Add New Bungalow"}</h3>
-              <button onClick={() => setIsBungalowModalOpen(false)} className="text-slate-400 hover:text-slate-800 cursor-pointer">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-100 my-auto">
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-slate-900 text-white flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-blue-400">domain</span>
+                <h3 className="font-bold text-lg">{editingBungalowId ? "Edit Circuit Bungalow" : "Add New Circuit Bungalow"}</h3>
+              </div>
+              <button
+                onClick={() => setIsBungalowModalOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Title</label>
-                  <input type="text" className={inputCls} placeholder="e.g. Nuwara Eliya Rest House" value={bungalowForm.title || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, title: e.target.value })} />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Location</label>
-                  <input type="text" className={inputCls} placeholder="e.g. Nuwara Eliya" value={bungalowForm.location || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, location: e.target.value })} />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Number of Rooms</label>
-                  <input type="number" className={inputCls} value={bungalowForm.rooms || 1} onChange={(e) => setBungalowForm({ ...bungalowForm, rooms: parseInt(e.target.value) })} />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Persons per Room</label>
-                  <input type="number" className={inputCls} value={bungalowForm.capacityPerRoom || 2} onChange={(e) => setBungalowForm({ ...bungalowForm, capacityPerRoom: parseInt(e.target.value) })} />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Cost for one night (Rs.)</label>
-                  <input type="text" className={inputCls} placeholder="e.g. 18,500" value={bungalowForm.price || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, price: e.target.value })} />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className={labelCls}>Facilities (comma separated)</label>
-                  <input type="text" className={inputCls} placeholder="e.g. AC, WiFi, Hot Water" value={bungalowForm.facilities?.join(", ") || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, facilities: e.target.value.split(",").map((s) => s.trim()) })} />
-                </div>
-                <div className="col-span-2">
-                  <label className={labelCls}>Additional Details</label>
-                  <textarea rows={3} className={`${inputCls} resize-none`} placeholder="Description of the place..." value={bungalowForm.details || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, details: e.target.value })} />
-                </div>
-                <div className="col-span-2">
-                  <label className={labelCls}>Photos (URL for now)</label>
-                  <div className="flex gap-2">
-                    <input type="text" className={`${inputCls} flex-1`} placeholder="https://image-url..." value={bungalowForm.image || ""} onChange={(e) => setBungalowForm({ ...bungalowForm, image: e.target.value })} />
-                    <button className="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer">
-                      <span className="material-symbols-outlined text-[16px]">upload</span> Upload
-                    </button>
+            {/* Modal Scrollable Body */}
+            <div className="p-6 overflow-y-auto flex-1 space-y-6">
+
+              {/* SECTION 1: CIRCUIT BUNGALOW GENERAL DETAILS */}
+              <div>
+                <h4 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3 flex items-center gap-1 border-b border-slate-100 pb-2">
+                  <span className="material-symbols-outlined text-[16px]">info</span>
+                  1. Bungalow Information (Model: CircuitBungalow)
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Bungalow Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                      placeholder="e.g. Diyatalawa Holiday Rest"
+                      value={bungalowForm.name}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, name: e.target.value })}
+                    />
                   </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Department <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                      placeholder="e.g. Ministry of Public Administration"
+                      value={bungalowForm.department}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, department: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Location / Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                      placeholder="e.g. Diyatalawa, Uva Province"
+                      value={bungalowForm.location}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, location: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Total Guest Capacity</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                      value={bungalowForm.capacity}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, capacity: parseInt(e.target.value) || 1 })}
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Image URL</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                      placeholder="https://images.unsplash.com/..."
+                      value={bungalowForm.image}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, image: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Description / Overview</label>
+                    <textarea
+                      rows={2}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 resize-none"
+                      placeholder="Overview of the bungalow premises..."
+                      value={bungalowForm.description}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, description: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Amenities (comma separated)</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                      placeholder="Hot Water, Kitchen, Garden"
+                      value={bungalowForm.amenities}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, amenities: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Highlights (comma separated)</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                      placeholder="Near Station, Scenic Views"
+                      value={bungalowForm.highlights}
+                      onChange={(e) => setBungalowForm({ ...bungalowForm, highlights: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 2: CARETAKER DETAILS */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <h4 className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[16px]">badge</span>
+                  2. Caretaker Details (Model: Caretaker)
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Caretaker Name</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500"
+                      placeholder="e.g. K. A. Perera"
+                      value={bungalowForm.caretaker.name}
+                      onChange={(e) =>
+                        setBungalowForm({
+                          ...bungalowForm,
+                          caretaker: { ...bungalowForm.caretaker, name: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Telephone Number</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500"
+                      placeholder="e.g. +94 77 1234567"
+                      value={bungalowForm.caretaker.telephoneNo}
+                      onChange={(e) =>
+                        setBungalowForm({
+                          ...bungalowForm,
+                          caretaker: { ...bungalowForm.caretaker, telephoneNo: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Address</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500"
+                      placeholder="e.g. Circuit Bungalow Quarters, Diyatalawa"
+                      value={bungalowForm.caretaker.address}
+                      onChange={(e) =>
+                        setBungalowForm({
+                          ...bungalowForm,
+                          caretaker: { ...bungalowForm.caretaker, address: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Email Address (Optional)</label>
+                    <input
+                      type="email"
+                      className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500"
+                      placeholder="caretaker@govstay.lk"
+                      value={bungalowForm.caretaker.emailAddress}
+                      onChange={(e) =>
+                        setBungalowForm({
+                          ...bungalowForm,
+                          caretaker: { ...bungalowForm.caretaker, emailAddress: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 3: ROOM DETAILS */}
+              <div>
+                <div className="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
+                  <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">bed</span>
+                    3. Room Details (Model: Room)
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={handleAddRoomRow}
+                    className="flex items-center gap-1 text-xs font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">add</span> Add Room
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {bungalowForm.rooms.map((room, idx) => (
+                    <div key={idx} className="bg-purple-50/40 border border-purple-100 rounded-xl p-4 relative group">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-bold text-purple-900">Room #{idx + 1}</span>
+                        {bungalowForm.rooms.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveRoomRow(idx)}
+                            className="text-red-500 hover:text-red-700 text-xs font-semibold flex items-center gap-0.5 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">delete</span> Remove
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-12 gap-3">
+                        <div className="col-span-12 sm:col-span-3">
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Room Number / Code</label>
+                          <input
+                            type="text"
+                            className="w-full border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                            placeholder="e.g. 101"
+                            value={room.roomNumber}
+                            onChange={(e) => handleRoomChange(idx, "roomNumber", e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-span-12 sm:col-span-3">
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Room Type</label>
+                          <select
+                            className="w-full border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                            value={room.roomType}
+                            onChange={(e) => handleRoomChange(idx, "roomType", e.target.value as "AC" | "NON_AC")}
+                          >
+                            <option value="NON_AC">Non-AC</option>
+                            <option value="AC">AC</option>
+                          </select>
+                        </div>
+
+                        <div className="col-span-12 sm:col-span-2">
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Beds Count</label>
+                          <input
+                            type="number"
+                            min={1}
+                            className="w-full border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                            value={room.noOfBeds}
+                            onChange={(e) => handleRoomChange(idx, "noOfBeds", parseInt(e.target.value) || 1)}
+                          />
+                        </div>
+
+                        <div className="col-span-12 sm:col-span-4">
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Price / Night (Rs.)</label>
+                          <input
+                            type="number"
+                            step="100"
+                            className="w-full border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                            value={room.price}
+                            onChange={(e) => handleRoomChange(idx, "price", parseFloat(e.target.value) || 0)}
+                          />
+                        </div>
+
+                        <div className="col-span-12">
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                            Room Items & Amenities (comma separated)
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
+                            placeholder="Double Bed, Geyser, Wardrobe, Ensuite Bathroom"
+                            value={room.items}
+                            onChange={(e) => handleRoomChange(idx, "items", e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
+            {/* Modal Footer */}
             <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-              <button onClick={() => setIsBungalowModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 cursor-pointer">Cancel</button>
-              <button onClick={saveBungalow} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-blue-700 cursor-pointer">Save Bungalow</button>
+              <button
+                type="button"
+                onClick={() => setIsBungalowModalOpen(false)}
+                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors cursor-pointer"
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveBungalow}
+                disabled={saving}
+                className="px-6 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {saving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[18px]">save</span>
+                    Save Bungalow Data
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
