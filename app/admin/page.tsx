@@ -929,6 +929,8 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={handleAddRoomRow}
+            disabled={bungalowForm.rooms.length >= bungalowForm.noOfRooms}
+            title={bungalowForm.rooms.length >= bungalowForm.noOfRooms ? `Your Bungalow only has ${bungalowForm.noOfRooms} rooms.` : undefined}
             className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
           >
             Add Room

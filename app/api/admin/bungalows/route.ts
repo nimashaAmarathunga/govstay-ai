@@ -70,6 +70,10 @@ export async function POST(request: Request) {
 
     const parsedNoOfRooms = Number(noOfRooms) || (Array.isArray(rooms) ? rooms.length : 1);
     const parsedCapacity = Number(capacity) || 4;
+    // Validate room limit before creating bungalow
+    if (Array.isArray(rooms) && rooms.length > parsedNoOfRooms) {
+      return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
+    }
 
     // Prisma nested create
     const newBungalow = await prisma.circuitBungalow.create({
@@ -178,6 +182,11 @@ export async function PUT(request: Request) {
 
     const parsedNoOfRooms = Number(noOfRooms) || (Array.isArray(rooms) ? rooms.length : 1);
     const parsedCapacity = Number(capacity) || 4;
+
+    // Validate room limit before updating bungalow
+    if (Array.isArray(rooms) && rooms.length > parsedNoOfRooms) {
+      return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
+    }
 
     // Use transaction to update bungalow, upsert caretaker, and refresh rooms
     const updatedBungalow = await prisma.$transaction(async (tx: any) => {
