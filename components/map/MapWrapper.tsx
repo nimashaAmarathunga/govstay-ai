@@ -97,10 +97,22 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       const allPlaces = geoData.query?.geosearch || [];
       const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
-      const places = allPlaces.filter((p: any) => {
+      let places = allPlaces.filter((p: any) => {
         const title = p.title.toLowerCase();
         return !excludeKeywords.some(keyword => title.includes(keyword));
       });
+
+      if (places.length === 0) {
+        // Fallback: search wider radius (25km = 25000) for remote bungalows
+        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=25000&gslimit=20&format=json&origin=*`;
+        const fallbackRes = await fetch(fallbackUrl);
+        const fallbackData = await fallbackRes.json();
+        const fallbackPlaces = fallbackData.query?.geosearch || [];
+        places = fallbackPlaces.filter((p: any) => {
+          const title = p.title.toLowerCase();
+          return !excludeKeywords.some(keyword => title.includes(keyword));
+        });
+      }
 
       if (places.length === 0) {
         setIsLoadingAttractions(false);
