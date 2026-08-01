@@ -35,6 +35,7 @@ export default function Page() {
   const [isBookingMode, setIsBookingMode] = useState(false);
   const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
   const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
+  const [sessionId] = useState(() => `demo-session-${Date.now()}`);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -203,11 +204,11 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#FDFDFD]">
+    <div className="flex flex-col flex-1 min-h-0 h-full bg-[#FDFDFD]">
       <main className="flex-1 flex overflow-hidden">
         
         {/* Left Column: Agent Status */}
-        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col hidden lg:flex">
+        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col min-h-0 hidden lg:flex">
            <div className="p-6 pb-2">
              <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">System Agents</h2>
            </div>
@@ -223,31 +224,33 @@ export default function Page() {
                   key={agent.id}
                   className={`p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
                     activeAgent === agent.id 
-                      ? 'bg-white border-slate-200 shadow-[0_2px_10px_rgb(0,0,0,0.04)]' 
+                      ? 'bg-emerald-50 border-emerald-200 shadow-sm ring-1 ring-emerald-500/20' 
                       : 'bg-transparent border-transparent hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-3 relative z-10">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                      activeAgent === agent.id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm ${
+                      activeAgent === agent.id ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500'
                     }`}>
                       {agentIcons[agent.id]}
                     </div>
                     <div>
-                      <h3 className={`text-[13px] font-semibold transition-colors ${
-                        activeAgent === agent.id ? 'text-slate-900' : 'text-slate-600'
+                      <h3 className={`text-[13px] font-bold transition-colors ${
+                        activeAgent === agent.id ? 'text-emerald-900' : 'text-slate-600'
                       }`}>
                         {agent.name}
                       </h3>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {activeAgent === agent.id ? 'Active' : 'Standby'}
+                      <p className={`text-[11px] font-semibold mt-0.5 ${
+                        activeAgent === agent.id ? 'text-emerald-600' : 'text-slate-400'
+                      }`}>
+                        {activeAgent === agent.id ? '● Active Now' : 'Standby'}
                       </p>
                     </div>
                   </div>
                   {activeAgent === agent.id && (
                     <motion.div 
                       layoutId="active-agent"
-                      className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900 rounded-r-full"
+                      className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
@@ -257,7 +260,7 @@ export default function Page() {
         </aside>
 
         {/* Center Column: Chat Interface */}
-        <section className="flex-1 flex flex-col bg-[#FDFDFD] relative">
+        <section className="flex-1 flex flex-col min-h-0 bg-[#FDFDFD] relative">
           
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 scroll-smooth">
             <div className="max-w-3xl mx-auto w-full space-y-8">
@@ -422,7 +425,7 @@ export default function Page() {
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 40 }}
-            className="bg-white border-l border-slate-100 flex flex-col shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
+            className="bg-white border-l border-slate-100 flex flex-col min-h-0 shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
           >
              <div className="p-6 pb-4 flex items-center gap-3 border-b border-slate-50">
                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
