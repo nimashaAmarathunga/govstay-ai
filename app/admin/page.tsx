@@ -7,7 +7,7 @@ import {
   Building2, Users, CalendarDays, Plus, Search,
   Edit2, Trash2, X, Save, AlertCircle, Loader2,
   Home, Phone, MapPin, BedDouble, FileText, CheckCircle2,
-  Hotel
+  Hotel, ArrowRight, ArrowLeft
 } from "lucide-react";
 
 // --- Types ---
@@ -154,8 +154,9 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Form State for Bungalow
+  // Form State for Bungalow (Step 1: Details, Step 2: Rooms)
   const [isBungalowModalOpen, setIsBungalowModalOpen] = useState(false);
+  const [modalStep, setModalStep] = useState<1 | 2>(1);
   const [editingBungalowId, setEditingBungalowId] = useState<string | null>(null);
   const [bungalowForm, setBungalowForm] = useState<BungalowFormState>(DEFAULT_FORM_STATE);
 
@@ -208,6 +209,7 @@ export default function AdminPage() {
       department: adminDepartment || DEFAULT_FORM_STATE.department,
     });
     setEditingBungalowId(null);
+    setModalStep(1);
     setIsBungalowModalOpen(true);
   };
 
@@ -253,7 +255,16 @@ export default function AdminPage() {
             },
           ],
     });
+    setModalStep(1);
     setIsBungalowModalOpen(true);
+  };
+
+  const handleNextToRooms = () => {
+    if (!bungalowForm.name.trim() || !bungalowForm.location.trim()) {
+      alert("Please fill in required fields: Bungalow Name and Location.");
+      return;
+    }
+    setModalStep(2);
   };
 
   const handleDeleteBungalow = async (id: string) => {
