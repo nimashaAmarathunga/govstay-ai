@@ -75,6 +75,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   const formatPrice = (price: number) => {
     return `Rs. ${price.toLocaleString()}`;
@@ -260,6 +261,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
     setBookingStatus("idle");
     setSelectedRoomIds([]);
     setPaymentSlipUrl(null);
+    setShowPaymentStep(false);
   };
 
   const acRoomsCount = bungalow.rooms.filter((r) => r.roomType === "AC").length;
@@ -615,128 +617,189 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 </div>
               </div>
 
-              {/* Date Selection Section */}
-              <div className="mb-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                  Select Dates
-                </h4>
-                <DateRangePicker 
-                  checkIn={checkIn}
-                  checkOut={checkOut}
-                  onChange={(start, end) => {
-                    setCheckIn(start);
-                    setCheckOut(end);
-                  }}
-                  isDateDisabled={isDateBooked}
-                />
-              </div>
-
-              {/* Selected Rooms Box */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                  Selected Rooms ({selectedRoomIds.length})
-                </span>
-
-                {selectedRoomIds.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic">
-                    No specific rooms selected. Booking will reserve the Entire Bungalow.
-                  </p>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    {bungalow.rooms
-                      .filter((r) => selectedRoomIds.includes(r.id))
-                      .map((r) => (
-                        <span
-                          key={r.id}
-                          className="px-2.5 py-1 bg-blue-600 text-white rounded-md text-xs font-bold"
-                        >
-                          Room {r.roomNumber}
-                        </span>
-                      ))}
+              {!showPaymentStep ? (
+                <>
+                  {/* Date Selection Section */}
+                  <div className="mb-6">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                      Select Dates
+                    </h4>
+                    <DateRangePicker 
+                      checkIn={checkIn}
+                      checkOut={checkOut}
+                      onChange={(start, end) => {
+                        setCheckIn(start);
+                        setCheckOut(end);
+                      }}
+                      isDateDisabled={isDateBooked}
+                    />
                   </div>
-                )}
-              </div>
 
-              {/* Dynamic Pricing Breakdown */}
-              {checkIn && checkOut && (
-                <div className="border-t border-slate-100 pt-4 mb-6 space-y-2 text-xs">
-                  <div className="flex justify-between items-center text-slate-500">
-                    <span>
-                      {isEntireBungalow ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRooms.length})`}
+                  {/* Selected Rooms Box */}
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                      Selected Rooms ({selectedRoomIds.length})
                     </span>
-                    <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+
+                    {selectedRoomIds.length === 0 ? (
+                      <p className="text-xs text-slate-500 italic">
+                        No specific rooms selected. Booking will reserve the Entire Bungalow.
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        {bungalow.rooms
+                          .filter((r) => selectedRoomIds.includes(r.id))
+                          .map((r) => (
+                            <span
+                              key={r.id}
+                              className="px-2.5 py-1 bg-blue-600 text-white rounded-md text-xs font-bold"
+                            >
+                              Room {r.roomNumber}
+                            </span>
+                          ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between items-center text-slate-500">
-                    <span>Duration</span>
-                    <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"}</span>
-                  </div>
-                  <div className="border-t border-slate-100/60 pt-2 flex justify-between items-center text-sm font-bold">
-                    <span className="text-slate-800">Total Price</span>
-                    <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
-                  </div>
-                </div>
-              )}
 
-              {/* Payment Slip Upload */}
-              {bookingStatus === "idle" && (
-                <div className="mb-6">
-                  <PaymentSlipUpload
-                    onUploadComplete={(url) => setPaymentSlipUrl(url)}
-                    value={paymentSlipUrl}
-                  />
-                </div>
-              )}
-
-              {/* Booking Actions */}
-              {bookingStatus === "idle" && (
-                <button
-                  onClick={handleBooking}
-                  disabled={!checkIn || !checkOut}
-                  className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
-                    checkIn && checkOut
-                      ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                  }`}
-                >
-                  {selectedRoomIds.length > 0
-                    ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
-                    : "Book Entire Bungalow"}
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </button>
-              )}
-
-              {bookingStatus === "booking" && (
-                <button
-                  disabled
-                  className="w-full py-4 bg-blue-400 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-wait"
-                >
-                  <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
-                  Processing Reservation...
-                </button>
-              )}
-
-              {bookingStatus === "success" && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
-                  <span className="material-symbols-outlined text-3xl text-emerald-600 mb-1">
-                    check_circle
-                  </span>
-                  <h4 className="font-bold text-emerald-900 text-sm">Reservation Confirmed!</h4>
-                  <p className="text-xs text-emerald-700 mt-1">
-                    Booked: {bookedRoomNumbers.join(", ")}
-                  </p>
+                  {/* Dynamic Pricing Breakdown */}
                   {checkIn && checkOut && (
-                    <div className="mt-1.5 p-2 bg-white/60 border border-emerald-100 rounded-lg text-left text-[11px] text-emerald-800 space-y-0.5">
-                      <p><strong>Dates:</strong> {formatDateString(checkIn)} to {formatDateString(checkOut)}</p>
-                      <p><strong>Duration:</strong> {nights} {nights === 1 ? "Night" : "Nights"} ({days} Days)</p>
-                      <p><strong>Total Paid:</strong> {formatPrice(totalCost)}</p>
+                    <div className="border-t border-slate-100 pt-4 mb-6 space-y-2 text-xs">
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span>
+                          {isEntireBungalow ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRooms.length})`}
+                        </span>
+                        <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500">
+                        <span>Duration</span>
+                        <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"}</span>
+                      </div>
+                      <div className="border-t border-slate-100/60 pt-2 flex justify-between items-center text-sm font-bold">
+                        <span className="text-slate-800">Total Price</span>
+                        <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
+                      </div>
                     </div>
                   )}
+
+                  {/* Proceed to Payment Step Button */}
                   <button
-                    onClick={resetBooking}
-                    className="mt-3.5 text-xs font-bold text-blue-600 underline cursor-pointer"
+                    onClick={() => setShowPaymentStep(true)}
+                    disabled={!checkIn || !checkOut}
+                    className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                      checkIn && checkOut
+                        ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer active:scale-[0.99]"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
                   >
-                    Make another selection
+                    {selectedRoomIds.length > 0
+                      ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
+                      : "Book Entire Bungalow"}
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                   </button>
+                </>
+              ) : (
+                <div>
+                  <button
+                    onClick={() => setShowPaymentStep(false)}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 mb-4 transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                    Change Rooms or Dates
+                  </button>
+
+                  <h4 className="font-bold text-slate-900 text-base mb-1">Upload Payment Slip</h4>
+                  <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
+                    Attach your bank transfer or deposit slip to submit this manual booking request.
+                  </p>
+
+                  {/* Summary Card */}
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-5 space-y-2 text-xs">
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span className="font-medium">Property:</span>
+                      <span className="font-bold text-slate-900 truncate max-w-[160px]">{bungalow.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span className="font-medium">Selected Rooms:</span>
+                      <span className="font-bold text-slate-900">
+                        {selectedRoomIds.length === 0 
+                          ? "Entire Bungalow" 
+                          : `Room ${selectedRooms.map(r => r.roomNumber).sort().join(", ")}`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span className="font-medium">Stay Dates:</span>
+                      <span className="font-bold text-slate-900">
+                        {formatDateString(checkIn)} - {formatDateString(checkOut)}
+                      </span>
+                    </div>
+                    <div className="border-t border-slate-200/80 pt-2 flex justify-between items-center text-sm">
+                      <span className="font-bold text-slate-800">Total Payable:</span>
+                      <span className="font-extrabold text-blue-600">{formatPrice(totalCost)}</span>
+                    </div>
+                  </div>
+
+                  {/* Payment Slip Upload Component */}
+                  {bookingStatus === "idle" && (
+                    <div className="mb-5">
+                      <PaymentSlipUpload
+                        onUploadComplete={(url) => setPaymentSlipUrl(url)}
+                        value={paymentSlipUrl}
+                      />
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  {bookingStatus === "idle" && (
+                    <button
+                      onClick={handleBooking}
+                      disabled={!paymentSlipUrl}
+                      className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm ${
+                        paymentSlipUrl
+                          ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer active:scale-[0.99]"
+                          : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <span>Submit Reservation</span>
+                      <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    </button>
+                  )}
+
+                  {bookingStatus === "booking" && (
+                    <button
+                      disabled
+                      className="w-full py-4 bg-blue-400 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-wait text-sm"
+                    >
+                      <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
+                      Submitting Reservation...
+                    </button>
+                  )}
+
+                  {bookingStatus === "success" && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center shadow-sm">
+                      <span className="material-symbols-outlined text-4xl text-emerald-600 mb-2">
+                        check_circle
+                      </span>
+                      <h4 className="font-bold text-emerald-900 text-base mb-1">Reservation Pending Approval!</h4>
+                      <p className="text-xs text-emerald-700 leading-relaxed font-medium mb-4">
+                        Your reservation request for <strong>{bungalow.name}</strong> ({bookedRoomNumbers.join(", ")}) has been recorded with status <strong>Pending</strong>.
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <Link
+                          href="/bookings"
+                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+                        >
+                          <span>View in My Reservations</span>
+                          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </Link>
+                        <button
+                          onClick={resetBooking}
+                          className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors py-1 cursor-pointer"
+                        >
+                          Make another selection
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
