@@ -207,7 +207,7 @@ export default function Page() {
       <main className="flex-1 flex overflow-hidden">
         
         {/* Left Column: Agent Status */}
-        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col hidden lg:flex">
+        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col min-h-0 hidden lg:flex">
            <div className="p-6 pb-2">
              <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">System Agents</h2>
            </div>
@@ -259,7 +259,7 @@ export default function Page() {
         </aside>
 
         {/* Center Column: Chat Interface */}
-        <section className="flex-1 flex flex-col bg-[#FDFDFD] relative">
+        <section className="flex-1 flex flex-col min-h-0 bg-[#FDFDFD] relative">
           
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 scroll-smooth">
             <div className="max-w-3xl mx-auto w-full space-y-8">
@@ -424,7 +424,7 @@ export default function Page() {
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 40 }}
-            className="bg-white border-l border-slate-100 flex flex-col shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
+            className="bg-white border-l border-slate-100 flex flex-col min-h-0 shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
           >
              <div className="p-6 pb-4 flex items-center gap-3 border-b border-slate-50">
                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
