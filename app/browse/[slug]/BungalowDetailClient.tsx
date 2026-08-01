@@ -103,15 +103,18 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
       b.status === "CONFIRMED" || b.status === "PENDING"
     );
 
+    const parseLocalDate = (isoString: string) => {
+      const [year, month, day] = isoString.split('T')[0].split('-').map(Number);
+      return new Date(year, month - 1, day);
+    };
+
     return activeBookings.some(booking => {
       if (selectedRoomIds.length > 0 && !selectedRoomIds.includes(booking.roomId)) {
         return false;
       }
       
-      const from = new Date(booking.fromDate);
-      from.setHours(0, 0, 0, 0);
-      const to = new Date(booking.toDate);
-      to.setHours(0, 0, 0, 0);
+      const from = parseLocalDate(booking.fromDate);
+      const to = parseLocalDate(booking.toDate);
 
       return checkTime >= from && checkTime < to;
     });
@@ -129,15 +132,18 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
       b.status === "CONFIRMED" || b.status === "PENDING"
     );
 
+    const parseLocalDate = (isoString: string) => {
+      const [year, month, day] = isoString.split('T')[0].split('-').map(Number);
+      return new Date(year, month - 1, day);
+    };
+
     return activeBookings.some(booking => {
       if (roomIds.length > 0 && !roomIds.includes(booking.roomId)) {
         return false;
       }
 
-      const from = new Date(booking.fromDate);
-      from.setHours(0, 0, 0, 0);
-      const to = new Date(booking.toDate);
-      to.setHours(0, 0, 0, 0);
+      const from = parseLocalDate(booking.fromDate);
+      const to = parseLocalDate(booking.toDate);
 
       return checkStart < to && checkEnd > from;
     });
@@ -223,6 +229,10 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
     setBookingStatus("booking");
     
     try {
+      const formatYYYYMMDD = (d: Date) => {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      };
+
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
@@ -231,8 +241,8 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
         body: JSON.stringify({
           circuitBungalowId: bungalow.id,
           roomIds: selectedRoomIds,
-          fromDate: checkIn.toISOString(),
-          toDate: checkOut.toISOString(),
+          fromDate: formatYYYYMMDD(checkIn),
+          toDate: formatYYYYMMDD(checkOut),
           totalCost: totalCost,
           paymentSlipUrl: paymentSlipUrl,
           userId: activeUser?.id,

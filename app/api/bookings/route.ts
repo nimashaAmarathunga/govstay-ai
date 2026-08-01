@@ -64,10 +64,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No rooms found to book." }, { status: 400 });
     }
 
-    const checkStart = new Date(fromDate);
-    checkStart.setHours(0, 0, 0, 0);
-    const checkEnd = new Date(toDate);
-    checkEnd.setHours(0, 0, 0, 0);
+    // fromDate and toDate are expected to be in YYYY-MM-DD format from the frontend.
+    // We append T00:00:00.000Z to parse them strictly as midnight UTC dates.
+    const checkStart = new Date(fromDate.includes('T') ? fromDate : `${fromDate}T00:00:00.000Z`);
+    const checkEnd = new Date(toDate.includes('T') ? toDate : `${toDate}T00:00:00.000Z`);
 
     // Validate that none of the rooms are already booked for the given dates
     for (const room of roomsToBook) {
