@@ -123,12 +123,10 @@ export default function BookingsPage() {
   };
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
     const load = async () => {
       await fetchBookings();
     };
     load();
-    return () => clearTimeout(timeoutId);
   }, [activeUser]);
 
   useEffect(() => {
