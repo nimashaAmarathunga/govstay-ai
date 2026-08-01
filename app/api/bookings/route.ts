@@ -3,9 +3,15 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    const whereClause = userId ? { userId } : {};
+
     const bookings = await prisma.booking.findMany({
+      where: whereClause,
       include: {
         circuitBungalow: true,
         room: true,

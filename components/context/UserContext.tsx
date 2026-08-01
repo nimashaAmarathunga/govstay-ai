@@ -72,6 +72,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         if (savedId) {
           const found = data.find((u) => u.id === savedId) ?? null;
           setActiveUserState(found);
+        } else {
+          // Default to employee with ID 245503B
+          const defaultUser = data.find((u) => u.empId === "245503B") ?? null;
+          if (defaultUser) {
+            setActiveUserState(defaultUser);
+            localStorage.setItem(STORAGE_KEY, defaultUser.id);
+          }
         }
       } catch {
         // localStorage unavailable

@@ -38,13 +38,17 @@ const INITIAL_BOOKINGS = [
   }
 ];
 
+import { useUser } from "@/components/context/UserContext";
+
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState<any[]>(INITIAL_BOOKINGS);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const { activeUser } = useUser();
 
   const fetchBookings = async () => {
+    if (!activeUser) return;
     try {
-      const res = await fetch("/api/bookings");
+      const res = await fetch(`/api/bookings?userId=${activeUser.id}`);
       if (!res.ok) throw new Error("Failed to fetch bookings");
       const data = await res.json();
       
@@ -111,7 +115,7 @@ export default function BookingsPage() {
         };
       });
 
-      setBookings([...formattedDbBookings, ...INITIAL_BOOKINGS]);
+      setBookings(formattedDbBookings);
     } catch (err) {
       console.error("Error fetching bookings:", err);
     }
@@ -119,7 +123,7 @@ export default function BookingsPage() {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [activeUser]);
 
   const handleCancelBooking = async (id: string) => {
     if (id.startsWith("BKG")) {
