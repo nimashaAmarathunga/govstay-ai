@@ -12,45 +12,23 @@ interface PropertyCard {
 interface Message {
   id: string;
   sender: "user" | "ai";
-  agent?: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent";
+  agent?: string;
   text: string;
   timestamp: string;
   propertyCard?: PropertyCard;
 }
 
 export default function Page() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "user",
-      text: "Find me a quiet bungalow in Nuwara Eliya for next weekend.",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "2",
-      sender: "ai",
-      agent: "Verification Agent",
-      text: "Identity verified. Accessing government residencies...",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "3",
-      sender: "ai",
-      agent: "Preference Agent",
-      text: "Based on your preference for garden views, I've found the Nuwara Eliya Rest House. It offers a secluded setting with colonial architecture and extensive landscaped grounds.",
-      timestamp: "10:43 AM",
-      propertyCard: {
-        title: "Nuwara Eliya Rest House",
-        suite: "Superior Garden Suite",
-        price: "Rs. 18,500",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
-      },
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [inputText, setInputText] = useState("");
+  const [attachment, setAttachment] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
+  
+  const [isBookingMode, setIsBookingMode] = useState(false);
+  const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -71,85 +49,129 @@ export default function Page() {
     return `${hours}:${minutes} ${ampm}`;
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      const base64Data = base64.split(',')[1] || base64;
+      setAttachment(base64Data);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend !== undefined ? textToSend.trim() : inputText.trim();
-    if (!text) return;
+    if (!text && !attachment) return;
 
     if (textToSend === undefined) {
       setInputText("");
     }
+    
+    const currentAttachment = attachment;
+    setAttachment(null); // clear after sending
 
     const time = formatTime();
+
+    const userMsgId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const aiMsgId = `ai-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     // 1. Add User Message
     setMessages((prev) => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: userMsgId,
         sender: "user",
-        text,
+        text: currentAttachment ? `[Attachment Uploaded]\n${text}` : text,
         timestamp: time,
       },
     ]);
-
-    // 2. Add AI reply simulation
-    setTimeout(() => {
-      const lowerText = text.toLowerCase();
-      let replyText = "";
-      let activeAgent: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent" = "Preference Agent";
-
-      if (lowerText.includes("amenities") || lowerText.includes("tell me more")) {
-        replyText = "The Nuwara Eliya Rest House features a scenic garden veranda, fireplace heating, premium Ceylon tea lounge access, high-speed Wi-Fi, and personalized steward service.";
-      } else if (lowerText.includes("other") || lowerText.includes("nearby") || lowerText.includes("bungalow")) {
-        replyText = "Other nearby government options: Nuwara Eliya General Bungalow (Rs. 15,000) and Sri Lanka Post Heritage Suite (Rs. 16,500). Let me know if you want me to search them.";
-      } else if (lowerText.includes("confirm") || lowerText.includes("book")) {
-        triggerConfirmBooking();
-        return;
-      } else {
-        replyText = `I have noted: "${text}". Feel free to confirm your booking or ask for more details.`;
-      }
-
-      setMessages((prev) => [
+    
+    // Add empty AI message to stream into
+    setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: aiMsgId,
           sender: "ai",
-          agent: activeAgent,
-          text: replyText,
-          timestamp: formatTime(),
+          text: "",
+          timestamp: time,
         },
-      ]);
-    }, 800);
+    ]);
+
+    try {
+        const systemContext = isBookingMode 
+          ? `\n\n(System Context - Current Form State: ${JSON.stringify(uiState)})`
+          : "";
+          
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                text: text + systemContext, 
+                session_id: "demo-session-govstay",
+                attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
+            })
+        });
+
+        if (!res.body) return;
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunkStr = decoder.decode(value, { stream: true });
+            const lines = chunkStr.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        
+                        // Small hack: if agent says "booking created successfully" or "confirmed", update UI right column
+                        if (data.text?.toLowerCase().includes("pending (awaiting approval)")) {
+                          setBookingStatus("confirming");
+                        }
+                        if (data.text?.toLowerCase().includes("confirmed")) {
+                          setBookingStatus("confirmed");
+                        }
+                        if (data.agent === "booking_agent" || data.text?.toLowerCase().includes("booking")) {
+                          setIsBookingMode(true);
+                        }
+                        if (data.ui_state) {
+                          setUiState(prev => ({ ...prev, ...data.ui_state }));
+                        }
+                        
+                        setMessages((prev) => 
+                            prev.map(m => m.id === aiMsgId ? {
+                                ...m,
+                                text: m.text + (data.text || ""),
+                                agent: data.agent || m.agent
+                            } : m)
+                        );
+                    } catch (e) {
+                        setMessages((prev) => 
+                            prev.map(m => m.id === aiMsgId ? {
+                                ...m,
+                                text: m.text + line.slice(6)
+                            } : m)
+                        );
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Chat error", err);
+    }
   };
 
   const triggerConfirmBooking = () => {
     if (bookingStatus !== "draft") return;
-
     setBookingStatus("confirming");
-
     setTimeout(() => {
       setBookingStatus("confirmed");
-      const time = formatTime();
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          sender: "ai",
-          agent: "Booking Agent",
-          text: "Booking finalized. Your reservation at Nuwara Eliya Rest House is locked in.",
-          timestamp: time,
-        },
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "ai",
-          agent: "Notification Agent",
-          text: whatsappEnabled
-            ? "WhatsApp confirmation sent to your registered number."
-            : "Booking confirmation sent to your email.",
-          timestamp: time,
-        },
-      ]);
     }, 1500);
   };
 
@@ -241,17 +263,26 @@ export default function Page() {
                    {message.agent && (
                      <div className="flex items-center gap-1.5 ml-2 mb-0.5">
                        <span className="material-symbols-outlined text-[14px] text-blue-600">
-                           {message.agent === "Verification Agent" ? "verified_user" : 
-                            message.agent === "Preference Agent" ? "psychology" : 
-                            message.agent === "Booking Agent" ? "event_available" : "notifications_active"}
+                           {message.agent.toLowerCase().includes("verification") ? "verified_user" : 
+                            message.agent.toLowerCase().includes("document") ? "description" : 
+                            message.agent.toLowerCase().includes("approval") ? "fact_check" : 
+                            message.agent.toLowerCase().includes("booking") ? "event_available" : "psychology"}
                        </span>
                        <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide">
-                         {message.agent}
+                         {message.agent.replace(/\[|\]/g, "").trim()}
                        </span>
                      </div>
                    )}
                    <div className="max-w-[75%] bg-white border border-slate-100 px-5 py-3.5 rounded-3xl rounded-tl-sm shadow-sm text-slate-700">
-                     <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     {message.text ? (
+                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     ) : (
+                       <div className="flex gap-1 items-center h-6">
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                       </div>
+                     )}
 
                      {message.propertyCard && (
                        <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-shadow">
@@ -295,13 +326,14 @@ export default function Page() {
                   <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
                      ✨ Tell me about amenities
                   </button>
-                  <button onClick={() => handleSendMessage("Any other bungalows nearby?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
-                     🔍 Show alternatives
+                  <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
+                     🔍 Search bungalows
                   </button>
                </div>
                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full p-1.5 pr-2 focus-within:bg-white focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100 transition-all">
-                 <button className="w-10 h-10 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-[22px]">add_circle</span>
+                 <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
+                 <button onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${attachment ? 'text-blue-600 bg-blue-100' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}>
+                    <span className="material-symbols-outlined text-[22px]">attach_file</span>
                  </button>
                  <input
                    className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 py-2"
@@ -313,7 +345,7 @@ export default function Page() {
                  />
                  <button
                    onClick={() => handleSendMessage()}
-                   disabled={!inputText.trim()}
+                   disabled={(!inputText.trim() && !attachment)}
                    className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm cursor-pointer"
                  >
                    <span className="material-symbols-outlined text-[18px]">send</span>
@@ -323,33 +355,53 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Right Column: Booking Details */}
+        {/* Right Column: Dynamic Booking Form */}
+        {isBookingMode && (
         <aside className="w-80 bg-white border-l border-slate-200 flex flex-col">
            <div className="p-5 border-b border-slate-100 flex items-center gap-2">
-             <span className="material-symbols-outlined text-slate-400">receipt_long</span>
-             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Your Selection</h2>
+             <span className="material-symbols-outlined text-slate-400">edit_document</span>
+             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Booking Form</h2>
            </div>
            
-           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-6">
+           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-4">
               
-              {/* Selected Accommodation info */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                 <h3 className="font-bold text-slate-800 text-lg mb-1">Nuwara Eliya Rest House</h3>
-                 <p className="text-sm text-slate-500 mb-4">Superior Garden Suite</p>
-                 
-                 <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">calendar_month</span>
-                       <div>
-                          <p className="font-medium">Sept 14 - Sept 16</p>
-                          <p className="text-xs text-slate-500">2 Nights</p>
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">group</span>
-                       <p className="font-medium">2 Guests</p>
-                    </div>
-                 </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Employee ID</label>
+                 <input 
+                   type="text" 
+                   value={uiState.emp_id || ""} 
+                   onChange={e => setUiState({...uiState, emp_id: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                   placeholder="e.g. EMP-123"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Room Number</label>
+                 <input 
+                   type="text" 
+                   value={uiState.room_number || ""} 
+                   onChange={e => setUiState({...uiState, room_number: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                   placeholder="e.g. OLD-101"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Check-in Date</label>
+                 <input 
+                   type="date" 
+                   value={uiState.from_date || ""} 
+                   onChange={e => setUiState({...uiState, from_date: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                 <label className="text-xs font-bold text-slate-500 uppercase">Check-out Date</label>
+                 <input 
+                   type="date" 
+                   value={uiState.to_date || ""} 
+                   onChange={e => setUiState({...uiState, to_date: e.target.value})}
+                   className="p-2 border border-slate-200 rounded-lg text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 outline-none transition-all"
+                 />
               </div>
 
               {/* Action / Checkout Card */}
@@ -360,21 +412,6 @@ export default function Page() {
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' : bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
                        {bookingStatus}
                     </span>
-                 </div>
-
-                 <div className="space-y-2 text-sm">
-                    <div className="flex justify-between text-white/80">
-                       <span>Rs. 18,500 x 2 nights</span>
-                       <span>Rs. 37,000</span>
-                    </div>
-                    <div className="flex justify-between text-white/80">
-                       <span>Service Fee</span>
-                       <span>Rs. 1,200</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-white/10">
-                       <span>Total</span>
-                       <span className="text-emerald-400">Rs. 38,200</span>
-                    </div>
                  </div>
 
                  <div className="flex items-center justify-between py-2 mt-2">
@@ -401,7 +438,7 @@ export default function Page() {
                      onClick={triggerConfirmBooking}
                      className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                    >
-                     Confirm Booking
+                     Submit Form
                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                    </button>
                  ) : bookingStatus === "confirming" ? (
@@ -424,6 +461,7 @@ export default function Page() {
               </div>
            </div>
         </aside>
+        )}
       </main>
     </div>
   );
