@@ -48,7 +48,7 @@ function RecenterMap({ lat, lng, zoom = 13 }: { lat: number; lng: number; zoom?:
 }
 
 const AttractionIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -57,7 +57,7 @@ const AttractionIcon = L.icon({
 });
 
 const ActiveAttractionIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [30, 48],
   iconAnchor: [15, 48],
@@ -175,7 +175,7 @@ export default function InteractiveMap({
               <Tooltip
                 permanent
                 direction="bottom"
-                className={`glass-tooltip !bg-white/90 !border ${isSelected ? '!border-amber-500 !text-amber-900 font-extrabold scale-110' : '!border-white/20 !text-purple-900 font-bold'} text-[10px] px-2 py-0.5 !rounded-md backdrop-blur-md mt-1 shadow-md transition-all`}
+                className={`glass-tooltip !bg-white/90 !border ${isSelected ? '!border-red-500 !text-red-900 font-extrabold scale-110' : '!border-white/20 !text-black font-bold'} text-[10px] px-2 py-0.5 !rounded-md backdrop-blur-md mt-1 shadow-md transition-all`}
                 opacity={1}
               >
                 <span className="drop-shadow-sm">{attraction.title}</span>
@@ -190,7 +190,7 @@ export default function InteractiveMap({
                       <img src={attraction.thumbnail} alt={attraction.title} className="w-full h-full object-cover rounded-lg" />
                     </div>
                   )}
-                  <h3 className="font-bold text-sm text-purple-700 leading-tight mb-1 px-1">{attraction.title}</h3>
+                  <h3 className="font-bold text-sm text-black leading-tight mb-1 px-1">{attraction.title}</h3>
                   {attraction.extract && (
                     <p className="text-[11px] text-slate-600 mb-2 px-1 line-clamp-3 leading-snug">{attraction.extract}</p>
                   )}

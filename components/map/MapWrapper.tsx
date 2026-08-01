@@ -335,7 +335,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
               {canScrollLeft && (
                 <button
                   onClick={handleScrollLeft}
-                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-purple-600 rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
+                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-black rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
                   title="Scroll Left"
                 >
                   <span className="material-symbols-outlined text-xl">chevron_left</span>
@@ -353,14 +353,13 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                     <button
                       key={attraction.id}
                       onClick={() => handleAttractionClick(attraction)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${
-                        isSelected
-                          ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-400 scale-105"
-                          : "bg-white/95 backdrop-blur-md text-purple-950 border-purple-100 hover:bg-purple-50 hover:border-purple-300"
-                      }`}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${isSelected
+                        ? "bg-red-600 text-white border-red-700 ring-2 ring-red-400 scale-105"
+                        : "bg-white/95 backdrop-blur-md text-black border-slate-300 hover:bg-slate-50 hover:border-slate-400"
+                        }`}
                       title={`Click to zoom in on ${attraction.title}`}
                     >
-                      <span className="material-symbols-outlined text-[16px] text-amber-400">
+                      <span className="material-symbols-outlined text-[16px] text-red-500">
                         {isSelected ? "zoom_in" : "location_on"}
                       </span>
                       <span className="truncate max-w-[150px]">{attraction.title}</span>
@@ -372,7 +371,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
               {canScrollRight && (
                 <button
                   onClick={handleScrollRight}
-                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-purple-600 rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
+                  className="w-9 h-9 flex items-center justify-center bg-white/95 backdrop-blur-md hover:bg-white text-slate-700 hover:text-black rounded-full shadow-lg border border-slate-200 cursor-pointer shrink-0 transition-all active:scale-95 animate-fade-in"
                   title="Scroll Right"
                 >
                   <span className="material-symbols-outlined text-xl">chevron_right</span>
