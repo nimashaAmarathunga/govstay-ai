@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const INITIAL_BOOKINGS = [
   {
     id: "BKG-2024-892",
+    bookingId: "BKG-2024-892",
     title: "Nuwara Eliya Rest House",
     date: "Sept 14 - Sept 16, 2024",
     status: "Confirmed",
@@ -13,6 +14,7 @@ const INITIAL_BOOKINGS = [
   },
   {
     id: "BKG-2024-710",
+    bookingId: "BKG-2024-710",
     title: "Galle Fort Heritage Bungalow",
     date: "Aug 02 - Aug 05, 2024",
     status: "Completed",
@@ -21,6 +23,7 @@ const INITIAL_BOOKINGS = [
   },
   {
     id: "BKG-2023-112",
+    bookingId: "BKG-2023-112",
     title: "Kandy Lake View Circuit",
     date: "Dec 10 - Dec 12, 2023",
     status: "Completed",
@@ -30,13 +33,121 @@ const INITIAL_BOOKINGS = [
 ];
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
+  const [bookings, setBookings] = useState<any[]>(INITIAL_BOOKINGS);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 
-  const handleCancelBooking = (id: string) => {
-    // We update the status to "Cancelled" instead of removing it to keep the history
-    setBookings(bookings.map(b => b.id === id ? { ...b, status: "Cancelled" } : b));
-    setMenuOpenId(null);
+  const fetchBookings = async () => {
+    try {
+      const res = await fetch("/api/bookings");
+      if (!res.ok) throw new Error("Failed to fetch bookings");
+      const data = await res.json();
+      
+      // Group bookings that were created together
+      const groups: { [key: string]: any[] } = {};
+      (data || []).forEach((b: any) => {
+        const fromTime = new Date(b.fromDate).getTime();
+        const toTime = new Date(b.toDate).getTime();
+        const createdTime = new Date(b.createdAt).getTime();
+
+        let foundGroupKey = null;
+        for (const key of Object.keys(groups)) {
+          const firstInGroup = groups[key][0];
+          const grpFromTime = new Date(firstInGroup.fromDate).getTime();
+          const grpToTime = new Date(firstInGroup.toDate).getTime();
+          const grpCreatedTime = new Date(firstInGroup.createdAt).getTime();
+
+          if (
+            firstInGroup.circuitBungalowId === b.circuitBungalowId &&
+            grpFromTime === fromTime &&
+            grpToTime === toTime &&
+            Math.abs(grpCreatedTime - createdTime) < 5000 // 5 seconds margin
+          ) {
+            foundGroupKey = key;
+            break;
+          }
+        }
+
+        if (foundGroupKey) {
+          groups[foundGroupKey].push(b);
+        } else {
+          groups[b.id] = [b];
+        }
+      });
+
+      const formattedDbBookings = Object.values(groups).map((group: any[]) => {
+        const first = group[0];
+        const from = new Date(first.fromDate);
+        const to = new Date(first.toDate);
+        const dateStr = `${from.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${to.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+
+        let displayStatus = "Pending";
+        if (first.status === "CONFIRMED") displayStatus = "Confirmed";
+        if (first.status === "CANCELLED") displayStatus = "Cancelled";
+        if (first.status === "REJECTED") displayStatus = "Rejected";
+
+        const totalCost = group.reduce((sum, b) => sum + (b.totalCost || 0), 0);
+        const roomNumbers = group.map((b) => b.room.roomNumber).sort().join(", ");
+        
+        const isEntire = group.length === first.circuitBungalow.noOfRooms;
+        const title = isEntire 
+          ? `${first.circuitBungalow.name} (Entire Bungalow)`
+          : `${first.circuitBungalow.name} (Room${group.length > 1 ? "s" : ""}: ${roomNumbers})`;
+
+        return {
+          id: first.id,
+          ids: group.map(b => b.id),
+          bookingId: first.bookingId || first.id,
+          title,
+          date: dateStr,
+          status: displayStatus,
+          amount: `Rs. ${totalCost.toLocaleString()}`,
+          image: first.circuitBungalow.image,
+          paymentSlipUrl: first.paymentSlipUrl,
+        };
+      });
+
+      // Merge and show real database bookings first, followed by mock history
+      setBookings([...formattedDbBookings, ...INITIAL_BOOKINGS]);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const handleCancelBooking = async (id: string) => {
+    if (id.startsWith("BKG")) {
+      // Local fallback for mock bookings
+      setBookings(bookings.map(b => b.id === id ? { ...b, status: "Cancelled" } : b));
+      setMenuOpenId(null);
+      return;
+    }
+
+    const bookingGroup = bookings.find(b => b.id === id);
+    const idsToCancel = bookingGroup && bookingGroup.ids ? bookingGroup.ids : [id];
+
+    try {
+      await Promise.all(idsToCancel.map((bookingId: string) => 
+        fetch("/api/bookings", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: bookingId,
+            status: "CANCELLED",
+          }),
+        })
+      ));
+
+      fetchBookings();
+      setMenuOpenId(null);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to cancel reservation.");
+    }
   };
 
   return (
@@ -64,7 +175,20 @@ export default function BookingsPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-800 text-sm">{booking.title}</h3>
-                    <p className="text-xs text-slate-500 font-mono">{booking.id}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-slate-500 font-mono">{booking.bookingId || booking.id}</p>
+                      {booking.paymentSlipUrl && (
+                        <a
+                          href={booking.paymentSlipUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/80 hover:bg-emerald-100 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[13px]">attach_file</span>
+                          Slip Attached
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="col-span-3 text-sm text-slate-600 font-medium">
@@ -76,8 +200,9 @@ export default function BookingsPage() {
                 <div className="col-span-2 flex items-center justify-between relative">
                   <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                     booking.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-700' : 
+                    booking.status === 'Pending' ? 'bg-amber-100 text-amber-700' : 
                     booking.status === 'Completed' ? 'bg-slate-100 text-slate-600' : 
-                    'bg-red-100 text-red-700' // For Cancelled
+                    'bg-red-100 text-red-700' // For Cancelled or Rejected
                   }`}>
                     {booking.status}
                   </span>
@@ -89,19 +214,30 @@ export default function BookingsPage() {
                   >
                     <span className="material-symbols-outlined text-[20px]">more_vert</span>
                   </button>
-
+ 
                   {/* Dropdown Menu */}
                   {menuOpenId === booking.id && (
                     <div className="absolute right-8 top-8 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-fade-in">
+                      {booking.paymentSlipUrl && (
+                        <a
+                          href={booking.paymentSlipUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                          View Payment Slip
+                        </a>
+                      )}
                       <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer">
-                        <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                        <span className="material-symbols-outlined text-[18px]">description</span>
                         View Receipt
                       </button>
                       <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 cursor-pointer">
                         <span className="material-symbols-outlined text-[18px]">contact_support</span>
                         Contact Support
                       </button>
-                      {booking.status === "Confirmed" && (
+                      {(booking.status === "Confirmed" || booking.status === "Pending") && (
                         <>
                           <div className="h-px bg-slate-100 my-1"></div>
                           <button 

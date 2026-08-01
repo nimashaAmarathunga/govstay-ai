@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import DateRangePicker from "@/components/booking/DateRangePicker";
+import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 
 export type DbRoom = {
   id: string;
@@ -21,6 +22,14 @@ export type DbCaretaker = {
   emailAddress?: string | null;
 };
 
+export type DbBooking = {
+  id: string;
+  roomId: string;
+  fromDate: string;
+  toDate: string;
+  status: "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
+};
+
 export type DbBungalowDetails = {
   id: string;
   slug: string;
@@ -37,6 +46,7 @@ export type DbBungalowDetails = {
   capacity: number;
   caretaker?: DbCaretaker | null;
   rooms: DbRoom[];
+  bookings?: DbBooking[];
 };
 
 interface BungalowDetailClientProps {
@@ -64,6 +74,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const [roomFilter, setRoomFilter] = useState<"ALL" | "AC" | "NON_AC">("ALL");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
   const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
+  const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return `Rs. ${price.toLocaleString()}`;
@@ -77,6 +88,75 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
       year: "numeric",
     });
   };
+
+  const isDateBooked = (date: Date) => {
+    if (!bungalow.bookings || bungalow.bookings.length === 0) return false;
+
+    const checkTime = new Date(date);
+    checkTime.setHours(0, 0, 0, 0);
+
+    const activeBookings = bungalow.bookings.filter(b => 
+      b.status === "CONFIRMED" || b.status === "PENDING"
+    );
+
+    return activeBookings.some(booking => {
+      if (selectedRoomIds.length > 0 && !selectedRoomIds.includes(booking.roomId)) {
+        return false;
+      }
+      
+      const from = new Date(booking.fromDate);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(booking.toDate);
+      to.setHours(0, 0, 0, 0);
+
+      return checkTime >= from && checkTime < to;
+    });
+  };
+
+  const checkDatesOverlap = (start: Date, end: Date, roomIds: string[]) => {
+    if (!bungalow.bookings || bungalow.bookings.length === 0) return false;
+
+    const checkStart = new Date(start);
+    checkStart.setHours(0, 0, 0, 0);
+    const checkEnd = new Date(end);
+    checkEnd.setHours(0, 0, 0, 0);
+
+    const activeBookings = bungalow.bookings.filter(b => 
+      b.status === "CONFIRMED" || b.status === "PENDING"
+    );
+
+    return activeBookings.some(booking => {
+      if (roomIds.length > 0 && !roomIds.includes(booking.roomId)) {
+        return false;
+      }
+
+      const from = new Date(booking.fromDate);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(booking.toDate);
+      to.setHours(0, 0, 0, 0);
+
+      return checkStart < to && checkEnd > from;
+    });
+  };
+
+  // Find first available dates on mount if tomorrow/day-after-tomorrow are booked
+  useEffect(() => {
+    if (checkIn && checkOut && checkDatesOverlap(checkIn, checkOut, [])) {
+      let tempCheckIn = getTomorrow();
+      let tempCheckOut = getDayAfterTomorrow();
+      for (let i = 0; i < 365; i++) {
+        if (!checkDatesOverlap(tempCheckIn, tempCheckOut, [])) {
+          setCheckIn(tempCheckIn);
+          setCheckOut(tempCheckOut);
+          break;
+        }
+        tempCheckIn = new Date(tempCheckIn);
+        tempCheckIn.setDate(tempCheckIn.getDate() + 1);
+        tempCheckOut = new Date(tempCheckIn);
+        tempCheckOut.setDate(tempCheckOut.getDate() + 1);
+      }
+    }
+  }, []);
 
   let nights = 0;
   let days = 0;
@@ -102,33 +182,84 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   });
 
   const toggleRoomSelection = (roomId: string) => {
-    setSelectedRoomIds((prev) =>
-      prev.includes(roomId) ? prev.filter((id) => id !== roomId) : [...prev, roomId]
-    );
+    const updatedRoomIds = selectedRoomIds.includes(roomId)
+      ? selectedRoomIds.filter((id) => id !== roomId)
+      : [...selectedRoomIds, roomId];
+    
+    if (checkIn && checkOut) {
+      const hasOverlap = checkDatesOverlap(checkIn, checkOut, updatedRoomIds);
+      if (hasOverlap) {
+        setCheckIn(null);
+        setCheckOut(null);
+        alert("The selected dates are already taken for the newly selected room configuration. Please pick new dates.");
+      }
+    }
+    setSelectedRoomIds(updatedRoomIds);
   };
 
   const selectAllRooms = () => {
-    if (selectedRoomIds.length === bungalow.rooms.length) {
-      setSelectedRoomIds([]);
-    } else {
-      setSelectedRoomIds(bungalow.rooms.map((r) => r.id));
+    let updatedRoomIds: string[] = [];
+    if (selectedRoomIds.length !== bungalow.rooms.length) {
+      updatedRoomIds = bungalow.rooms.map((r) => r.id);
     }
+
+    if (checkIn && checkOut) {
+      const hasOverlap = checkDatesOverlap(checkIn, checkOut, updatedRoomIds);
+      if (hasOverlap) {
+        setCheckIn(null);
+        setCheckOut(null);
+        alert("The selected dates are already taken for the newly selected room configuration. Please pick new dates.");
+      }
+    }
+    setSelectedRoomIds(updatedRoomIds);
   };
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
+    if (!checkIn || !checkOut) return;
     setBookingStatus("booking");
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          circuitBungalowId: bungalow.id,
+          roomIds: selectedRoomIds,
+          fromDate: checkIn.toISOString(),
+          toDate: checkOut.toISOString(),
+          totalCost: totalCost,
+          paymentSlipUrl: paymentSlipUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to make reservation");
+      }
+
       setBookingStatus("success");
       const selectedRoomNums = bungalow.rooms
         .filter((r) => selectedRoomIds.includes(r.id))
         .map((r) => r.roomNumber);
       setBookedRoomNumbers(selectedRoomNums.length > 0 ? selectedRoomNums : ["Entire Bungalow"]);
-    }, 1200);
+      
+      // Reload page after success to refresh bookings calendar
+      setTimeout(() => {
+        window.location.reload();
+      }, 2500);
+      
+    } catch (error: any) {
+      alert(error.message || "An error occurred while booking. Please try again.");
+      setBookingStatus("idle");
+    }
   };
 
   const resetBooking = () => {
     setBookingStatus("idle");
     setSelectedRoomIds([]);
+    setPaymentSlipUrl(null);
   };
 
   const acRoomsCount = bungalow.rooms.filter((r) => r.roomType === "AC").length;
@@ -496,6 +627,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     setCheckIn(start);
                     setCheckOut(end);
                   }}
+                  isDateDisabled={isDateBooked}
                 />
               </div>
 
@@ -542,6 +674,16 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     <span className="text-slate-800">Total Price</span>
                     <span className="text-lg text-blue-600">{formatPrice(totalCost)}</span>
                   </div>
+                </div>
+              )}
+
+              {/* Payment Slip Upload */}
+              {bookingStatus === "idle" && (
+                <div className="mb-6">
+                  <PaymentSlipUpload
+                    onUploadComplete={(url) => setPaymentSlipUrl(url)}
+                    value={paymentSlipUrl}
+                  />
                 </div>
               )}
 

@@ -22,7 +22,12 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
       rooms: {
         orderBy: { roomNumber: 'asc' }
       },
-      caretaker: true
+      caretaker: true,
+      bookings: {
+        where: {
+          status: { in: ['CONFIRMED', 'PENDING'] }
+        }
+      }
     }
   });
 
@@ -56,6 +61,13 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
       items: r.items,
       noOfBeds: r.noOfBeds,
       price: r.price
+    })),
+    bookings: bungalow.bookings.map(bk => ({
+      id: bk.id,
+      roomId: bk.roomId,
+      fromDate: bk.fromDate.toISOString(),
+      toDate: bk.toDate.toISOString(),
+      status: bk.status
     }))
   };
 

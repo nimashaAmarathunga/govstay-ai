@@ -1,10 +1,9 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Tooltip, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Attraction } from "./MapWrapper";
 
 // Fix Leaflet's default icon path issues in Next.js/Webpack
 const iconRetinaUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png";
@@ -36,18 +35,15 @@ export type BungalowMarker = {
   department: string;
 };
 
-import { useRouter } from "next/navigation";
-import { Attraction } from "./MapWrapper";
-
-// Component to recenter map when active marker changes
-function RecenterMap({ lat, lng }: { lat: number; lng: number }) {
+// Component to recenter map smoothly when active marker/attraction changes
+function RecenterMap({ lat, lng, zoom = 13 }: { lat: number; lng: number; zoom?: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lng], map.getZoom(), {
+    map.flyTo([lat, lng], zoom, {
       animate: true,
-      duration: 1,
+      duration: 1.2,
     });
-  }, [lat, lng, map]);
+  }, [lat, lng, zoom, map]);
   return null;
 }
 
@@ -60,18 +56,30 @@ const AttractionIcon = L.icon({
   shadowSize: [41, 41]
 });
 
-export default function InteractiveMap({ 
+const ActiveAttractionIcon = L.icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [30, 48],
+  iconAnchor: [15, 48],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+export default function InteractiveMap({
   bungalows,
   onBungalowClick,
   attractions = [],
-  selectedBungalow
-}: { 
-  bungalows: BungalowMarker[],
-  onBungalowClick?: (b: BungalowMarker) => void,
-  attractions?: Attraction[],
-  selectedBungalow?: BungalowMarker | null
+  selectedBungalow,
+  selectedAttraction,
+  onAttractionClick,
+}: {
+  bungalows: BungalowMarker[];
+  onBungalowClick?: (b: BungalowMarker) => void;
+  attractions?: Attraction[];
+  selectedBungalow?: BungalowMarker | null;
+  selectedAttraction?: Attraction | null;
+  onAttractionClick?: (attraction: Attraction) => void;
 }) {
-  const [activeBungalow, setActiveBungalow] = useState<BungalowMarker | null>(null);
   const router = useRouter();
 
   // Filter out bungalows without valid coordinates
@@ -86,13 +94,13 @@ export default function InteractiveMap({
 
   return (
     <div className="absolute inset-0 z-0">
-      <MapContainer 
-        center={defaultCenter} 
-        zoom={7} 
+      <MapContainer
+        center={defaultCenter}
+        zoom={7}
         minZoom={7}
         maxBounds={slBounds}
         maxBoundsViscosity={1.0}
-        scrollWheelZoom={true} 
+        scrollWheelZoom={true}
         style={{ width: '100%', height: '100%' }}
         className="z-0"
       >
@@ -101,13 +109,18 @@ export default function InteractiveMap({
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
 
-        {selectedBungalow && selectedBungalow.latitude && selectedBungalow.longitude && (
-          <RecenterMap lat={selectedBungalow.latitude} lng={selectedBungalow.longitude} />
+        {/* Dynamic Zooming and Recentering */}
+        {selectedAttraction ? (
+          <RecenterMap lat={selectedAttraction.lat} lng={selectedAttraction.lon} zoom={15} />
+        ) : (
+          selectedBungalow && selectedBungalow.latitude && selectedBungalow.longitude && (
+            <RecenterMap lat={selectedBungalow.latitude} lng={selectedBungalow.longitude} zoom={13} />
+          )
         )}
 
         {validBungalows.map((bungalow) => (
-          <Marker 
-            key={bungalow.id} 
+          <Marker
+            key={bungalow.id}
             position={[bungalow.latitude!, bungalow.longitude!]}
             eventHandlers={{
               click: () => {
@@ -119,10 +132,10 @@ export default function InteractiveMap({
               },
             }}
           >
-            <Tooltip 
-              direction="auto" 
-              offset={[0, -20]} 
-              opacity={1} 
+            <Tooltip
+              direction="auto"
+              offset={[0, -20]}
+              opacity={1}
               className="custom-popup bg-transparent border-0 shadow-none p-0"
             >
               <div className="w-56 p-1 bg-white rounded-2xl shadow-2xl border border-slate-200 pointer-events-none overflow-hidden">
@@ -143,40 +156,50 @@ export default function InteractiveMap({
           </Marker>
         ))}
 
-        {attractions.map((attraction) => (
-          <Marker 
-            key={`attr-${attraction.id}`} 
-            position={[attraction.lat, attraction.lon]}
-            icon={AttractionIcon}
-            zIndexOffset={500}
-          >
-            <Tooltip 
-              permanent 
-              direction="bottom" 
-              className="glass-tooltip !bg-white/40 !border !border-white/20 !shadow-none text-purple-900 font-bold text-[10px] px-2 py-0.5 !rounded-md backdrop-blur-md mt-1"
-              opacity={1}
+        {attractions.map((attraction) => {
+          const isSelected = selectedAttraction?.id === attraction.id;
+          return (
+            <Marker
+              key={`attr-${attraction.id}`}
+              position={[attraction.lat, attraction.lon]}
+              icon={isSelected ? ActiveAttractionIcon : AttractionIcon}
+              zIndexOffset={isSelected ? 1000 : 500}
+              eventHandlers={{
+                click: () => {
+                  if (onAttractionClick) {
+                    onAttractionClick(attraction);
+                  }
+                },
+              }}
             >
-              <span className="drop-shadow-sm">{attraction.title}</span>
-            </Tooltip>
-            <Popup 
-              offset={[0, -20]} 
-              className="custom-popup border-0 shadow-none p-0"
-            >
-              <div className="w-56 p-1 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden m-0">
-                {attraction.thumbnail && (
-                  <div className="w-full h-24 overflow-hidden mb-2">
-                    <img src={attraction.thumbnail} alt={attraction.title} className="w-full h-full object-cover rounded-lg" />
-                  </div>
-                )}
-                <h3 className="font-bold text-sm text-purple-700 leading-tight mb-1 px-1">{attraction.title}</h3>
-                {attraction.extract && (
-                  <p className="text-[11px] text-slate-600 mb-2 px-1 line-clamp-3 leading-snug">{attraction.extract}</p>
-                )}
-                <p className="text-[9px] text-slate-400 px-1 italic">Source: Wikipedia</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              <Tooltip
+                permanent
+                direction="bottom"
+                className={`glass-tooltip !bg-white/90 !border ${isSelected ? '!border-amber-500 !text-amber-900 font-extrabold scale-110' : '!border-white/20 !text-purple-900 font-bold'} text-[10px] px-2 py-0.5 !rounded-md backdrop-blur-md mt-1 shadow-md transition-all`}
+                opacity={1}
+              >
+                <span className="drop-shadow-sm">{attraction.title}</span>
+              </Tooltip>
+              <Popup
+                offset={[0, -20]}
+                className="custom-popup border-0 shadow-none p-0"
+              >
+                <div className="w-56 p-1 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden m-0">
+                  {attraction.thumbnail && (
+                    <div className="w-full h-24 overflow-hidden mb-2">
+                      <img src={attraction.thumbnail} alt={attraction.title} className="w-full h-full object-cover rounded-lg" />
+                    </div>
+                  )}
+                  <h3 className="font-bold text-sm text-purple-700 leading-tight mb-1 px-1">{attraction.title}</h3>
+                  {attraction.extract && (
+                    <p className="text-[11px] text-slate-600 mb-2 px-1 line-clamp-3 leading-snug">{attraction.extract}</p>
+                  )}
+                  <p className="text-[9px] text-slate-400 px-1 italic">Source: Wikipedia</p>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
