@@ -19,8 +19,8 @@ export default async function BrowsePage() {
     orderBy: { name: "asc" },
   });
 
-  const bungalows: DbBungalow[] = bungalowsFromDb.map((b) => {
-    const startingPrice = b.rooms.length > 0 ? Math.min(...b.rooms.map(r => r.price)) : 0;
+  const bungalows: DbBungalow[] = bungalowsFromDb.map((b: any) => {
+    const startingPrice = b.rooms.length > 0 ? Math.min(...b.rooms.map((r: any) => r.price)) : 0;
     
     return {
       id: b.id,
@@ -37,7 +37,7 @@ export default async function BrowsePage() {
       highlights: b.highlights,
       capacity: b.capacity,
       caretaker: b.caretaker,
-      rooms: b.rooms.map(r => ({
+      rooms: b.rooms.map((r: any) => ({
         id: r.id,
         roomNumber: r.roomNumber,
         roomType: r.roomType,
@@ -45,7 +45,7 @@ export default async function BrowsePage() {
         noOfBeds: r.noOfBeds,
         price: r.price
       })),
-      bookings: b.bookings.map(bk => ({
+      bookings: b.bookings.map((bk: any) => ({
         id: bk.id,
         roomId: bk.roomId,
         fromDate: bk.fromDate.toISOString(),
