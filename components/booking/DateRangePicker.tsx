@@ -184,7 +184,7 @@ export default function DateRangePicker({
         <div 
           onClick={() => setIsOpen(true)}
           className={`flex flex-col p-3 border rounded-xl cursor-pointer transition-all ${
-            isOpen ? "border-blue-500 bg-blue-50/10 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
+            isOpen ? "border-slate-900 bg-slate-50 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
           }`}
         >
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
@@ -199,7 +199,7 @@ export default function DateRangePicker({
         <div 
           onClick={() => setIsOpen(true)}
           className={`flex flex-col p-3 border rounded-xl cursor-pointer transition-all ${
-            isOpen ? "border-blue-500 bg-blue-50/10 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
+            isOpen ? "border-slate-900 bg-slate-50 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
           }`}
         >
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
@@ -214,14 +214,14 @@ export default function DateRangePicker({
 
       {/* Dynamic Duration Info Badge */}
       {checkIn && checkOut && (
-        <div className="mt-3 bg-blue-50 border border-blue-100 text-blue-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between animate-fade-in">
+        <div className="mt-3 bg-slate-100 border border-slate-200 text-slate-900 px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between animate-fade-in">
           <span className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px] text-blue-600">bedtime</span>
+            <span className="material-symbols-outlined text-[16px] text-slate-900">bedtime</span>
             <span>{nightsCount} {nightsCount === 1 ? "Night" : "Nights"} Stay</span>
           </span>
           <span className="text-slate-300">|</span>
           <span className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px] text-blue-600">wb_sunny</span>
+            <span className="material-symbols-outlined text-[16px] text-slate-900">wb_sunny</span>
             <span>{daysCount} {daysCount === 1 ? "Day" : "Days"} Total</span>
           </span>
         </div>
@@ -284,14 +284,14 @@ export default function DateRangePicker({
 
               // Highlight range
               if (inRange && !isCellDisabledVal) {
-                cellClass += "bg-blue-50 text-blue-700 rounded-none ";
+                cellClass += "bg-slate-100 text-slate-900 rounded-none ";
               }
 
               // Highlight start/end selection
               if (dateType === "start") {
-                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-blue-600 text-white shadow-md z-10 scale-105 ";
+                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-900 text-white shadow-md z-10 scale-105 ";
               } else if (dateType === "end") {
-                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-blue-600 text-white shadow-md z-10 scale-105 ";
+                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-900 text-white shadow-md z-10 scale-105 ";
               }
 
               // Underline today
@@ -306,7 +306,7 @@ export default function DateRangePicker({
                   <span className={cellClass}>
                     {date.getDate()}
                     {isToday && dateType === null && (
-                      <span className="absolute bottom-1 w-1 h-1 rounded-full bg-blue-600"></span>
+                      <span className="absolute bottom-1 w-1 h-1 rounded-full bg-slate-900"></span>
                     )}
                   </span>
                 </div>
