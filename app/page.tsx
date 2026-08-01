@@ -35,6 +35,7 @@ export default function Page() {
   const [isBookingMode, setIsBookingMode] = useState(false);
   const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
   const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
+  const [sessionId] = useState(() => `demo-session-${Date.now()}`);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -113,7 +114,7 @@ export default function Page() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 text: text + systemContext, 
-                session_id: "demo-session-govstay",
+                session_id: sessionId,
                 attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
             })
         });
