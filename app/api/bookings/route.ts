@@ -3,9 +3,15 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    const whereClause = userId ? { userId } : {};
+
     const bookings = await prisma.booking.findMany({
+      where: whereClause,
       include: {
         circuitBungalow: true,
         room: true,
@@ -24,20 +30,27 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { circuitBungalowId, roomIds, fromDate, toDate, paymentSlipUrl } = body;
+    const { circuitBungalowId, roomIds, fromDate, toDate, paymentSlipUrl, userId } = body;
 
     if (!circuitBungalowId || !fromDate || !toDate) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    // Find a user to associate this booking with.
-    // Try to find kasun_public first, otherwise use the first user in the DB.
-    let user = await prisma.user.findFirst({
-      where: { username: 'kasun_public' }
-    });
-    if (!user) {
-      user = await prisma.user.findFirst();
+    let user;
+    if (userId) {
+      user = await prisma.user.findUnique({ where: { id: userId } });
     }
+    
+    // Fallback if userId is not provided or not found
+    if (!user) {
+      user = await prisma.user.findFirst({
+        where: { username: 'kasun_public' }
+      });
+      if (!user) {
+        user = await prisma.user.findFirst();
+      }
+    }
+
     if (!user) {
       return NextResponse.json({ error: "No user found in the database. Please seed the database first." }, { status: 400 });
     }
