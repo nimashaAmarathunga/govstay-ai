@@ -22,6 +22,11 @@ async function main() {
       role: Role.SUPER_ADMIN,
       placeOfWork: 'Ministry of Public Administration',
       position: 'Director General',
+      nicNumber: '197512345678',
+      mobileNumber: '0771234567',
+      emailAddress: 'superadmin@govstay.lk',
+      residentialAddress: '123 Main St, Colombo 03',
+      preferredDistrict: 'Colombo',
     },
   });
 
@@ -33,6 +38,11 @@ async function main() {
       role: Role.DEPT_ADMIN,
       placeOfWork: 'Ministry of Public Administration',
       position: 'Senior Administrative Officer',
+      nicNumber: '198012345679',
+      mobileNumber: '0711234567',
+      emailAddress: 'sunil@pubadmin.gov.lk',
+      residentialAddress: '456 Kandy Rd, Kadawatha',
+      preferredDistrict: 'Gampaha',
     },
   });
 
@@ -44,6 +54,11 @@ async function main() {
       role: Role.DEPT_ADMIN,
       placeOfWork: "Land Commissioner General's Department",
       position: 'Assistant Commissioner',
+      nicNumber: '198512345680',
+      mobileNumber: '0721234567',
+      emailAddress: 'kamani@lands.gov.lk',
+      residentialAddress: '789 High Level Rd, Nugegoda',
+      preferredDistrict: 'Colombo',
     },
   });
 
@@ -58,6 +73,11 @@ async function main() {
       status: WorkStatus.WORKING,
       placeOfWork: 'Department of Wildlife Conservation',
       position: 'Software Engineer',
+      nicNumber: '199012345681',
+      mobileNumber: '0703009464',
+      emailAddress: 'ravidu@dwc.gov.lk',
+      residentialAddress: '101 Baseline Rd, Colombo 08',
+      preferredDistrict: 'Colombo',
     },
   });
 
@@ -71,6 +91,11 @@ async function main() {
       status: WorkStatus.WORKING,
       placeOfWork: 'Survey Department of Sri Lanka',
       position: 'Senior Surveyor',
+      nicNumber: '198212345682',
+      mobileNumber: '0703009464',
+      emailAddress: 'anura@survey.gov.lk',
+      residentialAddress: '202 Galle Rd, Mount Lavinia',
+      preferredDistrict: 'Colombo',
     },
   });
 
@@ -84,6 +109,11 @@ async function main() {
       status: WorkStatus.RETIRED,
       placeOfWork: 'Department of Agrarian Development',
       position: 'Former Divisional Officer',
+      nicNumber: '195512345683',
+      mobileNumber: '0703009464',
+      emailAddress: 'champa@agrarian.gov.lk',
+      residentialAddress: '303 Peradeniya Rd, Kandy',
+      preferredDistrict: 'Kandy',
     },
   });
 
@@ -97,6 +127,11 @@ async function main() {
       status: WorkStatus.WORKING,
       placeOfWork: 'Department of Irrigation',
       position: 'Executive Engineer',
+      nicNumber: '197812345684',
+      mobileNumber: '0703009464',
+      emailAddress: 'lalith@irrigation.gov.lk',
+      residentialAddress: '404 Kurunegala Rd, Dambulla',
+      preferredDistrict: 'Kurunegala',
     },
   });
 
@@ -106,6 +141,11 @@ async function main() {
       username: 'kasun_public',
       password: 'publicpassword123',
       role: Role.PUBLIC_USER,
+      nicNumber: '199512345685',
+      mobileNumber: '0779998888',
+      emailAddress: 'kasun@gmail.com',
+      residentialAddress: '505 Beach Rd, Negombo',
+      preferredDistrict: 'Gampaha',
     },
   });
 
@@ -216,9 +256,11 @@ async function main() {
     },
   });
 
-  await prisma.room.create({
-    data: { roomNumber: 'BAN-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], price: 3000.0, circuitBungalowId: ban1.id },
-  });
+  for (let i = 1; i <= 3; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `BAN-0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Geyser', 'Ensuite Bathroom'], price: 3000.0, circuitBungalowId: ban1.id },
+    });
+  }
 
   // 4. Jaffna Holiday Rest
   const jafRest = await prisma.circuitBungalow.create({
@@ -257,6 +299,11 @@ async function main() {
   await prisma.room.create({
     data: { roomNumber: 'JAF-STD-03', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Two Single Beds', 'Ceiling Fan'], price: 1500.0, circuitBungalowId: jafRest.id },
   });
+  for (let i = 4; i <= 25; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `JAF-STD-${i.toString().padStart(2, '0')}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Two Single Beds', 'Ceiling Fan'], price: 1500.0, circuitBungalowId: jafRest.id },
+    });
+  }
 
   // 5. Katharagama Holiday Rest (PubAdmin)
   const katRest = await prisma.circuitBungalow.create({
@@ -289,6 +336,11 @@ async function main() {
   const katR1 = await prisma.room.create({
     data: { roomNumber: 'KAT-AC-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: katRest.id },
   });
+  for (let i = 2; i <= 27; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `KAT-AC-${i.toString().padStart(2, '0')}`, roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: katRest.id },
+    });
+  }
 
   // 6. Monaragala Holiday Rest
   const monRest = await prisma.circuitBungalow.create({
@@ -318,9 +370,11 @@ async function main() {
     },
   });
 
-  await prisma.room.create({
-    data: { roomNumber: 'MON-01', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: monRest.id },
-  });
+  for (let i = 1; i <= 8; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `MON-0${i}`, roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 2000.0, circuitBungalowId: monRest.id },
+    });
+  }
 
   // =========================================================================
   // CATEGORY 2: LAND COMMISSIONER GENERAL'S DEPARTMENT (LCGD)
@@ -357,6 +411,11 @@ async function main() {
   const lcgdNeR1 = await prisma.room.create({
     data: { roomNumber: 'MEEP-01', roomType: RoomType.NON_AC, noOfBeds: 3, items: ['1 Double + 1 Single Bed', 'Geyser'], price: 1100.0, circuitBungalowId: lcgdNE.id },
   });
+  for (let i = 2; i <= 3; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `MEEP-0${i}`, roomType: RoomType.NON_AC, noOfBeds: 3, items: ['1 Double + 1 Single Bed', 'Geyser'], price: 1100.0, circuitBungalowId: lcgdNE.id },
+    });
+  }
 
   // 8. LCGD Katharagama
   const lcgdKat = await prisma.circuitBungalow.create({
@@ -389,6 +448,11 @@ async function main() {
   const lcgdKatR1 = await prisma.room.create({
     data: { roomNumber: 'KAT-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 800.0, circuitBungalowId: lcgdKat.id },
   });
+  for (let i = 2; i <= 3; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `KAT-0${i}-AC`, roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC', 'Attached Bath'], price: 800.0, circuitBungalowId: lcgdKat.id },
+    });
+  }
 
   // 9. LCGD Polonnaruwa
   const lcgdPol = await prisma.circuitBungalow.create({
@@ -418,9 +482,11 @@ async function main() {
     },
   });
 
-  await prisma.room.create({
-    data: { roomNumber: 'POL-01-AC', roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC'], price: 1500.0, circuitBungalowId: lcgdPol.id },
-  });
+  for (let i = 1; i <= 4; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `POL-0${i}-AC`, roomType: RoomType.AC, noOfBeds: 2, items: ['Double Bed', 'AC'], price: 1500.0, circuitBungalowId: lcgdPol.id },
+    });
+  }
 
   // =========================================================================
   // CATEGORY 3: STATE TIMBER CORPORATION (STC)
@@ -454,9 +520,11 @@ async function main() {
     },
   });
 
-  await prisma.room.create({
-    data: { roomNumber: 'STC-UDA-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Mosquito Net'], price: 2500.0, circuitBungalowId: stcUda.id },
-  });
+  for (let i = 1; i <= 3; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `STC-UDA-0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['Double Bed', 'Mosquito Net'], price: 2500.0, circuitBungalowId: stcUda.id },
+    });
+  }
 
   // 11. STC Nuwara Eliya (Kandapola)
   const stcKanda = await prisma.circuitBungalow.create({
@@ -486,9 +554,11 @@ async function main() {
     },
   });
 
-  await prisma.room.create({
-    data: { roomNumber: 'KAND-01', roomType: RoomType.NON_AC, noOfBeds: 2, items: ['King Bed', 'Heater'], price: 3500.0, circuitBungalowId: stcKanda.id },
-  });
+  for (let i = 1; i <= 3; i++) {
+    await prisma.room.create({
+      data: { roomNumber: `KAND-0${i}`, roomType: RoomType.NON_AC, noOfBeds: 2, items: ['King Bed', 'Heater'], price: 3500.0, circuitBungalowId: stcKanda.id },
+    });
+  }
 
   console.log('📅 Seeding Active Sample Bookings...');
 

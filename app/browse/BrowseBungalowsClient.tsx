@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import DateRangePicker from "@/components/booking/DateRangePicker";
 import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
+import { useUser } from "@/components/context/UserContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, SearchX, Star, MapPin, Users, BedDouble, 
@@ -59,7 +60,10 @@ interface BrowseBungalowsClientProps {
   bungalows: DbBungalow[];
 }
 
-export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClientProps) {
+export default function BrowseBungalowsClient({ bungalows: initialBungalows }: BrowseBungalowsClientProps) {
+  const { activeUser } = useUser();
+  const [bungalows, setBungalows] = useState(initialBungalows);
+
   const getTomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -210,6 +214,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
           toDate: checkOut.toISOString(),
           totalCost: totalCost,
           paymentSlipUrl: paymentSlipUrl,
+          userId: activeUser?.id,
         }),
       });
 

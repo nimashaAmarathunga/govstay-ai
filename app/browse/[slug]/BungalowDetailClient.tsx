@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import DateRangePicker from "@/components/booking/DateRangePicker";
 import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
+import { useUser } from "@/components/context/UserContext";
 
 export type DbRoom = {
   id: string;
@@ -54,6 +55,8 @@ interface BungalowDetailClientProps {
 }
 
 export default function BungalowDetailClient({ bungalow }: BungalowDetailClientProps) {
+  const { activeUser } = useUser();
+
   const getTomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -231,6 +234,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
           toDate: checkOut.toISOString(),
           totalCost: totalCost,
           paymentSlipUrl: paymentSlipUrl,
+          userId: activeUser?.id,
         }),
       });
 

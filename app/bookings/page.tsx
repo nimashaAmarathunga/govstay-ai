@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, CreditCard, MoreVertical, FileText,
   HelpCircle, XCircle, Search, Clock, CheckCircle2,
-  AlertCircle, Paperclip
+  AlertCircle, Paperclip, Loader2, Sparkles
 } from "lucide-react";
 
 const INITIAL_BOOKINGS = [
@@ -112,6 +112,7 @@ export default function BookingsPage() {
           amount: `LKR ${totalCost.toLocaleString()}`,
           image: first.circuitBungalow.image,
           paymentSlipUrl: first.paymentSlipUrl,
+          approvalReason: first.approvalReason,
         };
       });
 
@@ -122,8 +123,23 @@ export default function BookingsPage() {
   };
 
   useEffect(() => {
-    fetchBookings();
+    let timeoutId: NodeJS.Timeout;
+    const load = async () => {
+      await fetchBookings();
+    };
+    load();
+    return () => clearTimeout(timeoutId);
   }, [activeUser]);
+
+  useEffect(() => {
+    const hasPending = bookings.some(b => b.status === "Pending");
+    if (hasPending) {
+      const timeoutId = setTimeout(() => {
+        fetchBookings();
+      }, 1500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [bookings]);
 
   const handleCancelBooking = async (id: string) => {
     if (id.startsWith("BKG")) {
@@ -157,7 +173,8 @@ export default function BookingsPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (booking: any) => {
+    const status = booking.status;
     switch (status) {
       case 'Confirmed':
         return (
@@ -167,11 +184,18 @@ export default function BookingsPage() {
           </span>
         );
       case 'Pending':
+        const reasonText = booking.approvalReason || "Agent Kernel is initializing...";
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/60">
-            <Clock className="w-3.5 h-3.5" />
-            {status}
-          </span>
+          <div className="flex flex-col items-end gap-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/60 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Verifying
+            </span>
+            <span className="text-[10px] text-blue-600 font-medium flex items-center gap-1 max-w-[200px] text-right">
+              <Sparkles className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">{reasonText}</span>
+            </span>
+          </div>
         );
       case 'Completed':
         return (
@@ -257,7 +281,7 @@ export default function BookingsPage() {
                   
                   <div className="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end relative mt-2 md:mt-0">
                     <div className="flex-1 md:flex-none">
-                      {getStatusBadge(booking.status)}
+                      {getStatusBadge(booking)}
                     </div>
                     
                     <button 
