@@ -719,263 +719,263 @@ export default function AdminPage() {
               </div>
 
               <div className="p-8 overflow-y-auto flex-1 space-y-10 custom-scrollbar bg-slate-50/30">
-                
-                {/* SECTION 1 */}
-                <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
-                  <h4 className="text-[13px] font-bold text-slate-900 uppercase tracking-wider mb-5 flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center font-black text-[12px]">1</div>
-                    Bungalow Information
-                  </h4>
-                  <div className="grid grid-cols-2 gap-5">
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Bungalow Name *</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. Diyatalawa Holiday Rest"
-                        value={bungalowForm.name}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Department *</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. Ministry of Public Administration"
-                        value={bungalowForm.department}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, department: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Location / Address *</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. Diyatalawa, Uva Province"
-                        value={bungalowForm.location}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, location: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Guest Capacity</label>
-                      <input
-                        type="number"
-                        min={1}
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        value={bungalowForm.capacity}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, capacity: parseInt(e.target.value) || 1 })}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Cover Image URL</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="https://images.unsplash.com/..."
-                        value={bungalowForm.image}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, image: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Description Overview</label>
-                      <textarea
-                        rows={3}
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all resize-none"
-                        placeholder="Overview of the bungalow premises..."
-                        value={bungalowForm.description}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, description: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Amenities (comma separated)</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="Hot Water, Kitchen, Garden"
-                        value={bungalowForm.amenities}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, amenities: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Highlights (comma separated)</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="Near Station, Scenic Views"
-                        value={bungalowForm.highlights}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, highlights: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
+  {modalStep === 1 && (
+    <>
+      {/* SECTION 1: Bungalow Details */}
+      <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+        <h3 className="text-xl font-bold text-slate-900 mb-4">Bungalow Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Bungalow Name</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Bungalow Name"
+              value={bungalowForm.name}
+              onChange={(e) => setBungalowForm(prev => ({...prev, name: e.target.value}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Location</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Location"
+              value={bungalowForm.location}
+              onChange={(e) => setBungalowForm(prev => ({...prev, location: e.target.value}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Department</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Department"
+              value={bungalowForm.department}
+              onChange={(e) => setBungalowForm(prev => ({...prev, department: e.target.value}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Capacity</label>
+            <input
+              type="number"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Capacity"
+              value={bungalowForm.capacity}
+              onChange={(e) => setBungalowForm(prev => ({...prev, capacity: Number(e.target.value)}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">No. of Rooms</label>
+            <input
+              type="number"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="No. of Rooms"
+              value={bungalowForm.noOfRooms}
+              onChange={(e) => setBungalowForm(prev => ({...prev, noOfRooms: Number(e.target.value)}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Image URL</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Image URL"
+              value={bungalowForm.image}
+              onChange={(e) => setBungalowForm(prev => ({...prev, image: e.target.value}))}
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Description</label>
+            <textarea
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Description"
+              rows={3}
+              value={bungalowForm.description}
+              onChange={(e) => setBungalowForm(prev => ({...prev, description: e.target.value}))}
+            />
+          </div>
+        </div>
+      </div>
 
-                {/* SECTION 2 */}
-                <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
-                  <h4 className="text-[13px] font-bold text-slate-900 uppercase tracking-wider mb-5 flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-[12px]">2</div>
-                    Caretaker Details
-                  </h4>
-                  <div className="grid grid-cols-2 gap-5">
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Full Name</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. K. A. Perera"
-                        value={bungalowForm.caretaker.name}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, caretaker: { ...bungalowForm.caretaker, name: e.target.value }})}
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Telephone Number</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. +94 77 1234567"
-                        value={bungalowForm.caretaker.telephoneNo}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, caretaker: { ...bungalowForm.caretaker, telephoneNo: e.target.value }})}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-[12px] font-bold text-slate-700 mb-1.5">Physical Address</label>
-                      <input
-                        type="text"
-                        className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-4 py-3 text-[14px] font-medium text-slate-900 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-300 transition-all"
-                        placeholder="e.g. Circuit Bungalow Quarters, Diyatalawa"
-                        value={bungalowForm.caretaker.address}
-                        onChange={(e) => setBungalowForm({ ...bungalowForm, caretaker: { ...bungalowForm.caretaker, address: e.target.value }})}
-                      />
-                    </div>
-                  </div>
-                </div>
+      {/* SECTION 2: Caretaker Details */}
+      <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+        <h3 className="text-xl font-bold text-slate-900 mb-4">Caretaker Details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Name</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Caretaker Name"
+              value={bungalowForm.caretaker.name}
+              onChange={(e) => setBungalowForm(prev => ({...prev, caretaker: {...prev.caretaker, name: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Address</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Caretaker Address"
+              value={bungalowForm.caretaker.address}
+              onChange={(e) => setBungalowForm(prev => ({...prev, caretaker: {...prev.caretaker, address: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Telephone No</label>
+            <input
+              type="text"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Telephone Number"
+              value={bungalowForm.caretaker.telephoneNo}
+              onChange={(e) => setBungalowForm(prev => ({...prev, caretaker: {...prev.caretaker, telephoneNo: e.target.value}}))}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="Email Address"
+              value={bungalowForm.caretaker.emailAddress}
+              onChange={(e) => setBungalowForm(prev => ({...prev, caretaker: {...prev.caretaker, emailAddress: e.target.value}}))}
+            />
+          </div>
+        </div>
+      </div>
 
-                {/* SECTION 3 */}
-                <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
-                  <div className="flex justify-between items-center mb-5">
-                    <h4 className="text-[13px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-[12px]">3</div>
-                      Room Configurations
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={handleAddRoomRow}
-                      className="flex items-center gap-1.5 text-[12px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" /> Add Room
-                    </button>
-                  </div>
+      {/* Footer for Step 1 */}
+      <div className="px-8 py-5 bg-white border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 z-20">
+        <button
+          type="button"
+          onClick={() => setIsBungalowModalOpen(false)}
+          className="px-6 py-3 rounded-xl text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={handleNextToRooms}
+          className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-lg hover:bg-slate-800 transition-all"
+        >
+          Configure Rooms
+        </button>
+      </div>
+    </>
+  )}
 
-                  <div className="space-y-4">
-                    {bungalowForm.rooms.map((room, idx) => (
-                      <div key={idx} className="bg-slate-50 border border-slate-200 rounded-[20px] p-5 relative group">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-[13px] font-extrabold text-slate-700 bg-white px-3 py-1 rounded-full border border-slate-200">Room #{idx + 1}</span>
-                          {bungalowForm.rooms.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveRoomRow(idx)}
-                              className="text-red-500 hover:text-red-700 bg-white hover:bg-red-50 w-8 h-8 rounded-full border border-slate-200 hover:border-red-200 flex items-center justify-center transition-colors cursor-pointer"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
+  {modalStep === 2 && (
+    <>
+      {/* SECTION 3: Configure Rooms */}
+      <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+        <h3 className="text-xl font-bold text-slate-900 mb-4">Configure Rooms</h3>
+        {bungalowForm.rooms.map((room, idx) => (
+          <div key={idx} className="grid grid-cols-12 gap-4 bg-slate-50/20 p-4 rounded-xl mb-4">
+            <div className="col-span-12 sm:col-span-4">
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Room Number</label>
+              <input
+                type="text"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                value={room.roomNumber}
+                onChange={(e) => handleRoomChange(idx, "roomNumber", e.target.value)}
+              />
+            </div>
+            <div className="col-span-12 sm:col-span-4">
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Room Type</label>
+              <select
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                value={room.roomType}
+                onChange={(e) => handleRoomChange(idx, "roomType", e.target.value as any)}
+              >
+                <option value="AC">AC</option>
+                <option value="NON_AC">NON AC</option>
+              </select>
+            </div>
+            <div className="col-span-12 sm:col-span-4">
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">No. of Beds</label>
+              <input
+                type="number"
+                min={1}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                value={room.noOfBeds}
+                onChange={(e) => handleRoomChange(idx, "noOfBeds", parseInt(e.target.value) || 1)}
+              />
+            </div>
+            <div className="col-span-12 sm:col-span-4">
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Price / Night (LKR)</label>
+              <input
+                type="number"
+                step="100"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                value={room.price}
+                onChange={(e) => handleRoomChange(idx, "price", parseFloat(e.target.value) || 0)}
+              />
+            </div>
+            <div className="col-span-12">
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Included Items (comma separated)</label>
+              <input
+                type="text"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                placeholder="Double Bed, Geyser, Wardrobe, Ensuite Bathroom"
+                value={room.items}
+                onChange={(e) => handleRoomChange(idx, "items", e.target.value)}
+              />
+            </div>
+          </div>
+        ))}
 
-                        <div className="grid grid-cols-12 gap-4">
-                          <div className="col-span-12 sm:col-span-3">
-                            <label className="block text-[11px] font-bold text-slate-500 mb-1">Room ID / Code</label>
-                            <input
-                              type="text"
-                              className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 focus:border-slate-300"
-                              placeholder="e.g. 101"
-                              value={room.roomNumber}
-                              onChange={(e) => handleRoomChange(idx, "roomNumber", e.target.value)}
-                            />
-                          </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleAddRoomRow}
+            className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+          >
+            Add Room
+          </button>
+          {bungalowForm.rooms.length > 1 && (
+            <button
+              type="button"
+              onClick={() => handleRemoveRoomRow(bungalowForm.rooms.length - 1)}
+              className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+            >
+              Remove Last Room
+            </button>
+          )}
+        </div>
+      </div>
 
-                          <div className="col-span-12 sm:col-span-3">
-                            <label className="block text-[11px] font-bold text-slate-500 mb-1">Type</label>
-                            <select
-                              className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 focus:border-slate-300 appearance-none"
-                              value={room.roomType}
-                              onChange={(e) => handleRoomChange(idx, "roomType", e.target.value as "AC" | "NON_AC")}
-                            >
-                              <option value="NON_AC">Non-AC</option>
-                              <option value="AC">AC Room</option>
-                            </select>
-                          </div>
-
-                          <div className="col-span-12 sm:col-span-2">
-                            <label className="block text-[11px] font-bold text-slate-500 mb-1">Beds</label>
-                            <input
-                              type="number"
-                              min={1}
-                              className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 focus:border-slate-300"
-                              value={room.noOfBeds}
-                              onChange={(e) => handleRoomChange(idx, "noOfBeds", parseInt(e.target.value) || 1)}
-                            />
-                          </div>
-
-                          <div className="col-span-12 sm:col-span-4">
-                            <label className="block text-[11px] font-bold text-slate-500 mb-1">Price / Night (LKR)</label>
-                            <input
-                              type="number"
-                              step="100"
-                              className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-[13px] font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 focus:border-slate-300"
-                              value={room.price}
-                              onChange={(e) => handleRoomChange(idx, "price", parseFloat(e.target.value) || 0)}
-                            />
-                          </div>
-
-                          <div className="col-span-12">
-                            <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                              Included Items (comma separated)
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 focus:border-slate-300"
-                              placeholder="Double Bed, Geyser, Wardrobe, Ensuite Bathroom"
-                              value={room.items}
-                              onChange={(e) => handleRoomChange(idx, "items", e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="px-8 py-5 bg-white border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 z-20">
-                <button
-                  type="button"
-                  onClick={() => setIsBungalowModalOpen(false)}
-                  className="px-6 py-3 rounded-xl text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={saveBungalow}
-                  disabled={saving}
-                  className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Saving Data...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Save Bungalow
-                    </>
-                  )}
-                </button>
-              </div>
+      {/* Footer for Step 2 */}
+      <div className="px-8 py-5 bg-white border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 z-20">
+        <button
+          type="button"
+          onClick={() => setModalStep(1)}
+          className="px-6 py-3 rounded-xl text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          onClick={saveBungalow}
+          disabled={saving}
+          className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Saving Data...
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5" />
+              Save Bungalow
+            </>
+          )}
+        </button>
+      </div>
+    </>
+  )}
+</div>
             </motion.div>
           </div>
         )}
