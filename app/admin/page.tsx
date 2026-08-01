@@ -159,6 +159,7 @@ export default function AdminPage() {
   const [modalStep, setModalStep] = useState<1 | 2>(1);
   const [editingBungalowId, setEditingBungalowId] = useState<string | null>(null);
   const [bungalowForm, setBungalowForm] = useState<BungalowFormState>(DEFAULT_FORM_STATE);
+  const [resolvingMapLink, setResolvingMapLink] = useState<boolean>(false);
 
   // Fetch Data from APIs
   const fetchBungalows = async () => {
@@ -261,7 +262,7 @@ export default function AdminPage() {
 
   const handleNextToRooms = () => {
     if (!bungalowForm.name.trim() || !bungalowForm.location.trim()) {
-      alert("Please fill in required fields: Bungalow Name and Location.");
+      alert("Please fill in required fields: Bungalow Name and Address.");
       return;
     }
     setModalStep(2);
@@ -289,7 +290,7 @@ export default function AdminPage() {
 
   const saveBungalow = async () => {
     if (!bungalowForm.name.trim() || !bungalowForm.location.trim()) {
-      alert("Please fill in required fields: Bungalow Name and Location.");
+      alert("Please fill in required fields: Bungalow Name and Address.");
       return;
     }
 
@@ -372,6 +373,71 @@ export default function AdminPage() {
       };
       return { ...prev, rooms: updatedRooms };
     });
+  };
+
+  // --- Google Maps URL parser ---
+  const parseLatLngFromGoogleMapsUrl = (url: string): { lat: string; lng: string } | null => {
+    try {
+      // Pattern 1: @lat,lng (most common — works for /maps/@, /maps/place/@)
+      const atMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (atMatch) return { lat: atMatch[1], lng: atMatch[2] };
+
+      // Pattern 2: q=lat,lng or q=lat%2Clng
+      const qMatch = url.match(/[?&]q=(-?\d+\.\d+)[,|%2C](-?\d+\.\d+)/i);
+      if (qMatch) return { lat: qMatch[1], lng: qMatch[2] };
+
+      // Pattern 3: ll=lat,lng
+      const llMatch = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (llMatch) return { lat: llMatch[1], lng: llMatch[2] };
+
+      // Pattern 4: !3dlat!4dlng (embedded maps)
+      const embedMatch = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (embedMatch) return { lat: embedMatch[1], lng: embedMatch[2] };
+
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleGmapLinkChange = async (url: string) => {
+    setBungalowForm((prev) => ({
+      ...prev,
+      gmapLink: url,
+    }));
+
+    if (!url.trim()) return;
+
+    // Instant client-side match for full Google Maps URLs
+    const coords = parseLatLngFromGoogleMapsUrl(url);
+    if (coords) {
+      setBungalowForm((prev) => ({
+        ...prev,
+        latitude: coords.lat,
+        longitude: coords.lng,
+      }));
+      return;
+    }
+
+    // Call server-side redirect expander API for short links (e.g. maps.app.goo.gl)
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      try {
+        setResolvingMapLink(true);
+        const res = await fetch(`/api/admin/expand-map-link?url=${encodeURIComponent(url.trim())}`);
+        const json = await res.json();
+        if (json.success && json.latitude && json.longitude) {
+          setBungalowForm((prev) => ({
+            ...prev,
+            latitude: json.latitude,
+            longitude: json.longitude,
+          }));
+        }
+      } catch (err) {
+        console.error("Error expanding map link:", err);
+      } finally {
+        setResolvingMapLink(false);
+      }
+    }
   };
 
   // Stats calculation
@@ -736,11 +802,11 @@ export default function AdminPage() {
             />
           </div>
           <div>
-            <label className="block text-[11px] font-bold text-slate-500 mb-1">Location</label>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Address</label>
             <input
               type="text"
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
-              placeholder="Location"
+              placeholder="e.g. No. 12 Hill Street, Nuwara Eliya"
               value={bungalowForm.location}
               onChange={(e) => setBungalowForm(prev => ({...prev, location: e.target.value}))}
             />
@@ -794,6 +860,54 @@ export default function AdminPage() {
               value={bungalowForm.description}
               onChange={(e) => setBungalowForm(prev => ({...prev, description: e.target.value}))}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 1b: Location & Map */}
+      <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+        <h3 className="text-xl font-bold text-slate-900 mb-1">Location &amp; Map</h3>
+        <p className="text-[12px] text-slate-400 mb-4">Paste a Google Maps link to auto-extract coordinates.</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-1">Google Maps Link</label>
+            <input
+              type="url"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+              placeholder="https://www.google.com/maps/@6.9271,79.8612,15z"
+              value={bungalowForm.gmapLink || ""}
+              onChange={(e) => handleGmapLinkChange(e.target.value)}
+            />
+          </div>
+
+          {/* Read-only coordinates display */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-500 mb-2">Detected Coordinates</label>
+            {resolvingMapLink ? (
+              <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-700">
+                <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                <span className="text-[12px] font-medium">Resolving Google Maps short link &amp; extracting coordinates...</span>
+              </div>
+            ) : bungalowForm.latitude && bungalowForm.longitude ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                  <span className="text-emerald-600 text-sm">📍</span>
+                  <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Lat</span>
+                  <span className="text-[13px] font-semibold text-emerald-900 font-mono">{bungalowForm.latitude}</span>
+                </div>
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                  <span className="text-emerald-600 text-sm">📍</span>
+                  <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Lng</span>
+                  <span className="text-[13px] font-semibold text-emerald-900 font-mono">{bungalowForm.longitude}</span>
+                </div>
+                <span className="text-[11px] text-slate-400">Auto-extracted from map link</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-3 text-slate-400">
+                <span className="text-sm">🗺️</span>
+                <span className="text-[12px]">Paste a valid Google Maps link above to detect coordinates automatically.</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
