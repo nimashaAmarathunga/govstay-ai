@@ -59,19 +59,18 @@ export function EmployeeBenefits() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Built for Government Employees
+              Designed for Public Servants
             </h2>
             <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              GovStay is specifically designed for Sri Lankan government employees
-              and their families. Enjoy exclusive benefits, competitive rates, and
-              a seamless booking experience for your next getaway.
+              GovStay is engineered specifically for Sri Lankan government employees
+              and their families. We understand the pain of manual administrative processes, which is why we built an AI layer to handle verification, scheduling, and notifications.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
-                href="/browse"
+                href="/"
                 className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg text-center"
               >
-                Explore Accommodations
+                Chat with Agent Assistant
               </Link>
             </div>
           </motion.div>
