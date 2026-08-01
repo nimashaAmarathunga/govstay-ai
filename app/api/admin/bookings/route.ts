@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET all bookings with bungalow, room, and user details
-export async function GET() {
+// GET bookings with bungalow, room, and user details (optional ?department=... filter)
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const department = searchParams.get("department");
+
+    const where = department && department !== "ALL"
+      ? { circuitBungalow: { department } }
+      : {};
+
     const bookings = await prisma.booking.findMany({
+      where,
       include: {
         circuitBungalow: {
-          select: { name: true, location: true, image: true },
+          select: { name: true, location: true, image: true, department: true },
         },
         room: {
           select: { roomNumber: true, roomType: true, price: true },
