@@ -64,10 +64,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No rooms found to book." }, { status: 400 });
     }
 
-    const checkStart = new Date(fromDate);
-    checkStart.setHours(0, 0, 0, 0);
-    const checkEnd = new Date(toDate);
-    checkEnd.setHours(0, 0, 0, 0);
+    // Normalize incoming ISO strings to UTC midnight, preserving local calendar date
+    const startDateLocal = new Date(fromDate);
+    const checkStart = new Date(Date.UTC(
+      startDateLocal.getFullYear(),
+      startDateLocal.getMonth(),
+      startDateLocal.getDate()
+    ));
+
+    const endDateLocal = new Date(toDate);
+    const checkEnd = new Date(Date.UTC(
+      endDateLocal.getFullYear(),
+      endDateLocal.getMonth(),
+      endDateLocal.getDate()
+    ));
 
     // Validate that none of the rooms are already booked for the given dates
     for (const room of roomsToBook) {

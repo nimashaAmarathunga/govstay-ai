@@ -49,8 +49,8 @@ export function Hero({ onSearchClick }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
         >
-          Discover Your Perfect Government
-          <span className="block text-emerald-400">Accommodation</span>
+          Book Circuit Bungalows
+          <span className="block text-emerald-400">Smarter & Faster</span>
         </motion.h1>
 
         {/* Subheading */}
@@ -60,7 +60,7 @@ export function Hero({ onSearchClick }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed"
         >
-          AI-powered search and instant booking for circuit bungalows across Sri Lanka. Find your ideal retreat in seconds.
+          Eliminate endless paperwork and waiting times. GovStay uses intelligent automation to instantly process your government circuit bungalow reservations across Sri Lanka.
         </motion.p>
 
         {/* Search Card */}
@@ -75,19 +75,18 @@ export function Hero({ onSearchClick }: HeroProps) {
               <Search className="w-5 h-5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search by location or bungalow name..."
+                placeholder="Ask the Agent Assistant to plan your trip..."
                 className="w-full bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-sm md:text-base"
-                onFocus={handleSearchClick}
                 readOnly
               />
             </div>
-            <button
-              onClick={handleSearchClick}
+            <Link
+              href="/"
               className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2"
             >
-              <span>Search</span>
+              <span>Try Assistant</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </motion.div>
 
@@ -99,10 +98,10 @@ export function Hero({ onSearchClick }: HeroProps) {
           className="flex flex-col md:flex-row items-center justify-center gap-4"
         >
           <Link
-            href="/browse"
+            href="/"
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-2"
           >
-            <span>Browse Bungalows</span>
+            <span>Experience the Agent Assistant</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>
