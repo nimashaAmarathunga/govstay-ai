@@ -14,39 +14,39 @@ import {
 const features = [
   {
     icon: Zap,
-    title: "AI-Powered Search",
+    title: "Zero Paperwork",
     description:
-      "Find your perfect accommodation using our advanced AI assistant with natural language search.",
-  },
-  {
-    icon: MapPin,
-    title: "Interactive Maps",
-    description:
-      "Explore bungalow locations on our interactive map with real-time availability info.",
-  },
-  {
-    icon: Calendar,
-    title: "Instant Booking",
-    description:
-      "Reserve your accommodation in seconds with our streamlined booking process.",
+      "Say goodbye to manual forms and endless waiting. Upload your payment slip and let our system verify it instantly.",
   },
   {
     icon: Shield,
-    title: "Verified Properties",
+    title: "Guaranteed Availability",
     description:
-      "All properties are verified and maintained by government departments.",
-  },
-  {
-    icon: Building2,
-    title: "Department Management",
-    description:
-      "Seamless administration and room allocation for government department heads.",
+      "Our automated booking engine ensures your selected dates are locked in, completely preventing double-bookings.",
   },
   {
     icon: Clock,
-    title: "24/7 Support",
+    title: "Instant Verification",
     description:
-      "Access dedicated support whenever you need assistance with your booking.",
+      "Your uploaded payment slips are read and verified asynchronously within seconds, getting your booking confirmed faster.",
+  },
+  {
+    icon: Building2,
+    title: "AI Travel Assistant",
+    description:
+      "Not sure where to go? Simply ask the Agent Assistant for recommendations based on your preferences and budget.",
+  },
+  {
+    icon: Calendar,
+    title: "Streamlined Approvals",
+    description:
+      "Automated compliance checks mean Department Admins only need to intervene when absolutely necessary.",
+  },
+  {
+    icon: MapPin,
+    title: "WhatsApp Updates",
+    description:
+      "Stay in the loop with real-time WhatsApp notifications about your booking status and property caretaker details.",
   },
 ];
 
@@ -82,10 +82,10 @@ export function Features() {
           className="text-center mb-10 md:mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Why Choose GovStay
+            Why Use GovStay?
           </h2>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-            Experience the future of government accommodation discovery
+            Making government accommodation booking simpler, faster, and more transparent.
           </p>
         </motion.div>
 
