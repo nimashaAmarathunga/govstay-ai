@@ -1,6 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Send, Paperclip, Map, ShieldCheck, 
+  CalendarDays, Bell, CheckCircle2, 
+  FileText, Sparkles, Search, MessageSquare, Loader2, Info, MapPin, ArrowRight
+} from "lucide-react";
 
 interface PropertyCard {
   title: string;
@@ -12,49 +18,26 @@ interface PropertyCard {
 interface Message {
   id: string;
   sender: "user" | "ai";
-  agent?: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent";
+  agent?: string;
   text: string;
   timestamp: string;
   propertyCard?: PropertyCard;
 }
 
 export default function Page() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "user",
-      text: "Find me a quiet bungalow in Nuwara Eliya for next weekend.",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "2",
-      sender: "ai",
-      agent: "Verification Agent",
-      text: "Identity verified. Accessing government residencies...",
-      timestamp: "10:42 AM",
-    },
-    {
-      id: "3",
-      sender: "ai",
-      agent: "Preference Agent",
-      text: "Based on your preference for garden views, I've found the Nuwara Eliya Rest House. It offers a secluded setting with colonial architecture and extensive landscaped grounds.",
-      timestamp: "10:43 AM",
-      propertyCard: {
-        title: "Nuwara Eliya Rest House",
-        suite: "Superior Garden Suite",
-        price: "Rs. 18,500",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
-      },
-    },
-  ]);
-
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
+  const [attachment, setAttachment] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
+  
+  const [isBookingMode, setIsBookingMode] = useState(false);
+  const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
+  const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll chat to bottom
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -71,86 +54,139 @@ export default function Page() {
     return `${hours}:${minutes} ${ampm}`;
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      const base64Data = base64.split(',')[1] || base64;
+      setAttachment(base64Data);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSendMessage = async (textToSend?: string, simulateAttachment: boolean = false) => {
     const text = textToSend !== undefined ? textToSend.trim() : inputText.trim();
-    if (!text) return;
+    if (!text && !attachment && !simulateAttachment) return;
 
     if (textToSend === undefined) {
       setInputText("");
     }
+    
+    const currentAttachment = simulateAttachment ? "simulated_base64_data" : attachment;
+    if (!simulateAttachment) {
+      setAttachment(null);
+    }
 
     const time = formatTime();
+    const userMsgId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const aiMsgId = `ai-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-    // 1. Add User Message
     setMessages((prev) => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: userMsgId,
         sender: "user",
-        text,
+        text: simulateAttachment ? `[Payment Slip Uploaded]\n${text}` : currentAttachment ? `[Attachment Uploaded]\n${text}` : text,
         timestamp: time,
       },
     ]);
-
-    // 2. Add AI reply simulation
-    setTimeout(() => {
-      const lowerText = text.toLowerCase();
-      let replyText = "";
-      let activeAgent: "Verification Agent" | "Preference Agent" | "Booking Agent" | "Notification Agent" = "Preference Agent";
-
-      if (lowerText.includes("amenities") || lowerText.includes("tell me more")) {
-        replyText = "The Nuwara Eliya Rest House features a scenic garden veranda, fireplace heating, premium Ceylon tea lounge access, high-speed Wi-Fi, and personalized steward service.";
-      } else if (lowerText.includes("other") || lowerText.includes("nearby") || lowerText.includes("bungalow")) {
-        replyText = "Other nearby government options: Nuwara Eliya General Bungalow (Rs. 15,000) and Sri Lanka Post Heritage Suite (Rs. 16,500). Let me know if you want me to search them.";
-      } else if (lowerText.includes("confirm") || lowerText.includes("book")) {
-        triggerConfirmBooking();
-        return;
-      } else {
-        replyText = `I have noted: "${text}". Feel free to confirm your booking or ask for more details.`;
-      }
-
-      setMessages((prev) => [
+    
+    setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: aiMsgId,
           sender: "ai",
-          agent: activeAgent,
-          text: replyText,
-          timestamp: formatTime(),
+          text: "",
+          timestamp: time,
         },
-      ]);
-    }, 800);
+    ]);
+
+    try {
+        const systemContext = isBookingMode 
+          ? `\n\n(System Context - Current Form State: ${JSON.stringify(uiState)})`
+          : "";
+          
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                text: text + systemContext, 
+                session_id: "demo-session-govstay",
+                attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
+            })
+        });
+
+        if (!res.body) return;
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunkStr = decoder.decode(value, { stream: true });
+            const lines = chunkStr.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        
+                        if (data.delta?.toLowerCase().includes("pending (awaiting approval)")) {
+                          setBookingStatus("confirming");
+                        }
+                        if (data.delta?.toLowerCase().includes("confirmed")) {
+                          setBookingStatus("confirmed");
+                        }
+                        if (data.agent === "booking_agent" || data.delta?.toLowerCase().includes("booking")) {
+                          setIsBookingMode(true);
+                        }
+                        if (data.ui_state) {
+                          setUiState(prev => ({ ...prev, ...data.ui_state }));
+                        }
+                        if (data.agent) {
+                          setActiveAgent(data.agent);
+                        }
+                        
+                        setMessages((prev) => 
+                            prev.map(m => {
+                                if (m.id !== aiMsgId) return m;
+                                let updatedText = m.text + (data.delta || "");
+                                const validAgents = ["travel_agent", "booking_agent", "verification_agent", "notification_agent"];
+                                validAgents.forEach(ag => {
+                                    if (updatedText.toLowerCase().startsWith(ag)) {
+                                        updatedText = updatedText.substring(ag.length).trimStart();
+                                    }
+                                });
+                                return {
+                                    ...m,
+                                    text: updatedText,
+                                    agent: data.agent || m.agent
+                                };
+                            })
+                        );
+                    } catch (e) {
+                        setMessages((prev) => 
+                            prev.map(m => m.id === aiMsgId ? {
+                                ...m,
+                                text: m.text + line.slice(6)
+                            } : m)
+                        );
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Chat error", err);
+    }
   };
 
   const triggerConfirmBooking = () => {
     if (bookingStatus !== "draft") return;
-
     setBookingStatus("confirming");
-
-    setTimeout(() => {
-      setBookingStatus("confirmed");
-      const time = formatTime();
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          sender: "ai",
-          agent: "Booking Agent",
-          text: "Booking finalized. Your reservation at Nuwara Eliya Rest House is locked in.",
-          timestamp: time,
-        },
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "ai",
-          agent: "Notification Agent",
-          text: whatsappEnabled
-            ? "WhatsApp confirmation sent to your registered number."
-            : "Booking confirmation sent to your email.",
-          timestamp: time,
-        },
-      ]);
-    }, 1500);
+    handleSendMessage("I have reviewed the details and submitted the form. Here is my payment slip. Please finalize the booking.", true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -159,152 +195,207 @@ export default function Page() {
     }
   };
 
+  const agentIcons: Record<string, React.ReactNode> = {
+    verification_agent: <ShieldCheck className="w-4 h-4" />,
+    travel_agent: <Map className="w-4 h-4" />,
+    booking_agent: <CalendarDays className="w-4 h-4" />,
+    notification_agent: <Bell className="w-4 h-4" />,
+  };
+
   return (
-    <div className="flex flex-col h-full bg-slate-50">
-      {/* Main Content Area */}
+    <div className="flex flex-col h-screen bg-[#FDFDFD]">
       <main className="flex-1 flex overflow-hidden">
         
-        {/* Left Column: Clean Agent Status */}
-        <aside className="w-72 bg-white border-r border-slate-200 flex flex-col hidden lg:flex">
-           <div className="p-5 border-b border-slate-100">
-             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Assistant Agents</h2>
+        {/* Left Column: Agent Status */}
+        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col hidden lg:flex">
+           <div className="p-6 pb-2">
+             <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">System Agents</h2>
            </div>
-           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+           <div className="flex-1 overflow-y-auto p-4 space-y-2">
               
-              {/* Verification Agent */}
-              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 relative">
-                 <div className="flex items-center gap-3 mb-1">
-                    <span className="material-symbols-outlined text-blue-600 text-xl">verified_user</span>
-                    <span className="font-semibold text-slate-800 text-sm">Verification</span>
-                 </div>
-                 <p className="text-xs text-slate-600 ml-8">Identity Confirmed</p>
-                 <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500"></div>
-              </div>
-
-              {/* Preference Agent */}
-              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 relative">
-                 <div className="flex items-center gap-3 mb-1">
-                    <span className="material-symbols-outlined text-blue-600 text-xl">psychology</span>
-                    <span className="font-semibold text-slate-800 text-sm">Preferences</span>
-                 </div>
-                 <p className="text-xs text-slate-600 ml-8">Analyzing Requirements</p>
-                 <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500"></div>
-              </div>
-
-              {/* Booking Agent */}
-              <div className={`p-4 rounded-2xl border transition-all ${bookingStatus !== 'draft' ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100 opacity-70'} relative`}>
-                 <div className="flex items-center gap-3 mb-1">
-                    <span className={`material-symbols-outlined text-xl ${bookingStatus !== 'draft' ? 'text-blue-600' : 'text-slate-400'}`}>event_available</span>
-                    <span className={`font-semibold text-sm ${bookingStatus !== 'draft' ? 'text-slate-800' : 'text-slate-500'}`}>Booking</span>
-                 </div>
-                 <p className="text-xs text-slate-600 ml-8">
-                   {bookingStatus === 'draft' ? 'Awaiting Confirmation' : bookingStatus === 'confirming' ? 'Processing...' : 'Confirmed'}
-                 </p>
-                 <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${bookingStatus === 'confirmed' ? 'bg-emerald-500' : bookingStatus === 'confirming' ? 'bg-amber-500 animate-pulse' : 'bg-slate-300'}`}></div>
-              </div>
-
-              {/* Notification Agent */}
-              <div className={`p-4 rounded-2xl border transition-all ${bookingStatus === 'confirmed' ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100 opacity-70'} relative`}>
-                 <div className="flex items-center gap-3 mb-1">
-                    <span className={`material-symbols-outlined text-xl ${bookingStatus === 'confirmed' ? 'text-blue-600' : 'text-slate-400'}`}>notifications_active</span>
-                    <span className={`font-semibold text-sm ${bookingStatus === 'confirmed' ? 'text-slate-800' : 'text-slate-500'}`}>Notifications</span>
-                 </div>
-                 <p className="text-xs text-slate-600 ml-8">
-                   {bookingStatus === 'confirmed' ? 'Message Sent' : 'Standby'}
-                 </p>
-                 <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${bookingStatus === 'confirmed' ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
-              </div>
-
+              {[
+                { id: "verification_agent", name: "Verification" },
+                { id: "travel_agent", name: "Travel & Discovery" },
+                { id: "booking_agent", name: "Booking" },
+                { id: "notification_agent", name: "Notifications" }
+              ].map(agent => (
+                <div 
+                  key={agent.id}
+                  className={`p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
+                    activeAgent === agent.id 
+                      ? 'bg-white border-slate-200 shadow-[0_2px_10px_rgb(0,0,0,0.04)]' 
+                      : 'bg-transparent border-transparent hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                      activeAgent === agent.id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {agentIcons[agent.id]}
+                    </div>
+                    <div>
+                      <h3 className={`text-[13px] font-semibold transition-colors ${
+                        activeAgent === agent.id ? 'text-slate-900' : 'text-slate-600'
+                      }`}>
+                        {agent.name}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {activeAgent === agent.id ? 'Active' : 'Standby'}
+                      </p>
+                    </div>
+                  </div>
+                  {activeAgent === agent.id && (
+                    <motion.div 
+                      layoutId="active-agent"
+                      className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900 rounded-r-full"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </div>
+              ))}
            </div>
         </aside>
 
         {/* Center Column: Chat Interface */}
-        <section className="flex-1 flex flex-col bg-slate-50 relative">
+        <section className="flex-1 flex flex-col bg-[#FDFDFD] relative">
           
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 scroll-smooth">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 scroll-smooth">
+            <div className="max-w-3xl mx-auto w-full space-y-8">
+              {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-center opacity-70 mt-32">
+                   <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
+                     <Sparkles className="w-8 h-8 text-slate-900" />
+                   </div>
+                   <h2 className="text-xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
+                   <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
+                     I can help you search for circuit bungalows, check availability, or manage your bookings.
+                   </p>
+                </div>
+              )}
+
              {messages.map((message) => {
                const isUser = message.sender === "user";
 
                if (isUser) {
                  return (
-                   <div key={message.id} className="flex flex-col items-end gap-1 animate-fade-in">
-                     <div className="max-w-[75%] bg-blue-600 text-white px-5 py-3.5 rounded-3xl rounded-tr-sm shadow-sm">
+                   <motion.div 
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     key={message.id} 
+                     className="flex flex-col items-end gap-1.5"
+                   >
+                     <div className="max-w-[85%] md:max-w-2xl bg-slate-900 text-white px-6 py-4 rounded-[24px] rounded-tr-[8px] shadow-[0_4px_14px_0_rgb(0,0,0,0.05)]">
                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
                      </div>
-                     <span className="text-xs text-slate-400 px-2 font-medium">You • {message.timestamp}</span>
-                   </div>
+                   </motion.div>
                  );
                }
 
                return (
-                 <div key={message.id} className="flex flex-col items-start gap-1 animate-fade-in">
+                 <motion.div 
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   key={message.id} 
+                   className="flex flex-col items-start gap-1.5"
+                 >
                    {message.agent && (
-                     <div className="flex items-center gap-1.5 ml-2 mb-0.5">
-                       <span className="material-symbols-outlined text-[14px] text-blue-600">
-                           {message.agent === "Verification Agent" ? "verified_user" : 
-                            message.agent === "Preference Agent" ? "psychology" : 
-                            message.agent === "Booking Agent" ? "event_available" : "notifications_active"}
-                       </span>
-                       <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wide">
-                         {message.agent}
+                     <div className="flex items-center gap-2 ml-4 mb-1">
+                       <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center">
+                         {message.agent.toLowerCase().includes("verification") ? <ShieldCheck className="w-3 h-3 text-slate-600" /> : 
+                          message.agent.toLowerCase().includes("document") ? <FileText className="w-3 h-3 text-slate-600" /> : 
+                          message.agent.toLowerCase().includes("booking") ? <CalendarDays className="w-3 h-3 text-slate-600" /> : 
+                          <Map className="w-3 h-3 text-slate-600" />}
+                       </div>
+                       <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+                         {message.agent.replace(/\[|\]/g, "").trim().replace("_", " ")}
                        </span>
                      </div>
                    )}
-                   <div className="max-w-[75%] bg-white border border-slate-100 px-5 py-3.5 rounded-3xl rounded-tl-sm shadow-sm text-slate-700">
-                     <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-100 px-6 py-4 rounded-[24px] rounded-tl-[8px] shadow-[0_2px_10px_rgb(0,0,0,0.02)] text-slate-800">
+                     {message.text ? (
+                       <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-slate-700">
+                         {message.text.split('\n').map((line, i) => {
+                           // Simple markdown bold parsing for better looks
+                           if (line.includes('**')) {
+                             const parts = line.split('**');
+                             return (
+                               <p key={i} className="mb-2">
+                                 {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-slate-900 font-bold">{part}</strong> : part)}
+                               </p>
+                             )
+                           }
+                           return <p key={i} className={line.trim() === '' ? 'h-2' : ''}>{line}</p>
+                         })}
+                       </div>
+                     ) : (
+                       <div className="flex gap-1.5 items-center h-6 px-2">
+                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
+                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                       </div>
+                     )}
 
                      {message.propertyCard && (
-                       <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-shadow">
-                         <div className="h-40 w-full overflow-hidden relative">
+                       <div className="mt-6 rounded-3xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-all duration-300">
+                         <div className="h-48 w-full overflow-hidden relative">
                            <img
-                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                              alt={message.propertyCard.title}
                              src={message.propertyCard.image}
                            />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                           <div className="absolute bottom-3 left-3 text-white">
-                              <h4 className="font-bold text-lg leading-tight">{message.propertyCard.title}</h4>
-                              <p className="text-xs text-white/90 font-medium flex items-center gap-1">
-                                 <span className="material-symbols-outlined text-[12px]">location_on</span>
+                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                           <div className="absolute bottom-4 left-5 text-white">
+                              <h4 className="font-bold text-xl leading-tight mb-1">{message.propertyCard.title}</h4>
+                              <p className="text-[13px] text-white/90 font-medium flex items-center gap-1.5">
+                                 <MapPin className="w-3.5 h-3.5" />
                                  Nuwara Eliya
                               </p>
                            </div>
                          </div>
-                         <div className="p-4 flex justify-between items-center bg-white">
+                         <div className="p-5 flex justify-between items-center bg-white">
                            <div>
-                             <p className="text-sm font-medium text-slate-800">{message.propertyCard.suite}</p>
+                             <p className="text-[15px] font-semibold text-slate-900">{message.propertyCard.suite}</p>
                            </div>
                            <div className="text-right">
-                             <span className="text-blue-600 font-bold text-lg">{message.propertyCard.price}</span>
-                             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">per night</p>
+                             <span className="text-slate-900 font-bold text-xl">{message.propertyCard.price}</span>
+                             <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">per night</p>
                            </div>
                          </div>
                        </div>
                      )}
                    </div>
-                   <span className="text-xs text-slate-400 px-2 font-medium">GovSewana Assistant • {message.timestamp}</span>
-                 </div>
+                 </motion.div>
                );
              })}
+            </div>
           </div>
 
           {/* Chat Input */}
-          <div className="p-4 md:p-6 bg-white border-t border-slate-200">
-            <div className="max-w-3xl mx-auto">
-               <div className="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
-                  <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
-                     ✨ Tell me about amenities
-                  </button>
-                  <button onClick={() => handleSendMessage("Any other bungalows nearby?")} className="whitespace-nowrap px-4 py-1.5 rounded-full border border-slate-200 bg-white text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors font-medium cursor-pointer">
-                     🔍 Show alternatives
-                  </button>
+          <div className="p-6 md:p-8 shrink-0">
+             <div className="max-w-3xl mx-auto">
+               <div className="flex gap-2 mb-4 px-1 overflow-x-auto no-scrollbar">
+                 <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
+                   <Sparkles className="w-3.5 h-3.5" />
+                   Amenities
+                 </button>
+                 <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
+                   <Search className="w-3.5 h-3.5" />
+                   Search bungalows
+                 </button>
                </div>
-               <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full p-1.5 pr-2 focus-within:bg-white focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100 transition-all">
-                 <button className="w-10 h-10 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-[22px]">add_circle</span>
+               
+               <div className="relative flex items-center bg-white border border-slate-200 rounded-3xl p-2 shadow-[0_2px_20px_rgb(0,0,0,0.03)] focus-within:ring-4 focus-within:ring-slate-100 focus-within:border-slate-300 transition-all">
+                 <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
+                 <button 
+                   onClick={() => fileInputRef.current?.click()} 
+                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors shrink-0 ${
+                     attachment ? 'text-slate-900 bg-slate-100' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50'
+                   }`}
+                 >
+                    <Paperclip className="w-5 h-5" />
                  </button>
                  <input
-                   className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 py-2"
+                   className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 px-3 py-4"
                    placeholder="Type your message..."
                    type="text"
                    value={inputText}
@@ -313,117 +404,139 @@ export default function Page() {
                  />
                  <button
                    onClick={() => handleSendMessage()}
-                   disabled={!inputText.trim()}
-                   className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm cursor-pointer"
+                   disabled={(!inputText.trim() && !attachment)}
+                   className="w-12 h-12 shrink-0 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2"
                  >
-                   <span className="material-symbols-outlined text-[18px]">send</span>
+                   <ArrowRight className="w-5 h-5" />
                  </button>
                </div>
-            </div>
+             </div>
           </div>
         </section>
 
-        {/* Right Column: Booking Details */}
-        <aside className="w-80 bg-white border-l border-slate-200 flex flex-col">
-           <div className="p-5 border-b border-slate-100 flex items-center gap-2">
-             <span className="material-symbols-outlined text-slate-400">receipt_long</span>
-             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Your Selection</h2>
-           </div>
-           
-           <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-6">
-              
-              {/* Selected Accommodation info */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                 <h3 className="font-bold text-slate-800 text-lg mb-1">Nuwara Eliya Rest House</h3>
-                 <p className="text-sm text-slate-500 mb-4">Superior Garden Suite</p>
-                 
-                 <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">calendar_month</span>
-                       <div>
-                          <p className="font-medium">Sept 14 - Sept 16</p>
-                          <p className="text-xs text-slate-500">2 Nights</p>
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-700">
-                       <span className="material-symbols-outlined text-slate-400 text-[20px]">group</span>
-                       <p className="font-medium">2 Guests</p>
-                    </div>
-                 </div>
-              </div>
-
-              {/* Action / Checkout Card */}
-              <div className="bg-slate-800 text-white p-5 rounded-3xl shadow-lg mt-auto flex flex-col gap-4">
-                 
-                 <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                    <span className="text-white/70 text-sm">Status</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' : bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
-                       {bookingStatus}
-                    </span>
-                 </div>
-
-                 <div className="space-y-2 text-sm">
-                    <div className="flex justify-between text-white/80">
-                       <span>Rs. 18,500 x 2 nights</span>
-                       <span>Rs. 37,000</span>
-                    </div>
-                    <div className="flex justify-between text-white/80">
-                       <span>Service Fee</span>
-                       <span>Rs. 1,200</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-white/10">
-                       <span>Total</span>
-                       <span className="text-emerald-400">Rs. 38,200</span>
-                    </div>
-                 </div>
-
-                 <div className="flex items-center justify-between py-2 mt-2">
-                   <label className="text-sm text-white/80 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
-                     <span className="material-symbols-outlined text-[18px]">chat</span>
-                     WhatsApp Updates
-                   </label>
-                   <div className="relative inline-block w-11 h-6">
-                     <input
-                       checked={whatsappEnabled}
-                       onChange={(e) => setWhatsappEnabled(e.target.checked)}
-                       disabled={bookingStatus !== "draft"}
-                       className="sr-only peer disabled:opacity-50"
-                       id="whatsapp-toggle"
-                       type="checkbox"
+        {/* Right Column: Dynamic Booking Form */}
+        <AnimatePresence>
+          {isBookingMode && (
+          <motion.aside 
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 340, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 40 }}
+            className="bg-white border-l border-slate-100 flex flex-col shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
+          >
+             <div className="p-6 pb-4 flex items-center gap-3 border-b border-slate-50">
+               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                 <FileText className="w-4 h-4 text-slate-700" />
+               </div>
+               <h2 className="text-[14px] font-bold text-slate-900">Booking Summary</h2>
+             </div>
+             
+             <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
+                
+                <div className="flex flex-col gap-1.5">
+                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
+                   <input 
+                     type="text" 
+                     value={uiState.emp_id || ""} 
+                     onChange={e => setUiState({...uiState, emp_id: e.target.value})}
+                     className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     placeholder="e.g. EMP-123"
+                   />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Room</label>
+                   <input 
+                     type="text" 
+                     value={uiState.room_number || ""} 
+                     onChange={e => setUiState({...uiState, room_number: e.target.value})}
+                     className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     placeholder="e.g. OLD-101"
+                   />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-in</label>
+                     <input 
+                       type="date" 
+                       value={uiState.from_date || ""} 
+                       onChange={e => setUiState({...uiState, from_date: e.target.value})}
+                       className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
-                     <div className="w-full h-full bg-white/20 rounded-full peer peer-checked:bg-blue-500 transition-colors cursor-pointer"></div>
-                     <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 cursor-pointer shadow-sm"></div>
-                   </div>
-                 </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-out</label>
+                     <input 
+                       type="date" 
+                       value={uiState.to_date || ""} 
+                       onChange={e => setUiState({...uiState, to_date: e.target.value})}
+                       className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
+                     />
+                  </div>
+                </div>
 
-                 {bookingStatus === "draft" ? (
-                   <button
-                     onClick={triggerConfirmBooking}
-                     className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
-                   >
-                     Confirm Booking
-                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                   </button>
-                 ) : bookingStatus === "confirming" ? (
-                   <button
-                     disabled
-                     className="w-full py-3.5 bg-blue-500/50 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-wait"
-                   >
-                     <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
-                     Processing...
-                   </button>
-                 ) : (
-                   <button
-                     disabled
-                     className="w-full py-3.5 bg-emerald-500 text-white font-bold rounded-2xl shadow-md mt-2 flex items-center justify-center gap-2"
-                   >
-                     <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                     Confirmed
-                   </button>
-                 )}
-              </div>
-           </div>
-        </aside>
+                {/* Action / Checkout Card */}
+                <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mt-auto flex flex-col gap-5">
+                   
+                   <div className="flex justify-between items-center pb-5 border-b border-white/10">
+                      <span className="text-white/60 text-[13px] font-medium">Status</span>
+                      <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
+                        bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 
+                        bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-400' : 
+                        'bg-white/10 text-white'
+                      }`}>
+                         {bookingStatus}
+                      </span>
+                   </div>
+
+                   <div className="flex items-center justify-between">
+                     <label className="text-[13px] font-medium text-white/90 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
+                       <MessageSquare className="w-4 h-4 text-emerald-400" />
+                       WhatsApp Updates
+                     </label>
+                     <div className="relative inline-block w-10 h-5">
+                       <input
+                         checked={whatsappEnabled}
+                         onChange={(e) => setWhatsappEnabled(e.target.checked)}
+                         disabled={bookingStatus !== "draft"}
+                         className="sr-only peer disabled:opacity-50"
+                         id="whatsapp-toggle"
+                         type="checkbox"
+                       />
+                       <div className="w-full h-full bg-white/20 rounded-full peer peer-checked:bg-emerald-500 transition-colors cursor-pointer"></div>
+                       <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5 cursor-pointer shadow-sm"></div>
+                     </div>
+                   </div>
+
+                   {bookingStatus === "draft" ? (
+                     <button
+                       onClick={triggerConfirmBooking}
+                       className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                     >
+                       Confirm & Pay
+                     </button>
+                   ) : bookingStatus === "confirming" ? (
+                     <button
+                       disabled
+                       className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
+                     >
+                       <Loader2 className="w-5 h-5 animate-spin" />
+                       Processing
+                     </button>
+                   ) : (
+                     <button
+                       disabled
+                       className="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl shadow-md mt-2 flex items-center justify-center gap-2"
+                     >
+                       <CheckCircle2 className="w-5 h-5" />
+                       Confirmed
+                     </button>
+                   )}
+                </div>
+             </div>
+          </motion.aside>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
