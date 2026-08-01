@@ -5,7 +5,7 @@ import Navigation from "@/components/layout/Navigation";
 import AppProviders from "@/components/providers/AppProviders";
 
 export const metadata: Metadata = {
-  title: "GovStay AI - Government Accommodation Booking & Verification",
+  title: "GovSewana AI - Government Accommodation Booking & Verification",
   description: "Centralized discovery, real-time status monitoring, and automated allocation platform for government circuit bungalows and rest houses in Sri Lanka.",
 };
 

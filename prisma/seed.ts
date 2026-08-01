@@ -24,7 +24,7 @@ async function main() {
       position: 'Director General',
       nicNumber: '197512345678',
       mobileNumber: '0771234567',
-      emailAddress: 'superadmin@govstay.lk',
+      emailAddress: 'superadmin@govsewana.lk',
       residentialAddress: '123 Main St, Colombo 03',
       preferredDistrict: 'Colombo',
     },
@@ -179,7 +179,7 @@ async function main() {
       name: 'Bungalow In-charge',
       address: 'Near Economic Centre, Nuwara Eliya',
       telephoneNo: '+94 52 2222363',
-      emailAddress: 'pubadmin.ne@govstay.lk',
+      emailAddress: 'pubadmin.ne@govsewana.lk',
       circuitBungalowId: neOld.id,
     },
   });

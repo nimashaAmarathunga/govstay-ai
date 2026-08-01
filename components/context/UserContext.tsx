@@ -41,7 +41,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const STORAGE_KEY = "govstay_active_user_id";
+const STORAGE_KEY = "govsewana_active_user_id";
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 

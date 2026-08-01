@@ -107,7 +107,7 @@ export default function Navigation() {
           <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center transition-transform group-hover:scale-105">
             <Building2 className="text-white w-4 h-4" />
           </div>
-          <h1 className="text-[17px] font-bold tracking-tight text-slate-900">GovStay</h1>
+          <h1 className="text-[17px] font-bold tracking-tight text-slate-900">GovSewana</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">

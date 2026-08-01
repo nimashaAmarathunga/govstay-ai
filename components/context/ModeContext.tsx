@@ -15,7 +15,7 @@ interface ModeContextType {
 
 const ModeContext = createContext<ModeContextType | undefined>(undefined);
 
-const STORAGE_KEY = "govstay_app_mode";
+const STORAGE_KEY = "govsewana_app_mode";
 
 export function ModeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<AppMode>("user");
