@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { RoomType } from "@prisma/client";
 
-// GET all circuit bungalows with caretaker and rooms
-export async function GET() {
+// GET circuit bungalows with caretaker and rooms (optional ?department=... filter)
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const department = searchParams.get("department");
+
+    const where = department && department !== "ALL" ? { department } : {};
+
     const bungalows = await prisma.circuitBungalow.findMany({
+      where,
       include: {
         caretaker: true,
         rooms: {
@@ -112,7 +117,7 @@ export async function POST(request: Request) {
               rooms: {
                 create: rooms.map((r: any) => ({
                   roomNumber: r.roomNumber || `Room-${Date.now()}`,
-                  roomType: r.roomType === "AC" ? RoomType.AC : RoomType.NON_AC,
+                  roomType: r.roomType === "AC" ? "AC" : "NON_AC",
                   noOfBeds: Number(r.noOfBeds) || 2,
                   price: parseFloat(r.price) || 3000,
                   items: Array.isArray(r.items)
@@ -175,7 +180,7 @@ export async function PUT(request: Request) {
     const parsedCapacity = Number(capacity) || 4;
 
     // Use transaction to update bungalow, upsert caretaker, and refresh rooms
-    const updatedBungalow = await prisma.$transaction(async (tx) => {
+    const updatedBungalow = await prisma.$transaction(async (tx: any) => {
       // 1. Update basic bungalow info
       const b = await tx.circuitBungalow.update({
         where: { id },
@@ -235,7 +240,7 @@ export async function PUT(request: Request) {
             data: rooms.map((r: any) => ({
               circuitBungalowId: id,
               roomNumber: r.roomNumber || `Room`,
-              roomType: r.roomType === "AC" ? RoomType.AC : RoomType.NON_AC,
+              roomType: r.roomType === "AC" ? "AC" : "NON_AC",
               noOfBeds: Number(r.noOfBeds) || 2,
               price: parseFloat(r.price) || 3000,
               items: Array.isArray(r.items)

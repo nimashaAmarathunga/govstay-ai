@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@/components/context/UserContext";
 import { 
   Building2, Users, CalendarDays, Plus, Search,
   Edit2, Trash2, X, Save, AlertCircle, Loader2,
@@ -95,6 +96,7 @@ type DbBooking = {
     name: string;
     location: string;
     image: string;
+    department?: string;
   };
   room?: {
     roomNumber: string;
@@ -137,7 +139,13 @@ const DEFAULT_FORM_STATE: BungalowFormState = {
 };
 
 export default function AdminPage() {
+  const { activeUser } = useUser();
   const [activeTab, setActiveTab] = useState<"bungalows" | "bookings">("bungalows");
+
+  // Determine active department filter (DEPT_ADMIN filters by placeOfWork, SUPER_ADMIN sees all)
+  const adminDepartment = (activeUser && activeUser.role === "DEPT_ADMIN" && activeUser.placeOfWork)
+    ? activeUser.placeOfWork
+    : null;
 
   // Data State
   const [bungalows, setBungalows] = useState<DbBungalow[]>([]);
@@ -155,7 +163,10 @@ export default function AdminPage() {
   const fetchBungalows = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/bungalows");
+      const url = adminDepartment
+        ? `/api/admin/bungalows?department=${encodeURIComponent(adminDepartment)}`
+        : "/api/admin/bungalows";
+      const res = await fetch(url);
       const json = await res.json();
       if (json.success) {
         setBungalows(json.data);
@@ -172,7 +183,10 @@ export default function AdminPage() {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch("/api/admin/bookings");
+      const url = adminDepartment
+        ? `/api/admin/bookings?department=${encodeURIComponent(adminDepartment)}`
+        : "/api/admin/bookings";
+      const res = await fetch(url);
       const json = await res.json();
       if (json.success) {
         setBookings(json.data);
@@ -185,11 +199,14 @@ export default function AdminPage() {
   useEffect(() => {
     fetchBungalows();
     fetchBookings();
-  }, []);
+  }, [adminDepartment]);
 
   // --- Handlers ---
   const handleAddBungalow = () => {
-    setBungalowForm(DEFAULT_FORM_STATE);
+    setBungalowForm({
+      ...DEFAULT_FORM_STATE,
+      department: adminDepartment || DEFAULT_FORM_STATE.department,
+    });
     setEditingBungalowId(null);
     setIsBungalowModalOpen(true);
   };
@@ -355,11 +372,31 @@ export default function AdminPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto p-6 md:p-10">
           
-          <div className="mb-10">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">Admin Dashboard</h1>
-            <p className="text-[15px] text-slate-500 font-medium">
-              Manage circuit bungalows, rooms, caretakers, and view live system reservations.
-            </p>
+          <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">Admin Dashboard</h1>
+              <p className="text-[15px] text-slate-500 font-medium">
+                Manage circuit bungalows, rooms, caretakers, and view live system reservations.
+              </p>
+            </div>
+            {activeUser && (
+              <div className="bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-sm flex items-center gap-3.5 self-start md:self-auto border border-slate-800">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
+                  {activeUser.name.charAt(0)}
+                </div>
+                <div>
+                  <div className="text-[13px] font-bold text-white leading-tight flex items-center gap-2">
+                    {activeUser.name}
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      {activeUser.role === "SUPER_ADMIN" ? "Super Admin" : "Dept Admin"}
+                    </span>
+                  </div>
+                  <div className="text-[11.5px] text-slate-400 font-medium mt-0.5">
+                    {adminDepartment ? `Department: ${adminDepartment}` : "All Departments Access"}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
