@@ -4,21 +4,26 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Proxy the request to the custom Agent Kernel local server running on port 8001
-    const response = await fetch("http://127.0.0.1:8001/chat", {
+    console.log(`[Next.js API] Received chat request from frontend. Body: ${JSON.stringify(body)}`);
+
+    // Proxy the request to the custom Agent Kernel local server running on port 8000
+    console.log("[Next.js API] Sending fetch to http://127.0.0.1:8000/api/v1/chat...");
+    const response = await fetch("http://127.0.0.1:8000/api/v1/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      // Ensure we format the payload expected by api.py (ChatRequest)
+      // Ensure we format the payload expected by Agent Kernel (BaseRunRequest)
       body: JSON.stringify({
-        message: body.text,
-        thread_id: body.session_id || "default-session",
+        prompt: body.text,
+        session_id: body.session_id || "default-session",
       }),
     });
+    console.log(`[Next.js API] Fetch completed with status: ${response.status} ${response.statusText}`);
 
     if (!response.ok) {
       const errText = await response.text();
+      console.log(`[Next.js API] Backend Error Body: ${errText}`);
       console.error("Backend Error:", errText);
       return new Response(JSON.stringify({ error: "Agent server failed to respond." }), {
         status: response.status,
