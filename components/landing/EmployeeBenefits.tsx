@@ -62,7 +62,7 @@ export function EmployeeBenefits() {
               Designed for Public Servants
             </h2>
             <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              GovStay is engineered specifically for Sri Lankan government employees
+              GovSewana is engineered specifically for Sri Lankan government employees
               and their families. We understand the pain of manual administrative processes, which is why we built an AI layer to handle verification, scheduling, and notifications.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">

@@ -73,7 +73,7 @@ export function Footer() {
               <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
                 <Building2 className="text-white w-4 h-4" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">GovStay</h3>
+              <h3 className="text-xl font-bold tracking-tight">GovSewana</h3>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
               Discover and book verified government accommodations across Sri
@@ -120,11 +120,11 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:support@govstay.lk"
+                  href="mailto:support@govsewana.lk"
                   className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-300 text-sm"
                 >
                   <Mail className="w-4 h-4" />
-                  support@govstay.lk
+                  support@govsewana.lk
                 </a>
               </li>
               <li>
@@ -148,7 +148,7 @@ export function Footer() {
           transition={{ delay: 0.4 }}
           className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-400"
         >
-          <p>&copy; 2026 GovStay. All rights reserved.</p>
+          <p>&copy; 2026 GovSewana. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white transition-colors">
               Privacy

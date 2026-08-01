@@ -7,14 +7,14 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "GovStay made finding accommodation for my family vacation incredibly easy. The AI assistant understood exactly what I was looking for, and we booked within minutes.",
+      "GovSewana made finding accommodation for my family vacation incredibly easy. The AI assistant understood exactly what I was looking for, and we booked within minutes.",
     author: "Ravi Kumarasinghe",
     role: "District Secretary",
     avatar: "🧑‍💼",
   },
   {
     quote:
-      "The interactive map feature is fantastic! I could see all available properties and nearby attractions at a glance. Definitely using GovStay again.",
+      "The interactive map feature is fantastic! I could see all available properties and nearby attractions at a glance. Definitely using GovSewana again.",
     author: "Lakshmi Perera",
     role: "Government Officer",
     avatar: "👩‍💼",
@@ -64,7 +64,7 @@ export function Testimonials() {
             What Our Users Say
           </h2>
           <p className="text-slate-500 text-lg">
-            Real feedback from government employees who love GovStay
+            Real feedback from government employees who love GovSewana
           </p>
         </motion.div>
 
