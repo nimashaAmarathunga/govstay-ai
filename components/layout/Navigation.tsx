@@ -66,6 +66,18 @@ export default function Navigation() {
 
   const handleModeChange = (newMode: AppMode) => {
     setMode(newMode);
+
+    if (activeUser) {
+      const isAdminRole = activeUser.role === "DEPT_ADMIN" || activeUser.role === "SUPER_ADMIN";
+      const isUserRole = activeUser.role === "GOV_EMPLOYEE" || activeUser.role === "PUBLIC_USER";
+
+      if (newMode === "admin" && !isAdminRole) {
+        setActiveUser(null);
+      } else if (newMode === "user" && !isUserRole) {
+        setActiveUser(null);
+      }
+    }
+
     if (newMode === "user" && pathname === "/admin") router.push("/");
     else if (newMode === "admin" && pathname !== "/admin") router.push("/admin");
   };
