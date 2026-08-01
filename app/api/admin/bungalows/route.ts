@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { RoomType } from "@prisma/client";
 
-// GET all circuit bungalows with caretaker and rooms
-export async function GET() {
+// GET circuit bungalows with caretaker and rooms (optional ?department=... filter)
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const department = searchParams.get("department");
+
+    const where = department && department !== "ALL" ? { department } : {};
+
     const bungalows = await prisma.circuitBungalow.findMany({
+      where,
       include: {
         caretaker: true,
         rooms: {
@@ -23,6 +28,46 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+async function resolveCoordinates(
+  lat: any,
+  lng: any,
+  gmapLink?: string
+): Promise<{ latitude: number | null; longitude: number | null }> {
+  let parsedLat = lat ? parseFloat(lat) : null;
+  let parsedLng = lng ? parseFloat(lng) : null;
+
+  if (isNaN(parsedLat as number)) parsedLat = null;
+  if (isNaN(parsedLng as number)) parsedLng = null;
+
+  if ((parsedLat === null || parsedLng === null) && gmapLink && gmapLink.startsWith("http")) {
+    try {
+      const res = await fetch(gmapLink, {
+        method: "GET",
+        redirect: "follow",
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+      });
+      const expandedUrl = res.url;
+
+      const pinMatch = expandedUrl.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (pinMatch) {
+        return { latitude: parseFloat(pinMatch[1]), longitude: parseFloat(pinMatch[2]) };
+      }
+
+      const atMatch = expandedUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (atMatch) {
+        return { latitude: parseFloat(atMatch[1]), longitude: parseFloat(atMatch[2]) };
+      }
+    } catch (err) {
+      console.error("Error auto-resolving map link in API:", err);
+    }
+  }
+
+  return { latitude: parsedLat, longitude: parsedLng };
 }
 
 // POST: Create new Circuit Bungalow with Caretaker and Rooms
@@ -65,6 +110,12 @@ export async function POST(request: Request) {
 
     const parsedNoOfRooms = Number(noOfRooms) || (Array.isArray(rooms) ? rooms.length : 1);
     const parsedCapacity = Number(capacity) || 4;
+    // Validate room limit before creating bungalow
+    if (Array.isArray(rooms) && rooms.length > parsedNoOfRooms) {
+      return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
+    }
+
+    const { latitude: finalLat, longitude: finalLng } = await resolveCoordinates(latitude, longitude, gmapLink);
 
     // Prisma nested create
     const newBungalow = await prisma.circuitBungalow.create({
@@ -88,8 +139,8 @@ export async function POST(request: Request) {
           : typeof highlights === "string"
           ? highlights.split(",").map((s: string) => s.trim()).filter(Boolean)
           : [],
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
+        latitude: finalLat,
+        longitude: finalLng,
         gmapLink: gmapLink || null,
 
         // Create Caretaker if caretaker name is provided
@@ -112,7 +163,7 @@ export async function POST(request: Request) {
               rooms: {
                 create: rooms.map((r: any) => ({
                   roomNumber: r.roomNumber || `Room-${Date.now()}`,
-                  roomType: r.roomType === "AC" ? RoomType.AC : RoomType.NON_AC,
+                  roomType: r.roomType === "AC" ? "AC" : "NON_AC",
                   noOfBeds: Number(r.noOfBeds) || 2,
                   price: parseFloat(r.price) || 3000,
                   items: Array.isArray(r.items)
@@ -174,8 +225,15 @@ export async function PUT(request: Request) {
     const parsedNoOfRooms = Number(noOfRooms) || (Array.isArray(rooms) ? rooms.length : 1);
     const parsedCapacity = Number(capacity) || 4;
 
+    // Validate room limit before updating bungalow
+    if (Array.isArray(rooms) && rooms.length > parsedNoOfRooms) {
+      return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
+    }
+
+    const { latitude: finalLat, longitude: finalLng } = await resolveCoordinates(latitude, longitude, gmapLink);
+
     // Use transaction to update bungalow, upsert caretaker, and refresh rooms
-    const updatedBungalow = await prisma.$transaction(async (tx) => {
+    const updatedBungalow = await prisma.$transaction(async (tx: any) => {
       // 1. Update basic bungalow info
       const b = await tx.circuitBungalow.update({
         where: { id },
@@ -198,8 +256,8 @@ export async function PUT(request: Request) {
             : typeof highlights === "string"
             ? highlights.split(",").map((s: string) => s.trim()).filter(Boolean)
             : [],
-          latitude: latitude ? parseFloat(latitude) : null,
-          longitude: longitude ? parseFloat(longitude) : null,
+          latitude: finalLat,
+          longitude: finalLng,
           gmapLink: gmapLink || null,
         },
       });
@@ -235,7 +293,7 @@ export async function PUT(request: Request) {
             data: rooms.map((r: any) => ({
               circuitBungalowId: id,
               roomNumber: r.roomNumber || `Room`,
-              roomType: r.roomType === "AC" ? RoomType.AC : RoomType.NON_AC,
+              roomType: r.roomType === "AC" ? "AC" : "NON_AC",
               noOfBeds: Number(r.noOfBeds) || 2,
               price: parseFloat(r.price) || 3000,
               items: Array.isArray(r.items)

@@ -114,7 +114,7 @@ export default function Page() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 text: text + systemContext, 
-                session_id: sessionId,
+                session_id: "demo-session-govsewana",
                 attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
             })
         });

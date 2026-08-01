@@ -66,6 +66,18 @@ export default function Navigation() {
 
   const handleModeChange = (newMode: AppMode) => {
     setMode(newMode);
+
+    if (activeUser) {
+      const isAdminRole = activeUser.role === "DEPT_ADMIN" || activeUser.role === "SUPER_ADMIN";
+      const isUserRole = activeUser.role === "GOV_EMPLOYEE" || activeUser.role === "PUBLIC_USER";
+
+      if (newMode === "admin" && !isAdminRole) {
+        setActiveUser(null);
+      } else if (newMode === "user" && !isUserRole) {
+        setActiveUser(null);
+      }
+    }
+
     if (newMode === "user" && pathname === "/admin") router.push("/");
     else if (newMode === "admin" && pathname !== "/admin") router.push("/admin");
   };
@@ -103,11 +115,11 @@ export default function Navigation() {
   return (
     <header className="flex-none h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-50 sticky top-0">
       <div className="flex items-center gap-10">
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/about" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center transition-transform group-hover:scale-105">
             <Building2 className="text-white w-4 h-4" />
           </div>
-          <h1 className="text-[17px] font-bold tracking-tight text-slate-900">GovStay</h1>
+          <h1 className="text-[17px] font-bold tracking-tight text-slate-900">GovSewana</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">

@@ -27,7 +27,7 @@ export default async function AdminApprovalsPage() {
         <header className="flex justify-between items-end border-b border-slate-200 pb-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">AI Booking Approvals</h1>
-            <p className="text-slate-500 mt-2">Monitor automated decisions made by the GovStay Multi-Agent System.</p>
+            <p className="text-slate-500 mt-2">Monitor automated decisions made by the GovSewana Multi-Agent System.</p>
           </div>
           <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-200 text-sm font-semibold shadow-sm">
             <span className="material-symbols-outlined text-lg">check_circle</span>

@@ -1,6 +1,6 @@
-# GovStay-AI
+# GovSewana-AI
 
-GovStay-AI is a Next.js application for discoverability and booking of government-owned rest houses and circuit bungalows across Sri Lanka.
+GovSewana-AI is a Next.js application for discoverability and booking of government-owned rest houses and circuit bungalows across Sri Lanka.
 
 ## Developer Quick Start Guide
 

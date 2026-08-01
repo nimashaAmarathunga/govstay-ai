@@ -128,7 +128,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-slate-900/80 backdrop-blur-md w-max px-3 py-1.5 rounded-lg text-white text-[10px] font-bold uppercase tracking-widest mb-2 border border-white/10">
-                        {bungalow.department.split(" ")[0]}
+                        {bungalow.department}
                       </div>
                     </div>
                   </div>
