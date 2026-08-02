@@ -6,6 +6,58 @@ GovSewana-AI is a Next.js application for discoverability and booking of governm
 
 *(Please insert the link to your video demonstration here)*
 
+
+---
+
+## How to Run the Next.js Frontend
+
+To run the Next.js prototype locally on your machine, follow these simple steps:
+
+### Step-by-Step Setup
+
+#### 1. Install dependencies
+```bash
+npm install
+```
+
+#### 2. Configure Environment Variables
+1. Copy the `sample-dotenv.txt` file to create your own `.env` file:
+   ```bash
+   cp sample-dotenv.txt .env
+   ```
+2. Populate the `.env` file with the required database connection strings (provided in our submission details).
+
+#### 3. Generate the Prisma Client
+You **must** generate the local Prisma Client types so TypeScript can resolve the database schema:
+```bash
+npx prisma generate
+```
+
+#### 4. Start the Development Server
+You do **not** need to run database pushes or seeds since the database is already set up and populated. Simply run:
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view and interact with the application.
+
+---
+
+### Advanced / New Database Setup (Optional)
+
+If you are setting up a brand new/private database and need to initialize it from scratch:
+
+1. **Push the Schema:** Pushes the tables and relations defined in `schema.prisma` directly to your database:
+   ```bash
+   npx prisma db push
+   ```
+2. **Seed Initial Data:** Populates your database with test users, bungalows, rooms, and bookings:
+   ```bash
+   npx prisma db seed
+   ```
+
+
+
 ## ⚠️ Important: Multi-Repository Architecture
 Please note that our prototype is split across two repositories:
 1. **Frontend & API (This Repo):** Contains the Next.js web application and UI.
@@ -82,8 +134,9 @@ Based on our original application blueprint, the following features are planned 
 
 During the development process, we had to make several key pivots from our initial proposal to better fit technical requirements and government constraints:
 
-- **AI Engine (The Biggest Pivot):** Initially, we proposed using the Gemini Flash API. However, to ensure maximum data privacy for government employee data and document uploads, we completely pivoted to using **Local LLMs** (`llama3.2` and `qwen2.5`). 
+- **AI Engine (The Biggest Pivot):** Initially, we proposed using the Gemini Flash API. However, we completely pivoted to using **Local LLMs** (`llama3.2` and `qwen2.5`) to ensure maximum data privacy for government employee data, eliminate ongoing API costs, and avoid the constraints of API rate limits.
 - **Agent Orchestration with Agent Kernel:** Instead of using n8n or a simple API wrapper, we adopted **Agent Kernel** paired with **LangGraph**. This required a massive architectural shift and a steep learning curve. We had to build, test, and debug the agent logic in a completely separate repository (`agent-kernel`) and figure out how to integrate it. While it took a lot of effort to understand Agent Kernel's hooks, supervisors, and session management, it ultimately allowed us to build an enterprise-grade multi-agent system with real reasoning, prompt injection security, and multi-step workflows.
 
 ---
+
 
