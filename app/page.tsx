@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
+import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Send, Paperclip, Map, ShieldCheck, 
@@ -28,6 +30,7 @@ export default function Page() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
+  const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
@@ -36,8 +39,18 @@ export default function Page() {
   const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
   const [uiState, setUiState] = useState({ emp_id: "", room_number: "", from_date: "", to_date: "" });
   const [sessionId] = useState(() => `demo-session-${Date.now()}`);
+  const router = useRouter();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (bookingStatus === "confirmed") {
+      const timer = setTimeout(() => {
+        router.push('/my-bookings');
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [bookingStatus, router]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -135,8 +148,8 @@ export default function Page() {
                     try {
                         const data = JSON.parse(line.slice(6));
                         
-                        if (data.delta?.toLowerCase().includes("pending (awaiting approval)")) {
-                          setBookingStatus("confirming");
+                        if (data.delta?.toLowerCase().includes("pending (awaiting verification)")) {
+                          setBookingStatus("confirmed");
                         }
                         if (data.delta?.toLowerCase().includes("confirmed")) {
                           setBookingStatus("confirmed");
@@ -186,8 +199,12 @@ export default function Page() {
 
   const triggerConfirmBooking = () => {
     if (bookingStatus !== "draft") return;
+    if (!paymentSlipUrl) {
+      alert("Please upload your payment slip first before confirming.");
+      return;
+    }
     setBookingStatus("confirming");
-    handleSendMessage("I have reviewed the details and submitted the form. Here is my payment slip. Please finalize the booking.", true);
+    handleSendMessage(`I have reviewed the details and submitted the form. Here is my payment slip: ${paymentSlipUrl}. Please finalize the booking.`, true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -476,6 +493,20 @@ export default function Page() {
                        className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
                   </div>
+                </div>
+
+                {uiState.total_cost && (
+                   <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-xl mt-2 shadow-sm">
+                     <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Total Cost</span>
+                     <span className="text-[16px] font-extrabold text-slate-900">LKR {uiState.total_cost.toLocaleString()}</span>
+                   </div>
+                )}
+
+                <div className="mt-2">
+                   <PaymentSlipUpload 
+                     onUploadComplete={(url) => setPaymentSlipUrl(url)} 
+                     value={paymentSlipUrl}
+                   />
                 </div>
 
                 {/* Action / Checkout Card */}

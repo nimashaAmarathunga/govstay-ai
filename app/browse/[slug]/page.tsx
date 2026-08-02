@@ -6,12 +6,7 @@ type BungalowDetailsPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const bungalows = await prisma.circuitBungalow.findMany({
-    select: { slug: true },
-  });
-  return bungalows.map((bungalow) => ({ slug: bungalow.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function BungalowDetailsPage({ params }: BungalowDetailsPageProps) {
   const { slug } = await params;
