@@ -9,7 +9,7 @@ GovSewana-AI is a Next.js application for discoverability and booking of governm
 ## ⚠️ Important: Multi-Repository Architecture
 Please note that our prototype is split across two repositories:
 1. **Frontend & API (This Repo):** Contains the Next.js web application and UI.
-2. **AI Agent Logic (Agent Kernel Repo):** *(Please insert the link to your agent-kernel repo here)*. The core AI reasoning, LangGraph multi-agent logic, and local LLM orchestration are built here. 
+2. **AI Agent Logic (Agent Kernel Repo):** *https://github.com/nimashaAmarathunga/agent-kernel*. The core AI reasoning, LangGraph multi-agent logic, and local LLM orchestration are built here. 
    - 🔍 **Where to look:** Please review the `use-cases/govstay-agent/` directory in the Agent Kernel repository to see our actual AI implementation, agent routing, and security hooks.
 
 ## What We Have Built So Far (What Users Can Do Today)
