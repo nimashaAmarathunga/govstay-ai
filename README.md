@@ -71,7 +71,6 @@ For this prototype stage, we focused on building a fully functional, AI-driven u
 - **Browse and Discover:** Users can explore a beautifully designed website to discover various government rest houses and circuit bungalows.
 - **View on Map:** Users can use an interactive map to visually locate properties across the country.
 - **Chat with the AI:** Instead of clicking through complex search filters, users can simply type to our AI assistant (e.g., "Find me a bungalow in Nuwara Eliya for 4 people next weekend"). 
-- **Upload IDs for Instant Verification:** Government employees can upload a photo of their ID card directly into the chat. Our AI's vision capabilities will read the ID and automatically verify their eligibility.
 - **Book via Conversation:** Once a user finds a place they like, they can just ask the AI to book it. The AI automatically handles the booking process in the background and saves their reservation for approval.
 
 ## Technical Architecture & Agent System
