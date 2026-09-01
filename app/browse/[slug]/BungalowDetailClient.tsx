@@ -302,7 +302,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
         {/* Hero Card */}
         <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="relative h-72 sm:h-96 lg:h-[28rem]">
-            <img src={bungalow.image} alt={bungalow.name} className="h-full w-full object-cover" />
+            <img 
+              src={bungalow.image} 
+              alt={bungalow.name} 
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
+              }}
+              className="h-full w-full object-cover" 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
             
             <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 shadow-md backdrop-blur-md">
