@@ -34,18 +34,21 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'slips');
+    const folder = (formData.get('folder') as string) || 'ids';
+    const safeFolder = folder === 'slips' ? 'slips' : 'ids';
+
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', safeFolder);
     await mkdir(uploadsDir, { recursive: true });
 
     // Generate unique filename
     const rawExt = file.name.split('.').pop() || 'bin';
     const sanitizedExt = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const filename = `slip-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${sanitizedExt}`;
+    const filename = `${safeFolder.slice(0, -1)}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${sanitizedExt}`;
     const filePath = path.join(uploadsDir, filename);
 
     await writeFile(filePath, buffer);
 
-    const publicUrl = `/uploads/slips/${filename}`;
+    const publicUrl = `/uploads/${safeFolder}/${filename}`;
 
     return NextResponse.json({
       success: true,
