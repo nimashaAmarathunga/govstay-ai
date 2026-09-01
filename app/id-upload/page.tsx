@@ -3,23 +3,27 @@
 import { useState, useRef, FormEvent, ChangeEvent, DragEvent } from "react";
 import { useUser, AppUser } from "@/components/context/UserContext";
 import { useRouter } from "next/navigation";
-import { 
-  UploadCloud, 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  UserCheck, 
-  Building, 
-  CreditCard, 
-  ShieldCheck, 
-  X, 
+import {
+  UploadCloud,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  UserCheck,
+  Building,
+  CreditCard,
+  ShieldCheck,
+  X,
   Sparkles,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  Eye,
+  EyeOff,
+  Navigation
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const inputClassName = 
+const inputClassName =
   "w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/5";
 
 export default function IdUploadPage() {
@@ -30,6 +34,8 @@ export default function IdUploadPage() {
   const [formData, setFormData] = useState({
     name: "",
     username: "",
+    password: "",
+    confirmPassword: "",
     nicNumber: "",
     empId: "",
     mobileNumber: "",
@@ -41,6 +47,7 @@ export default function IdUploadPage() {
     preferredDistrict: "",
     residentialAddress: ""
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   // File upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -128,6 +135,21 @@ export default function IdUploadPage() {
       return;
     }
 
+    if (!formData.password) {
+      setErrorMessage("Please enter a password for your user account.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Password and Confirm Password do not match.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -181,9 +203,12 @@ export default function IdUploadPage() {
     setCreatedRecord(null);
     setSelectedFile(null);
     setFilePreview(null);
+    setShowPassword(false);
     setFormData({
       name: "",
       username: "",
+      password: "",
+      confirmPassword: "",
       nicNumber: "",
       empId: "",
       mobileNumber: "",
@@ -217,7 +242,7 @@ export default function IdUploadPage() {
         <AnimatePresence mode="wait">
           {createdRecord ? (
             /* Success Card View */
-            <motion.div 
+            <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.96, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -239,7 +264,7 @@ export default function IdUploadPage() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="rounded-2xl bg-slate-50 p-6 border border-slate-100 space-y-4">
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Database Record Details</h3>
-                  
+
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
                       <span className="text-slate-500 font-medium">Record ID</span>
@@ -279,10 +304,10 @@ export default function IdUploadPage() {
                             <span className="text-xs font-semibold">{createdRecord.empIdPhoto.split("/").pop()}</span>
                           </div>
                         ) : (
-                          <img 
-                            src={createdRecord.empIdPhoto} 
-                            alt="Uploaded ID Card" 
-                            className="max-h-48 object-contain rounded-lg" 
+                          <img
+                            src={createdRecord.empIdPhoto}
+                            alt="Uploaded ID Card"
+                            className="max-h-48 object-contain rounded-lg"
                           />
                         )}
                       </div>
@@ -325,7 +350,7 @@ export default function IdUploadPage() {
             </motion.div>
           ) : (
             /* Upload & Info Form */
-            <motion.form 
+            <motion.form
               key="form"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -351,13 +376,12 @@ export default function IdUploadPage() {
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`relative rounded-2xl border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${
-                      isDragging
+                    className={`relative rounded-2xl border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${isDragging
                         ? "border-indigo-500 bg-indigo-50/50 scale-[1.01]"
                         : selectedFile
-                        ? "border-emerald-300 bg-emerald-50/30"
-                        : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"
-                    }`}
+                          ? "border-emerald-300 bg-emerald-50/30"
+                          : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"
+                      }`}
                   >
                     <input
                       ref={fileInputRef}
@@ -474,6 +498,41 @@ export default function IdUploadPage() {
                         value={formData.username}
                         onChange={handleInputChange}
                         placeholder="Auto-generated if left blank"
+                        className={inputClassName}
+                      />
+                    </label>
+
+                    <label className="relative">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Account Password *</span>
+                      <div className="relative">
+                        <input
+                          required
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          placeholder="Create secure password"
+                          className={`${inputClassName} pr-10`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </label>
+
+                    <label>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Confirm Password *</span>
+                      <input
+                        required
+                        type={showPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        placeholder="Re-enter password"
                         className={inputClassName}
                       />
                     </label>
@@ -611,27 +670,23 @@ export default function IdUploadPage() {
                 </section>
 
                 {/* Submit Action Bar */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
-                  <p className="text-xs text-slate-400">
-                    Clicking submit will upload the ID card file and create a record in the <code className="font-mono text-slate-700">users</code> table.
-                  </p>
-
+                <div className="pt-6 border-t border-slate-100 flex items-center justify-end">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-slate-900 text-white font-semibold shadow-md hover:bg-slate-800 transition-all disabled:opacity-50 cursor-pointer text-sm"
+                    className="group relative inline-flex items-center justify-between pl-6 pr-1.5 py-1.5 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white font-medium shadow-[0_10px_25px_-5px_rgba(15,23,42,0.4)] border border-slate-700/80 hover:border-slate-500 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Saving to Database...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400" />
-                        <span>Upload ID & Save User Record</span>
-                      </>
-                    )}
+                    <span className="text-[15px] font-medium tracking-wide text-slate-100 pr-4 select-none">
+                      {isSubmitting ? "Saving to Database..." : "Upload ID & Save User Record"}
+                    </span>
+
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-b from-white to-slate-100 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.25)] border border-slate-200/80 shrink-0 transition-transform group-hover:translate-x-0.5">
+                      {isSubmitting ? (
+                        <RefreshCw className="w-4 h-4 text-slate-900 animate-spin" />
+                      ) : (
+                        <Navigation className="w-4 h-4 text-slate-900 fill-slate-900 rotate-45" />
+                      )}
+                    </div>
                   </button>
                 </div>
               </div>

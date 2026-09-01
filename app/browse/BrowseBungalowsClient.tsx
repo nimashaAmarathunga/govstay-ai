@@ -117,6 +117,9 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     <img
                       src={bungalow.image}
                       alt={bungalow.name}
+                      onError={(e) => {
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>

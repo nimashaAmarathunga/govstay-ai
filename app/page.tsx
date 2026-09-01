@@ -46,7 +46,7 @@ export default function Page() {
   useEffect(() => {
     if (bookingStatus === "confirmed") {
       const timer = setTimeout(() => {
-        router.push('/my-bookings');
+        router.push('/bookings');
       }, 2500);
       return () => clearTimeout(timer);
     }
@@ -148,10 +148,7 @@ export default function Page() {
                     try {
                         const data = JSON.parse(line.slice(6));
                         
-                        if (data.delta?.toLowerCase().includes("pending (awaiting verification)")) {
-                          setBookingStatus("confirmed");
-                        }
-                        if (data.delta?.toLowerCase().includes("confirmed")) {
+                        if (data.delta?.toLowerCase().includes("payment is now being verified") || data.delta?.toLowerCase().includes("payment slip uploaded successfully")) {
                           setBookingStatus("confirmed");
                         }
                         if (data.agent === "booking_agent" || data.delta?.toLowerCase().includes("booking")) {
@@ -167,7 +164,8 @@ export default function Page() {
                         setMessages((prev) => 
                             prev.map(m => {
                                 if (m.id !== aiMsgId) return m;
-                                let updatedText = m.text + (data.delta || "");
+                                let deltaText = data.error ? `[System Error]: ${data.error}` : (data.delta || "");
+                                let updatedText = m.text + deltaText;
                                 const validAgents = ["travel_agent", "booking_agent", "verification_agent", "notification_agent"];
                                 validAgents.forEach(ag => {
                                     if (updatedText.toLowerCase().startsWith(ag)) {
@@ -512,16 +510,24 @@ export default function Page() {
                 {/* Action / Checkout Card */}
                 <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mt-auto flex flex-col gap-5">
                    
-                   <div className="flex justify-between items-center pb-5 border-b border-white/10">
-                      <span className="text-white/60 text-[13px] font-medium">Status</span>
-                      <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
-                        bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 
-                        bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-400' : 
-                        'bg-white/10 text-white'
+                    <div className="flex justify-between items-center pb-5 border-b border-white/10">
+                       <span className="text-white/60 text-[13px] font-medium">Status</span>
+                       <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
+                         bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 
+                         bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-400' : 
+                         uiState.booking_id ? 'bg-blue-500/20 text-blue-400' :
+                         'bg-white/10 text-white'
                       }`}>
-                         {bookingStatus}
+                         {bookingStatus === 'confirmed' ? '✓ Confirmed' : bookingStatus === 'confirming' ? '⏳ Payment Verification' : uiState.booking_id ? '⏳ Awaiting Payment Slip' : 'Draft'}
                       </span>
                    </div>
+                   
+                   {uiState.booking_id && (
+                     <div className="flex justify-between items-center">
+                       <span className="text-white/60 text-[13px] font-medium">Booking ID</span>
+                       <span className="text-white text-[13px] font-bold">{uiState.booking_id}</span>
+                     </div>
+                   )}
 
                    <div className="flex items-center justify-between">
                      <label className="text-[13px] font-medium text-white/90 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
@@ -547,7 +553,7 @@ export default function Page() {
                        onClick={triggerConfirmBooking}
                        className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
-                       Confirm & Pay
+                       {uiState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
                      </button>
                    ) : bookingStatus === "confirming" ? (
                      <button

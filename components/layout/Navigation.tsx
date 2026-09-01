@@ -69,6 +69,7 @@ export default function Navigation() {
     { name: "My Bookings", href: "/bookings" },
     { name: "Upload ID & Info", href: "/id-upload" },
     { name: "My Profile", href: "/profile" },
+    { name: "Login", href: "/login" },
   ];
 
   const handleModeChange = (newMode: AppMode) => {
