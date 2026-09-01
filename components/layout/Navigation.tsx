@@ -58,6 +58,7 @@ export default function Navigation() {
     { name: "Upload ID & Info", href: "/id-upload" },
     { name: "Admin Panel", href: "/admin" },
     { name: "My Profile", href: "/profile" },
+    { name: "Login", href: "/login" },
   ];
 
   const visibleNavLinks = allNavLinks.filter((link) => {
