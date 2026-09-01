@@ -130,7 +130,7 @@ export function FeaturedProperties({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span>•</span>
-                        <span>{property.noOfRooms} rooms</span>
+                        <span>{(property as any).rooms && (property as any).rooms.length > 0 ? (property as any).rooms.length : property.noOfRooms} rooms</span>
                       </div>
                     </div>
                   </div>
