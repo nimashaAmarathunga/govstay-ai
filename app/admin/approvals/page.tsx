@@ -1,9 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedAdmin } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import React from "react";
 
 export const dynamic = "force-dynamic"; // ensure fresh data
 
 export default async function AdminApprovalsPage() {
+  const admin = await getAuthenticatedAdmin();
+  if (!admin) {
+    redirect("/admin/login?callbackUrl=/admin/approvals");
+  }
+
   const bookings = await prisma.booking.findMany({
     orderBy: { createdAt: "desc" },
     take: 20,

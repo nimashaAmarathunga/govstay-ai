@@ -166,7 +166,7 @@ async function main() {
       noOfRooms: 3,
       department: 'Ministry of Public Administration',
       capacity: 10,
-      image: 'https://images.unsplash.com/photo-1542314831-c6a4d14cdce8?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
       description: 'Traditional holiday bungalow near Nuwara Eliya Dedicated Economic Centre. Features spacious living quarters, fireplace, and scenic garden views.',
       rating: 4.6,
       amenities: ['Fireplace', 'Garden', 'Kitchen Facilities', 'Hot Water', 'Steward Service'],
