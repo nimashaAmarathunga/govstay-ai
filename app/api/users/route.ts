@@ -11,6 +11,12 @@ const userSelect = {
   status: true,
   placeOfWork: true,
   position: true,
+  empIdPhoto: true,
+  nicNumber: true,
+  mobileNumber: true,
+  emailAddress: true,
+  residentialAddress: true,
+  preferredDistrict: true,
   createdAt: true,
 } as const;
 
@@ -30,25 +36,55 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, username, password, role, empId, status, placeOfWork, position } = body;
+    const {
+      name,
+      username,
+      password,
+      role,
+      empId,
+      status,
+      placeOfWork,
+      position,
+      empIdPhoto,
+      nicNumber,
+      mobileNumber,
+      emailAddress,
+      residentialAddress,
+      preferredDistrict,
+    } = body;
 
-    if (!name || !username || !password) {
+    if (!name) {
       return Response.json(
-        { error: "name, username, and password are required." },
+        { error: "Name is required." },
         { status: 400 }
       );
     }
 
+    // Auto-generate username if not provided (e.g. from email/empId/name + random suffix)
+    const finalUsername =
+      username ||
+      (emailAddress ? emailAddress.split('@')[0] : null) ||
+      (empId ? empId.toLowerCase().replace(/[^a-z0-9]/g, '') : null) ||
+      `user_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const finalPassword = password || "userPass123";
+
     const user = await prisma.user.create({
       data: {
         name,
-        username,
-        password,
+        username: finalUsername,
+        password: finalPassword,
         role: role ?? "GOV_EMPLOYEE",
         empId: empId || undefined,
         status: status ?? "WORKING",
         placeOfWork: placeOfWork || undefined,
         position: position || undefined,
+        empIdPhoto: empIdPhoto || undefined,
+        nicNumber: nicNumber || undefined,
+        mobileNumber: mobileNumber || undefined,
+        emailAddress: emailAddress || undefined,
+        residentialAddress: residentialAddress || undefined,
+        preferredDistrict: preferredDistrict || undefined,
       },
       select: userSelect,
     });
@@ -64,7 +100,7 @@ export async function POST(request: NextRequest) {
       (error as { code: string }).code === "P2002"
     ) {
       return Response.json(
-        { error: "Username or Employee ID already exists." },
+        { error: "Username or Employee ID already exists in system." },
         { status: 409 }
       );
     }

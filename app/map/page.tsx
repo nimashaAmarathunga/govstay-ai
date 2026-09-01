@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import MapWrapper from "@/components/map/MapWrapper";
 import { BungalowMarker } from "@/components/map/InteractiveMap";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function MapPage() {
   // Fetch real bungalow locations from the database
   const circuitBungalows = await prisma.circuitBungalow.findMany({

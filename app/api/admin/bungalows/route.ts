@@ -30,6 +30,46 @@ export async function GET(request: Request) {
   }
 }
 
+async function resolveCoordinates(
+  lat: any,
+  lng: any,
+  gmapLink?: string
+): Promise<{ latitude: number | null; longitude: number | null }> {
+  let parsedLat = lat ? parseFloat(lat) : null;
+  let parsedLng = lng ? parseFloat(lng) : null;
+
+  if (isNaN(parsedLat as number)) parsedLat = null;
+  if (isNaN(parsedLng as number)) parsedLng = null;
+
+  if ((parsedLat === null || parsedLng === null) && gmapLink && gmapLink.startsWith("http")) {
+    try {
+      const res = await fetch(gmapLink, {
+        method: "GET",
+        redirect: "follow",
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+      });
+      const expandedUrl = res.url;
+
+      const pinMatch = expandedUrl.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (pinMatch) {
+        return { latitude: parseFloat(pinMatch[1]), longitude: parseFloat(pinMatch[2]) };
+      }
+
+      const atMatch = expandedUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (atMatch) {
+        return { latitude: parseFloat(atMatch[1]), longitude: parseFloat(atMatch[2]) };
+      }
+    } catch (err) {
+      console.error("Error auto-resolving map link in API:", err);
+    }
+  }
+
+  return { latitude: parsedLat, longitude: parsedLng };
+}
+
 // POST: Create new Circuit Bungalow with Caretaker and Rooms
 export async function POST(request: Request) {
   try {
@@ -75,6 +115,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
     }
 
+    const { latitude: finalLat, longitude: finalLng } = await resolveCoordinates(latitude, longitude, gmapLink);
+
     // Prisma nested create
     const newBungalow = await prisma.circuitBungalow.create({
       data: {
@@ -97,8 +139,8 @@ export async function POST(request: Request) {
           : typeof highlights === "string"
           ? highlights.split(",").map((s: string) => s.trim()).filter(Boolean)
           : [],
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
+        latitude: finalLat,
+        longitude: finalLng,
         gmapLink: gmapLink || null,
 
         // Create Caretaker if caretaker name is provided
@@ -188,6 +230,8 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: "Room limit exceeded for this bungalow." }, { status: 400 });
     }
 
+    const { latitude: finalLat, longitude: finalLng } = await resolveCoordinates(latitude, longitude, gmapLink);
+
     // Use transaction to update bungalow, upsert caretaker, and refresh rooms
     const updatedBungalow = await prisma.$transaction(async (tx: any) => {
       // 1. Update basic bungalow info
@@ -212,8 +256,8 @@ export async function PUT(request: Request) {
             : typeof highlights === "string"
             ? highlights.split(",").map((s: string) => s.trim()).filter(Boolean)
             : [],
-          latitude: latitude ? parseFloat(latitude) : null,
-          longitude: longitude ? parseFloat(longitude) : null,
+          latitude: finalLat,
+          longitude: finalLng,
           gmapLink: gmapLink || null,
         },
       });

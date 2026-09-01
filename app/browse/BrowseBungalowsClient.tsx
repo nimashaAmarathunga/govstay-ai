@@ -128,7 +128,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-slate-900/80 backdrop-blur-md w-max px-3 py-1.5 rounded-lg text-white text-[10px] font-bold uppercase tracking-widest mb-2 border border-white/10">
-                        {bungalow.department.split(" ")[0]}
+                        {bungalow.department}
                       </div>
                     </div>
                   </div>
@@ -145,7 +145,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     <div className="flex items-center gap-4 text-[13px] font-medium text-slate-600 mb-6 border-b border-slate-100 pb-5">
                       <span className="flex items-center gap-2">
                         <BedDouble className="w-4 h-4 text-slate-400" />
-                        {bungalow.noOfRooms} Rooms
+                        {bungalow.rooms && bungalow.rooms.length > 0 ? bungalow.rooms.length : bungalow.noOfRooms} Rooms
                       </span>
                       <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
                       <span className="flex items-center gap-2">
