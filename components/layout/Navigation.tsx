@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useMode, AppMode } from "@/components/context/ModeContext";
@@ -54,6 +55,7 @@ export default function Navigation() {
     { name: "Browse", href: "/browse" },
     { name: "Map View", href: "/map" },
     { name: "My Bookings", href: "/bookings" },
+    { name: "Upload ID & Info", href: "/id-upload" },
     { name: "Admin Panel", href: "/admin" },
     { name: "My Profile", href: "/profile" },
   ];
@@ -115,11 +117,17 @@ export default function Navigation() {
   return (
     <header className="flex-none h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-50 sticky top-0">
       <div className="flex items-center gap-10">
-        <Link href="/about" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center transition-transform group-hover:scale-105">
-            <Building2 className="text-white w-4 h-4" />
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="relative h-10 w-10 flex items-center justify-center transition-transform group-hover:scale-105">
+            <Image
+              src="/logo.png"
+              alt="GovSewana Logo"
+              fill
+              className="object-contain mix-blend-multiply"
+              priority
+            />
           </div>
-          <h1 className="text-[17px] font-bold tracking-tight text-slate-900">GovSewana</h1>
+          <h1 className="text-[18px] font-bold tracking-tight text-slate-900">GovSewana</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">
