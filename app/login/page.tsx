@@ -14,8 +14,7 @@ import {
   UserPlus,
   ArrowRight,
   CheckCircle2,
-  AlertCircle,
-  Briefcase
+  AlertCircle
 } from "lucide-react";
 import { useUser, AppUser } from "@/components/context/UserContext";
 
@@ -175,36 +174,36 @@ function AuthPageContent() {
   };
 
   return (
-    <div className="min-h-full flex-1 flex items-center justify-center p-4 sm:p-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black text-slate-100 relative overflow-hidden">
+    <div className="min-h-full flex-1 flex items-center justify-center p-4 sm:p-6 bg-gradient-to-b from-slate-50 via-blue-50/20 to-slate-100 text-slate-800 relative overflow-hidden">
       {/* Subtle Background Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md z-10">
-        <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
           
           {/* Header Logo & Title */}
-          <div className="flex items-center justify-center gap-3 mb-6 pb-4 border-b border-slate-800/80">
-            <div className="h-10 w-10 relative flex items-center justify-center rounded-xl bg-white/10 p-1 border border-white/10 shrink-0">
+          <div className="flex items-center justify-center gap-3 mb-6 pb-4 border-b border-slate-100">
+            <div className="h-10 w-10 relative flex items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200/80 shrink-0">
               <Image
                 src="/logo.png"
                 alt="GovSewana Logo"
                 fill
-                className="object-contain"
+                className="object-contain mix-blend-multiply"
               />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">GovSewana</h2>
-              <p className="text-xs text-slate-400 font-medium">Account Portal</p>
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">GovSewana</h2>
+              <p className="text-xs text-slate-500 font-medium">Account Portal</p>
             </div>
           </div>
 
           {/* TAB CONTROLLER */}
-          <div className="relative flex p-1 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6">
+          <div className="relative flex p-1 bg-slate-100 rounded-2xl border border-slate-200/80 mb-6">
             <button
               type="button"
               onClick={() => handleTabChange("login")}
               className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-semibold rounded-xl transition-colors cursor-pointer z-10 ${
-                activeTab === "login" ? "text-white" : "text-slate-400 hover:text-slate-200"
+                activeTab === "login" ? "text-white" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -215,7 +214,7 @@ function AuthPageContent() {
               type="button"
               onClick={() => handleTabChange("register")}
               className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-semibold rounded-xl transition-colors cursor-pointer z-10 ${
-                activeTab === "register" ? "text-white" : "text-slate-400 hover:text-slate-200"
+                activeTab === "register" ? "text-white" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -225,7 +224,7 @@ function AuthPageContent() {
             {/* Animated Pill Indicator */}
             <motion.div
               layout
-              className="absolute inset-y-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md"
+              className="absolute inset-y-1 rounded-xl bg-slate-900 shadow-sm"
               initial={false}
               animate={{
                 left: activeTab === "login" ? "4px" : "50%",
@@ -248,27 +247,27 @@ function AuthPageContent() {
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   {/* Error Banner */}
                   {loginError && (
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                       <span>{loginError}</span>
                     </div>
                   )}
 
                   {/* Success Banner */}
                   {loginSuccess && (
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                       <span>{loginSuccess}</span>
                     </div>
                   )}
 
                   {/* EMAIL / USERNAME SECTION */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-300">
+                    <label className="text-xs font-semibold text-slate-700">
                       Email or Username
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <User className="w-4 h-4" />
                       </div>
                       <input
@@ -277,7 +276,7 @@ function AuthPageContent() {
                         onChange={(e) => setLoginIdentifier(e.target.value)}
                         placeholder="Enter your email or username"
                         required
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all"
                       />
                     </div>
                   </div>
@@ -285,17 +284,17 @@ function AuthPageContent() {
                   {/* PASSWORD SECTION */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-slate-300">Password</label>
+                      <label className="text-xs font-semibold text-slate-700">Password</label>
                       <button
                         type="button"
                         onClick={() => alert("Password reset link sent to your email.")}
-                        className="text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                        className="text-[11px] font-semibold text-slate-900 hover:text-black transition-colors cursor-pointer"
                       >
                         Forgot password?
                       </button>
                     </div>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
@@ -304,12 +303,12 @@ function AuthPageContent() {
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="Enter password"
                         required
-                        className="w-full pl-10 pr-10 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                        className="w-full pl-10 pr-10 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all"
                       />
                       <button
                         type="button"
                         onClick={() => setShowLoginPassword((prev) => !prev)}
-                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                       >
                         {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -323,9 +322,9 @@ function AuthPageContent() {
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-950 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900"
+                        className="w-3.5 h-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                       />
-                      <span className="text-xs text-slate-400">Remember me</span>
+                      <span className="text-xs text-slate-600">Remember me</span>
                     </label>
                   </div>
 
@@ -333,7 +332,7 @@ function AuthPageContent() {
                   <button
                     type="submit"
                     disabled={loginLoading}
-                    className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
+                    className="w-full py-2.5 px-4 bg-slate-900 hover:bg-black text-white font-semibold text-xs rounded-xl shadow-lg shadow-slate-900/10 transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
                   >
                     {loginLoading ? (
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -347,13 +346,13 @@ function AuthPageContent() {
                 </form>
 
                 {/* FOOTER SWITCH TO REGISTER */}
-                <div className="mt-6 text-center pt-2 border-t border-slate-800/80">
-                  <p className="text-xs text-slate-400">
+                <div className="mt-6 text-center pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500">
                     Don&apos;t have an account?{" "}
                     <button
                       type="button"
                       onClick={() => handleTabChange("register")}
-                      className="font-bold text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors cursor-pointer ml-1"
+                      className="font-bold text-slate-900 hover:text-black underline underline-offset-4 transition-colors cursor-pointer ml-1"
                     >
                       Register
                     </button>
@@ -371,25 +370,25 @@ function AuthPageContent() {
                 <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                   {/* Error Banner */}
                   {regError && (
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                       <span>{regError}</span>
                     </div>
                   )}
 
                   {/* Success Banner */}
                   {regSuccess && (
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                       <span>{regSuccess}</span>
                     </div>
                   )}
 
                   {/* FULL NAME */}
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-slate-300">Full Name</label>
+                    <label className="text-xs font-semibold text-slate-700">Full Name</label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <User className="w-4 h-4" />
                       </div>
                       <input
@@ -398,16 +397,16 @@ function AuthPageContent() {
                         onChange={(e) => setRegName(e.target.value)}
                         placeholder="Full Name"
                         required
-                        className="w-full pl-9 pr-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                        className="w-full pl-9 pr-3 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 transition-all"
                       />
                     </div>
                   </div>
 
                   {/* EMAIL */}
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-slate-300">Email Address</label>
+                    <label className="text-xs font-semibold text-slate-700">Email Address</label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <Mail className="w-4 h-4" />
                       </div>
                       <input
@@ -416,7 +415,7 @@ function AuthPageContent() {
                         onChange={(e) => setRegEmail(e.target.value)}
                         placeholder="Email Address"
                         required
-                        className="w-full pl-9 pr-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                        className="w-full pl-9 pr-3 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 transition-all"
                       />
                     </div>
                   </div>
@@ -424,33 +423,33 @@ function AuthPageContent() {
                   {/* USERNAME & EMP ID ROW */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-slate-300">Username</label>
+                      <label className="text-xs font-semibold text-slate-700">Username</label>
                       <input
                         type="text"
                         value={regUsername}
                         onChange={(e) => setRegUsername(e.target.value)}
                         placeholder="Username"
-                        className="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                        className="w-full px-3 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 transition-all"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-slate-300">Gov Employee ID</label>
+                      <label className="text-xs font-semibold text-slate-700">Gov Employee ID</label>
                       <input
                         type="text"
                         value={regEmpId}
                         onChange={(e) => setRegEmpId(e.target.value)}
                         placeholder="Employee ID"
-                        className="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                        className="w-full px-3 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 transition-all"
                       />
                     </div>
                   </div>
 
                   {/* PASSWORD */}
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-slate-300">Password</label>
+                    <label className="text-xs font-semibold text-slate-700">Password</label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
@@ -459,12 +458,12 @@ function AuthPageContent() {
                         onChange={(e) => setRegPassword(e.target.value)}
                         placeholder="Password"
                         required
-                        className="w-full pl-9 pr-9 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                        className="w-full pl-9 pr-9 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 transition-all"
                       />
                       <button
                         type="button"
                         onClick={() => setShowRegPassword((prev) => !prev)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                       >
                         {showRegPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -475,7 +474,7 @@ function AuthPageContent() {
                   <button
                     type="submit"
                     disabled={regLoading}
-                    className="w-full mt-2 py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
+                    className="w-full mt-2 py-2.5 px-4 bg-slate-900 hover:bg-black text-white font-semibold text-xs rounded-xl shadow-lg shadow-slate-900/10 transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
                   >
                     {regLoading ? (
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -489,13 +488,13 @@ function AuthPageContent() {
                 </form>
 
                 {/* FOOTER SWITCH TO LOGIN */}
-                <div className="mt-5 text-center pt-2 border-t border-slate-800/80">
-                  <p className="text-xs text-slate-400">
+                <div className="mt-5 text-center pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500">
                     Already have an account?{" "}
                     <button
                       type="button"
                       onClick={() => handleTabChange("login")}
-                      className="font-bold text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors cursor-pointer ml-1"
+                      className="font-bold text-slate-900 hover:text-black underline underline-offset-4 transition-colors cursor-pointer ml-1"
                     >
                       Log in
                     </button>
@@ -514,10 +513,10 @@ function AuthPageContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-full flex-1 flex items-center justify-center bg-slate-950 text-slate-400">
+      <div className="min-h-full flex-1 flex items-center justify-center bg-slate-50 text-slate-500">
         <div className="flex items-center gap-2">
-          <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs">Loading Auth Portal...</span>
+          <div className="h-4 w-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium">Loading Auth Portal...</span>
         </div>
       </div>
     }>
