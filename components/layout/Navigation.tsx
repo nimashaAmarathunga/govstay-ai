@@ -55,6 +55,7 @@ export default function Navigation() {
     { name: "Browse", href: "/browse" },
     { name: "Map View", href: "/map" },
     { name: "My Bookings", href: "/bookings" },
+    { name: "Upload ID & Info", href: "/id-upload" },
     { name: "Admin Panel", href: "/admin" },
     { name: "My Profile", href: "/profile" },
   ];

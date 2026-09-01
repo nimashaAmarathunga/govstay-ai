@@ -22,6 +22,12 @@ export interface AppUser {
   status: WorkStatus;
   placeOfWork: string | null;
   position: string | null;
+  empIdPhoto?: string | null;
+  nicNumber?: string | null;
+  mobileNumber?: string | null;
+  emailAddress?: string | null;
+  residentialAddress?: string | null;
+  preferredDistrict?: string | null;
   createdAt: string;
 }
 
