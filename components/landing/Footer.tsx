@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Building2, Mail, Phone } from "lucide-react";
 
@@ -69,11 +70,16 @@ export function Footer() {
             transition={{ duration: 0.5 }}
             className="lg:col-span-1"
           >
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-                <Building2 className="text-white w-4 h-4" />
+            <Link href="/" className="flex items-center gap-2.5 mb-4 group">
+              <div className="relative h-9 w-9 bg-white p-1 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
+                <Image
+                  src="/logo.png"
+                  alt="GovSewana Logo"
+                  fill
+                  className="object-contain p-0.5"
+                />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">GovSewana</h3>
+              <h3 className="text-xl font-bold tracking-tight text-white">GovSewana</h3>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
               Discover and book verified government accommodations across Sri
