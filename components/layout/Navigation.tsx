@@ -12,18 +12,19 @@ import {
   roleBadgeClass,
   userInitial,
 } from "@/components/context/UserContext";
-import { 
-  Building2, 
-  User, 
-  ShieldCheck, 
-  Terminal, 
-  HelpCircle, 
+import {
+  Building2,
+  User,
+  ShieldCheck,
+  Terminal,
+  HelpCircle,
   CheckCircle2,
   ChevronDown,
   Settings,
   Lock,
   LogOut,
-  Sparkles
+  Sparkles,
+  LogIn,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -31,7 +32,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { mode, setMode } = useMode();
-  const { users, activeUser, setActiveUser, isLoading } = useUser();
+  const { users, activeUser, setActiveUser, logout, isLoading } = useUser();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function Navigation() {
     setSettingsOpen(false);
   }, [mode, pathname]);
 
-  // Main navigation links (Admin access moved exclusively under Settings icon)
+  // Main navigation links
   const allNavLinks = [
     { name: "Agent Assistant", href: "/" },
     { name: "Browse", href: "/browse" },
@@ -108,6 +109,13 @@ export default function Navigation() {
     }
   };
 
+  const handleUserLogout = async () => {
+    await logout();
+    setDropdownOpen(false);
+    router.push("/login");
+    router.refresh();
+  };
+
   const handleAdminLogout = async () => {
     try {
       await fetch("/api/admin/logout", { method: "POST" });
@@ -125,10 +133,9 @@ export default function Navigation() {
   ) : (
     <User className="w-5 h-5 text-slate-500" />
   );
-  
-  const avatarBg = activeUser ? "bg-slate-900" : "bg-white border border-slate-200";
-  const dropdownHeader = mode === "user" ? "Select User / Employee" : "Select Admin";
 
+  const avatarBg = activeUser ? "bg-slate-900" : "bg-white border border-slate-200";
+  const dropdownHeader = mode === "user" ? "Account / Switch User" : "Admin Profiles";
   const isAdminUser = activeUser && (activeUser.role === "DEPT_ADMIN" || activeUser.role === "SUPER_ADMIN");
 
   return (
@@ -157,7 +164,7 @@ export default function Navigation() {
                 href={link.href}
                 className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
                   isActive
-                    ? "text-slate-900"
+                    ? "text-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
@@ -228,7 +235,7 @@ export default function Navigation() {
               <div className={`h-7 w-7 rounded-full flex items-center justify-center ${avatarBg}`}>
                 {avatarContent}
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
 
             <AnimatePresence>
@@ -244,14 +251,21 @@ export default function Navigation() {
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                       {dropdownHeader}
                     </p>
-                    {activeUser && (
-                      <p className="text-[13px] font-medium text-slate-900 mt-1 truncate">
-                        Active: {activeUser.name}
-                      </p>
+                    {activeUser ? (
+                      <div className="mt-1">
+                        <p className="text-[13px] font-bold text-slate-900 truncate">
+                          {activeUser.name}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          @{activeUser.username} {activeUser.empId ? `(ID: ${activeUser.empId})` : ""}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-[12px] text-slate-500 mt-1">Not authenticated</p>
                     )}
                   </div>
 
-                  <ul className="max-h-[320px] overflow-y-auto p-2 space-y-0.5">
+                  <ul className="max-h-[260px] overflow-y-auto p-2 space-y-0.5">
                     {isLoading ? (
                       <li className="px-4 py-6 text-center text-[13px] text-slate-400">Loading…</li>
                     ) : dropdownUsers.length === 0 ? (
@@ -265,7 +279,7 @@ export default function Navigation() {
                           <li key={user.id}>
                             <button
                               onClick={() => handleSelectUser(user)}
-                              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors cursor-pointer ${
+                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors cursor-pointer ${
                                 isSelected ? "bg-slate-50" : "hover:bg-slate-50/50"
                               }`}
                             >
@@ -278,10 +292,10 @@ export default function Navigation() {
                               </div>
 
                               <div className="flex-1 min-w-0">
-                                <p className={`text-[13px] font-medium truncate ${isSelected ? "text-slate-900" : "text-slate-700"}`}>
+                                <p className={`text-[12px] font-semibold truncate ${isSelected ? "text-slate-900" : "text-slate-700"}`}>
                                   {user.name}
                                 </p>
-                                <p className="text-[11px] text-slate-400 truncate">
+                                <p className="text-[10px] text-slate-400 truncate">
                                   @{user.username}{user.placeOfWork ? ` · ${user.placeOfWork}` : ""}
                                 </p>
                               </div>
@@ -293,6 +307,28 @@ export default function Navigation() {
                       })
                     )}
                   </ul>
+
+                  {/* Actions Footer */}
+                  <div className="p-2 border-t border-slate-100 bg-slate-50/50 space-y-1">
+                    {activeUser ? (
+                      <button
+                        onClick={handleUserLogout}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-red-500" />
+                        <span>Sign Out JWT Session</span>
+                      </button>
+                    ) : (
+                      <Link
+                        href="/login"
+                        onClick={() => setDropdownOpen(false)}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                      >
+                        <LogIn className="w-4 h-4 text-blue-500" />
+                        <span>Sign In with Account</span>
+                      </Link>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -311,7 +347,7 @@ export default function Navigation() {
             title="App Settings & Admin Login"
             aria-label="Settings and Admin Login"
           >
-            <Settings className={`w-5 h-5 transition-transform duration-300 ${settingsOpen ? 'rotate-90' : ''}`} />
+            <Settings className={`w-5 h-5 transition-transform duration-300 ${settingsOpen ? "rotate-90" : ""}`} />
           </button>
 
           <AnimatePresence>
@@ -329,7 +365,7 @@ export default function Navigation() {
                     Application Settings
                   </span>
                   <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                    Admin
+                    Admin Portal
                   </span>
                 </div>
 

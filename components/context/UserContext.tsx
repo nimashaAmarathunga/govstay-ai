@@ -34,12 +34,16 @@ export interface AppUser {
 interface UserContextType {
   /** All users fetched from /api/users */
   users: AppUser[];
-  /** The currently "active" user (simulated session) */
+  /** The currently "active" user */
   activeUser: AppUser | null;
-  /** Switch the active user */
+  /** Switch or set the active user */
   setActiveUser: (user: AppUser | null) => void;
   /** Re-fetch the user list (call after creating a new user) */
   refreshUsers: () => Promise<void>;
+  /** Check current JWT authentication state */
+  checkAuthSession: () => Promise<AppUser | null>;
+  /** Logout user or admin session */
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -69,30 +73,72 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // On mount: fetch users, then restore the previously selected user from localStorage
-  useEffect(() => {
-    setIsLoading(true);
-    fetchUsers().then((data) => {
-      try {
-        const savedId = localStorage.getItem(STORAGE_KEY);
-        if (savedId) {
-          const found = data.find((u) => u.id === savedId) ?? null;
-          setActiveUserState(found);
-        } else {
-          // Default to employee with ID 245503B
-          const defaultUser = data.find((u) => u.empId === "245503B") ?? null;
-          if (defaultUser) {
-            setActiveUserState(defaultUser);
-            localStorage.setItem(STORAGE_KEY, defaultUser.id);
-          }
+  const checkAuthSession = useCallback(async (): Promise<AppUser | null> => {
+    try {
+      // 1. Try checking User JWT session
+      const userRes = await fetch("/api/auth/me");
+      if (userRes.ok) {
+        const data = await userRes.json();
+        if (data.authenticated && data.user) {
+          setActiveUserState(data.user);
+          try {
+            localStorage.setItem(STORAGE_KEY, data.user.id);
+          } catch {}
+          return data.user;
         }
-      } catch {
-        // localStorage unavailable
-      } finally {
-        setIsLoading(false);
       }
+
+      // 2. Try checking Admin JWT session
+      const adminRes = await fetch("/api/admin/me");
+      if (adminRes.ok) {
+        const data = await adminRes.json();
+        if (data.authenticated && data.user) {
+          setActiveUserState(data.user);
+          try {
+            localStorage.setItem(STORAGE_KEY, data.user.id);
+          } catch {}
+          return data.user;
+        }
+      }
+    } catch (err) {
+      console.error("UserContext: checkAuthSession error", err);
+    }
+    return null;
+  }, []);
+
+  // On mount: fetch users and restore or verify session
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    Promise.all([fetchUsers(), checkAuthSession()]).then(([allUsers, authenticatedUser]) => {
+      if (!isMounted) return;
+
+      if (!authenticatedUser) {
+        try {
+          const savedId = localStorage.getItem(STORAGE_KEY);
+          if (savedId) {
+            const found = allUsers.find((u) => u.id === savedId) ?? null;
+            if (found) setActiveUserState(found);
+          } else {
+            // Default to employee with ID 245503B for demo browsing
+            const defaultUser = allUsers.find((u) => u.empId === "245503B") ?? null;
+            if (defaultUser) {
+              setActiveUserState(defaultUser);
+              localStorage.setItem(STORAGE_KEY, defaultUser.id);
+            }
+          }
+        } catch {
+          // localStorage unavailable
+        }
+      }
+      setIsLoading(false);
     });
-  }, [fetchUsers]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchUsers, checkAuthSession]);
 
   const setActiveUser = (user: AppUser | null) => {
     setActiveUserState(user);
@@ -107,9 +153,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const logout = async () => {
+    try {
+      await Promise.allSettled([
+        fetch("/api/auth/logout", { method: "POST" }),
+        fetch("/api/admin/logout", { method: "POST" }),
+      ]);
+    } catch (err) {
+      console.error("Logout error", err);
+    }
+    setActiveUser(null);
+  };
+
   const refreshUsers = useCallback(async () => {
     const data = await fetchUsers();
-    // If the active user was updated, sync it
     setActiveUserState((prev) => {
       if (!prev) return null;
       return data.find((u) => u.id === prev.id) ?? prev;
@@ -118,7 +175,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ users, activeUser, setActiveUser, refreshUsers, isLoading }}
+      value={{
+        users,
+        activeUser,
+        setActiveUser,
+        refreshUsers,
+        checkAuthSession,
+        logout,
+        isLoading,
+      }}
     >
       {children}
     </UserContext.Provider>
@@ -159,5 +224,5 @@ export function roleBadgeClass(role: UserRole): string {
 
 /** Returns the first letter of a name for avatar initials */
 export function userInitial(name: string): string {
-  return name.trim().charAt(0).toUpperCase();
+  return name ? name.trim().charAt(0).toUpperCase() : "U";
 }

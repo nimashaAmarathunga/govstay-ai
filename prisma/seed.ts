@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
 import { WorkStatus, Role, RoomType, BookingStatus } from '@prisma/client';
+import { hashPassword } from '../lib/auth';
 
 async function main() {
   console.log('🧹 Clearing existing database records...');
@@ -12,13 +13,18 @@ async function main() {
   await prisma.circuitBungalow.deleteMany({});
   await prisma.user.deleteMany({});
 
-  console.log('👤 Seeding System Users...');
+  console.log('👤 Seeding System Users with Argon2id Password Hashes...');
+
+  const adminHash = await hashPassword('adminpassword123');
+  const deptAdminHash = await hashPassword('deptpassword123');
+  const userHash = await hashPassword('userpassword123');
+  const publicHash = await hashPassword('publicpassword123');
 
   const superAdmin = await prisma.user.create({
     data: {
       name: 'Dr. K. L. Perera',
       username: 'superadmin',
-      password: 'adminpassword123',
+      password: adminHash,
       role: Role.SUPER_ADMIN,
       placeOfWork: 'Ministry of Public Administration',
       position: 'Director General',
@@ -34,7 +40,7 @@ async function main() {
     data: {
       name: 'Sunil Wickramasinghe',
       username: 'pubadmin_admin',
-      password: 'deptpassword123',
+      password: deptAdminHash,
       role: Role.DEPT_ADMIN,
       placeOfWork: 'Ministry of Public Administration',
       position: 'Senior Administrative Officer',
@@ -50,7 +56,7 @@ async function main() {
     data: {
       name: 'Kamani Jayawardena',
       username: 'lands_admin',
-      password: 'deptpassword123',
+      password: deptAdminHash,
       role: Role.DEPT_ADMIN,
       placeOfWork: "Land Commissioner General's Department",
       position: 'Assistant Commissioner',
@@ -67,7 +73,7 @@ async function main() {
     data: {
       name: 'Ravidu Rajapaksha',
       username: 'ravidu_245503b',
-      password: 'userpassword123',
+      password: userHash,
       empId: '245503B',
       role: Role.GOV_EMPLOYEE,
       status: WorkStatus.WORKING,
@@ -85,7 +91,7 @@ async function main() {
     data: {
       name: 'Anura Fernando',
       username: 'anura_245548p',
-      password: 'userpassword123',
+      password: userHash,
       empId: '245548P',
       role: Role.GOV_EMPLOYEE,
       status: WorkStatus.WORKING,
@@ -103,7 +109,7 @@ async function main() {
     data: {
       name: 'Champa De Silva',
       username: 'champa_245516r',
-      password: 'userpassword123',
+      password: userHash,
       empId: '245516R',
       role: Role.GOV_EMPLOYEE,
       status: WorkStatus.RETIRED,
@@ -121,7 +127,7 @@ async function main() {
     data: {
       name: 'Lalith Gunawardena',
       username: 'lalith_245506l',
-      password: 'userpassword123',
+      password: userHash,
       empId: '245506L',
       role: Role.GOV_EMPLOYEE,
       status: WorkStatus.WORKING,
@@ -139,7 +145,7 @@ async function main() {
     data: {
       name: 'Kasun Rathnayake',
       username: 'kasun_public',
-      password: 'publicpassword123',
+      password: publicHash,
       role: Role.PUBLIC_USER,
       nicNumber: '199512345685',
       mobileNumber: '0779998888',

@@ -1,16 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  ShieldCheck, Lock, User, Eye, EyeOff,
-  ArrowRight, AlertCircle, Loader2, Sparkles, KeyRound
+  ShieldCheck,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+  Sparkles,
+  KeyRound,
 } from "lucide-react";
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
@@ -29,7 +37,7 @@ export default function AdminLoginPage() {
           router.replace(callbackUrl);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [router, callbackUrl]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -77,7 +85,7 @@ export default function AdminLoginPage() {
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header Logo (Real GovSewana Logo) */}
+      {/* Header Logo (GovSewana Logo) */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,7 +113,7 @@ export default function AdminLoginPage() {
         </Link>
       </motion.div>
 
-      {/* Main Login Card (Matching Light Theme) */}
+      {/* Main Login Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -123,7 +131,7 @@ export default function AdminLoginPage() {
             </p>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
-            Secure SSL
+            Secured
           </span>
         </div>
 
@@ -198,7 +206,7 @@ export default function AdminLoginPage() {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Authenticating...</span>
+                <span>Authenticating ...</span>
               </>
             ) : (
               <>
@@ -259,5 +267,22 @@ export default function AdminLoginPage() {
         </Link>
       </motion.div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-900" />
+            <span className="text-sm font-medium">Loading Admin Portal...</span>
+          </div>
+        </div>
+      }
+    >
+      <AdminLoginContent />
+    </Suspense>
   );
 }

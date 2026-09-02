@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyPassword, signAdminToken, ADMIN_COOKIE_NAME } from "@/lib/auth";
+import {
+  verifyPassword,
+  hashPassword,
+  needsRehash,
+  signAdminToken,
+  ADMIN_COOKIE_NAME,
+} from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +40,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check role permission
+    // Check administrative role permission
     if (user.role !== "DEPT_ADMIN" && user.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { error: "Access denied. Administrative privileges are required." },
@@ -42,8 +48,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify password
-    const isValidPassword = verifyPassword(password, user.password);
+    // Securely verify password with Argon2 (or legacy format)
+    const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
       return NextResponse.json(
         { error: "Invalid username or password." },
@@ -51,8 +57,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate signed token
-    const token = signAdminToken({
+    // Lazy Migration: If admin password was stored in plain text or legacy format, upgrade to Argon2id
+    if (needsRehash(user.password)) {
+      try {
+        const newHash = await hashPassword(password);
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { password: newHash },
+        });
+      } catch (migrationErr) {
+        console.warn("Admin password hash upgrade deferred:", user.id);
+      }
+    }
+
+    // Generate signed Admin JWT token (24 hours)
+    const token = await signAdminToken({
       id: user.id,
       username: user.username,
       role: user.role,
@@ -61,6 +80,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({
       success: true,
+      token,
       user: {
         id: user.id,
         name: user.name,
@@ -72,7 +92,7 @@ export async function POST(request: Request) {
       },
     });
 
-    // Set HTTP-only session cookie
+    // Set HTTP-only session cookie for Admin
     response.cookies.set({
       name: ADMIN_COOKIE_NAME,
       value: token,
