@@ -36,6 +36,7 @@ export default function Page() {
   const [draftState, setDraftState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number; booking_id?: string; status?: string }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
   const [activeBooking, setActiveBooking] = useState<any>(null);
   const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
+  const [uiState, setUiState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number; booking_id?: string }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
   const [isBookingMode, setIsBookingMode] = useState(false);
   const [sessionId] = useState(() => `demo-session-${Date.now()}`);
   const router = useRouter();
