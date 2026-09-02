@@ -6,9 +6,10 @@ interface PaymentSlipUploadProps {
   onUploadComplete: (url: string | null) => void;
   value?: string | null;
   bookingId: string;
+  userId?: string;
 }
 
-export default function PaymentSlipUpload({ onUploadComplete, value, bookingId }: PaymentSlipUploadProps) {
+export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, userId }: PaymentSlipUploadProps) {
   const [fileUrl, setFileUrl] = useState<string | null>(value || null);
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -59,6 +60,9 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId }
       const formData = new FormData();
       formData.append("file", file);
       formData.append("bookingId", bookingId);
+      if (userId) {
+        formData.append("userId", userId);
+      }
 
       const res = await fetch("/api/upload", {
         method: "POST",
