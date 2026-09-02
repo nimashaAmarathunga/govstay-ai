@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-  const adminPayload = await getAuthenticatedAdmin();
+export async function GET(request: Request) {
+  const adminPayload = await getAuthenticatedAdmin(request);
 
   if (!adminPayload) {
     return NextResponse.json({ authenticated: false }, { status: 401 });

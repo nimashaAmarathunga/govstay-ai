@@ -1,103 +1,271 @@
-import crypto from "crypto";
+import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import crypto from "crypto";
+import argon2 from "argon2";
 
-const JWT_SECRET = process.env.JWT_SECRET || "govstay_super_secret_admin_key_2026";
+// Secret key for JWT signing - sourced from environment variable with fallback
+const JWT_SECRET_STRING =
+  process.env.JWT_SECRET || "govstay_super_secret_jwt_key_2026_production_grade";
+const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
+
+export const USER_COOKIE_NAME = "govstay_user_token";
 export const ADMIN_COOKIE_NAME = "govstay_admin_token";
+
+export interface UserJwtPayload {
+  userId: string;
+  username: string;
+  role: string;
+  name: string;
+  email?: string | null;
+  empId?: string | null;
+  [key: string]: unknown;
+}
 
 export interface AdminJwtPayload {
   userId: string;
   username: string;
   role: string;
   name: string;
-  iat: number;
-  exp: number;
+  [key: string]: unknown;
 }
 
+// ─── Argon2 Password Hashing & Security ──────────────────────────────────────
+
 /**
- * Verifies a plain text password against a stored hash or plaintext string.
+ * Recommended OWASP Argon2id configuration options.
+ * Argon2id combines resistance to side-channel cache timing attacks (Argon2i)
+ * and GPU/ASIC brute-force attacks (Argon2d).
  */
-export function verifyPassword(password: string, stored: string): boolean {
-  if (!stored) return false;
-  // If stored as salt:hash (for future hashed passwords)
-  if (stored.includes(":") && stored.length > 100) {
-    const [salt, originalHash] = stored.split(":");
-    const hash = crypto
-      .pbkdf2Sync(password, salt, 1000, 64, "sha512")
-      .toString("hex");
-    return hash === originalHash;
+const ARGON2_OPTIONS = {
+  type: argon2.argon2id,
+  memoryCost: 65536, // 64 MB
+  timeCost: 3,       // 3 iterations
+  parallelism: 4,    // 4 parallel threads
+} as const;
+
+/**
+ * Hashes a plain-text password using Argon2id with cryptographically secure random salt.
+ *
+ * @param password Plain-text password to hash
+ * @returns Formatted Argon2 hash string
+ */
+export async function hashPassword(password: string): Promise<string> {
+  if (!password || typeof password !== "string") {
+    throw new Error("Password must be a non-empty string.");
   }
-  // Direct equality for seeded plain text passwords
-  return password === stored;
+  return await argon2.hash(password, ARGON2_OPTIONS);
 }
 
 /**
- * Creates a signed token string (HMAC SHA-256 base64url encoded payload).
+ * Determines whether a stored password string needs to be migrated to Argon2id.
+ * Returns true if the stored value is legacy plain text or older PBKDF2 hash.
+ *
+ * @param stored The stored password value in the database
  */
-export function signAdminToken(user: { id: string; username: string; role: string; name: string }): string {
-  const header = { alg: "HS256", typ: "JWT" };
-  const payload: AdminJwtPayload = {
+export function needsRehash(stored: string): boolean {
+  if (!stored) return true;
+  // Modern Argon2 hashes start with "$argon2"
+  return !stored.startsWith("$argon2");
+}
+
+/**
+ * Validates password strength policy.
+ * Requirements:
+ * - At least 8 characters
+ * - At least 1 letter and 1 number or special character
+ */
+export function validatePasswordStrength(password: string): { isValid: boolean; message?: string } {
+  if (!password || typeof password !== "string") {
+    return { isValid: false, message: "Password is required." };
+  }
+  if (password.length < 8) {
+    return { isValid: false, message: "Password must be at least 8 characters long." };
+  }
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasDigitOrSpecial = /[\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+
+  if (!hasLetter || !hasDigitOrSpecial) {
+    return {
+      isValid: false,
+      message: "Password must contain at least one letter and one number or special character.",
+    };
+  }
+
+  return { isValid: true };
+}
+
+/**
+ * Securely verifies a plain-text password against a stored Argon2 hash (or legacy format).
+ * Safely handles migration from legacy plain-text or PBKDF2 without breaking existing users.
+ *
+ * @param password The plain-text password entered during login
+ * @param stored The stored password hash (or legacy string) in the database
+ * @returns boolean indicating if password is valid
+ */
+export async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  if (!password || !stored) return false;
+
+  // 1. Primary path: Verify using modern Argon2id
+  if (stored.startsWith("$argon2")) {
+    try {
+      return await argon2.verify(stored, password);
+    } catch {
+      return false;
+    }
+  }
+
+  // 2. Backward compatibility path: Legacy PBKDF2 (salt:hash format)
+  if (stored.includes(":") && stored.length > 100) {
+    try {
+      const [salt, originalHash] = stored.split(":");
+      const hash = crypto
+        .pbkdf2Sync(password, salt, 1000, 64, "sha512")
+        .toString("hex");
+      return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(originalHash));
+    } catch {
+      return false;
+    }
+  }
+
+  // 3. Backward compatibility path: Legacy plain text (temporary fallback for unmigrated users)
+  // Constant-time comparison to prevent timing attacks
+  try {
+    const a = Buffer.from(password);
+    const b = Buffer.from(stored);
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
+  } catch {
+    return password === stored;
+  }
+}
+
+// ─── JWT Authentication Utilities (jose) ────────────────────────────────────
+
+/**
+ * Signs a JWT for a standard user (7 days expiry).
+ */
+export async function signUserToken(user: {
+  id: string;
+  username: string;
+  role: string;
+  name: string;
+  emailAddress?: string | null;
+  empId?: string | null;
+}): Promise<string> {
+  const token = await new SignJWT({
     userId: user.id,
     username: user.username,
     role: user.role,
     name: user.name,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
-  };
+    email: user.emailAddress || null,
+    empId: user.empId || null,
+  })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(JWT_SECRET);
 
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString("base64url");
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
-
-  const signature = crypto
-    .createHmac("sha256", JWT_SECRET)
-    .update(`${encodedHeader}.${encodedPayload}`)
-    .digest("base64url");
-
-  return `${encodedHeader}.${encodedPayload}.${signature}`;
+  return token;
 }
 
 /**
- * Verifies and decodes a signed admin token.
+ * Verifies a user JWT and returns the decoded payload.
  */
-export function verifyAdminToken(token: string): AdminJwtPayload | null {
+export async function verifyUserToken(token: string): Promise<UserJwtPayload | null> {
   if (!token) return null;
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-
-  const [encodedHeader, encodedPayload, signature] = parts;
-
-  const expectedSignature = crypto
-    .createHmac("sha256", JWT_SECRET)
-    .update(`${encodedHeader}.${encodedPayload}`)
-    .digest("base64url");
-
-  if (signature !== expectedSignature) {
-    return null;
-  }
-
   try {
-    const payload: AdminJwtPayload = JSON.parse(
-      Buffer.from(encodedPayload, "base64url").toString("utf-8")
-    );
-
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      return null; // Expired
-    }
-
-    return payload;
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as unknown as UserJwtPayload;
   } catch {
     return null;
   }
 }
 
 /**
- * Reads and verifies admin token from Next.js server cookie store.
+ * Reads and verifies the user token from Next.js server cookie store or Authorization header.
  */
-export async function getAuthenticatedAdmin(): Promise<AdminJwtPayload | null> {
+export async function getAuthenticatedUser(request?: Request): Promise<UserJwtPayload | null> {
   try {
+    // 1. Check Authorization header if request is provided
+    if (request) {
+      const authHeader = request.headers.get("Authorization");
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.substring(7).trim();
+        const payload = await verifyUserToken(token);
+        if (payload) return payload;
+      }
+    }
+
+    // 2. Check Next.js server cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get(USER_COOKIE_NAME)?.value;
+    if (!token) return null;
+    return await verifyUserToken(token);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Signs a JWT for an administrator (24 hours expiry).
+ */
+export async function signAdminToken(user: {
+  id: string;
+  username: string;
+  role: string;
+  name: string;
+}): Promise<string> {
+  const token = await new SignJWT({
+    userId: user.id,
+    username: user.username,
+    role: user.role,
+    name: user.name,
+  })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setIssuedAt()
+    .setExpirationTime("24h")
+    .sign(JWT_SECRET);
+
+  return token;
+}
+
+/**
+ * Verifies an admin JWT and returns the decoded payload.
+ */
+export async function verifyAdminToken(token: string): Promise<AdminJwtPayload | null> {
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    // Ensure the token has administrative role
+    if (payload.role !== "DEPT_ADMIN" && payload.role !== "SUPER_ADMIN") {
+      return null;
+    }
+    return payload as unknown as AdminJwtPayload;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reads and verifies the admin token from Next.js server cookie store or Authorization header.
+ */
+export async function getAuthenticatedAdmin(request?: Request): Promise<AdminJwtPayload | null> {
+  try {
+    // 1. Check Authorization header if request is provided
+    if (request) {
+      const authHeader = request.headers.get("Authorization");
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.substring(7).trim();
+        const payload = await verifyAdminToken(token);
+        if (payload) return payload;
+      }
+    }
+
+    // 2. Check Next.js server cookies
     const cookieStore = await cookies();
     const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
     if (!token) return null;
-    return verifyAdminToken(token);
+    return await verifyAdminToken(token);
   } catch {
     return null;
   }
