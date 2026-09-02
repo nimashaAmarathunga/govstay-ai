@@ -226,13 +226,14 @@ export default function Page() {
   };
 
   const triggerConfirmBooking = () => {
-    if (activeBooking?.status !== "PENDING_UPLOAD" && !draftState.booking_id) return;
+    if (activeBooking && activeBooking.status === "PENDING" && activeBooking.paymentSlipUrl) return;
+    if (!draftState.booking_id && !activeBooking?.bookingId) return;
     if (!paymentSlipUrl) {
       alert("Please upload your payment slip first before verifying.");
       return;
     }
     // Optimistic update
-    setActiveBooking((prev: any) => prev ? { ...prev, status: "PENDING" } : prev);
+    setActiveBooking((prev: any) => prev ? { ...prev, status: "PENDING", paymentSlipUrl: paymentSlipUrl } : prev);
     handleSendMessage(`I have reviewed the details and submitted the form. Here is my payment slip: ${paymentSlipUrl}. Please finalize the booking for ${draftState.booking_id || activeBooking?.bookingId}.`, true);
   };
 
@@ -542,7 +543,8 @@ export default function Page() {
 
                 <div className="mt-2">
                    <PaymentSlipUpload 
-                     onUploadComplete={(url) => setPaymentSlipUrl(url)} 
+                     onUploadComplete={setPaymentSlipUrl}
+                     bookingId={draftState.booking_id || activeBooking?.bookingId || ""}
                      value={paymentSlipUrl}
                    />
                 </div>
@@ -554,11 +556,11 @@ export default function Page() {
                        <span className="text-white/60 text-[13px] font-medium">Status</span>
                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
                          activeBooking?.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-400' : 
-                         activeBooking?.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400' : 
-                         (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? 'bg-blue-500/20 text-blue-400' :
+                         activeBooking?.status === 'PENDING' && activeBooking?.paymentSlipUrl ? 'bg-amber-500/20 text-amber-400' : 
+                         (!activeBooking || (activeBooking?.status === 'PENDING' && !activeBooking?.paymentSlipUrl)) && (activeBooking?.bookingId || draftState.booking_id) ? 'bg-blue-500/20 text-blue-400' :
                          'bg-white/10 text-white'
                       }`}>
-                         {activeBooking?.status === 'CONFIRMED' ? '✓ Confirmed' : activeBooking?.status === 'PENDING' ? '⏳ Payment Verification' : (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? '⏳ Awaiting Payment Slip' : 'Draft'}
+                         {activeBooking?.status === 'CONFIRMED' ? '✓ Confirmed' : activeBooking?.status === 'PENDING' && activeBooking?.paymentSlipUrl ? '⏳ Payment Verification' : (!activeBooking || (activeBooking?.status === 'PENDING' && !activeBooking?.paymentSlipUrl)) && (activeBooking?.bookingId || draftState.booking_id) ? '⏳ Awaiting Payment Slip' : 'Draft'}
                       </span>
                    </div>
                    
@@ -588,14 +590,14 @@ export default function Page() {
                      </div>
                    </div>
 
-                   {(!activeBooking || activeBooking?.status === "PENDING_UPLOAD") ? (
+                   {(!activeBooking || (activeBooking?.status === "PENDING" && !activeBooking?.paymentSlipUrl)) ? (
                      <button
                        onClick={triggerConfirmBooking}
                        className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
                        {activeBooking?.bookingId || draftState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
                      </button>
-                   ) : activeBooking?.status === "PENDING" ? (
+                   ) : activeBooking?.status === "PENDING" && activeBooking?.paymentSlipUrl ? (
                      <button
                        disabled
                        className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
