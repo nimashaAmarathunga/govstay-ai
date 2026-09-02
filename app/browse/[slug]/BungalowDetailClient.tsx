@@ -12,6 +12,8 @@ export type DbRoom = {
   roomType: "AC" | "NON_AC";
   items: string[];
   noOfBeds: number;
+  bed_count?: number;
+  capacity?: number;
   price: number;
 };
 
@@ -548,7 +550,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                             <span className="material-symbols-outlined text-[16px] text-slate-400">
                               bed
                             </span>
-                            <span>{room.noOfBeds} Beds available</span>
+                            <span>{room.bed_count || room.noOfBeds} Beds available (Sleeps {room.capacity})</span>
                           </div>
 
                           {/* In-Room Items */}
