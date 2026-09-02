@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useUser } from "@/components/context/UserContext";
-import { User, CalendarDays, Sparkles, LogOut, FileCheck2, BotMessageSquare } from "lucide-react";
+import { User, CalendarDays, Sparkles, LogOut, FileCheck2, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
@@ -79,15 +79,15 @@ export default function DashboardPage() {
           <p className="text-xs text-slate-500">Upload your government ID for faster booking approvals.</p>
         </Link>
 
-        {/* Agent Assistant Card */}
+        {/* Support Assistant Card */}
         <Link href="/agent" className="group p-6 bg-slate-900 border border-slate-800 rounded-3xl shadow-md hover:shadow-lg transition-all hover:bg-slate-800 relative overflow-hidden">
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl"></div>
           <div className="w-12 h-12 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <BotMessageSquare className="w-6 h-6" />
+            <MessageSquare className="w-6 h-6" />
             <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-amber-400" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">AI Assistant</h3>
-          <p className="text-xs text-slate-400">Ask questions and manage bookings via conversational AI.</p>
+          <h3 className="text-lg font-bold text-white mb-1">Help & Support</h3>
+          <p className="text-xs text-slate-400">Get assistance and manage bookings through our support desk.</p>
         </Link>
       </div>
     </div>

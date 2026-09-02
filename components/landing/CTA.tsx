@@ -33,7 +33,7 @@ export function CTA() {
                 href="/"
                 className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg"
               >
-                <span>Talk to Agent Assistant</span>
+                <span>Talk to Support Desk</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>

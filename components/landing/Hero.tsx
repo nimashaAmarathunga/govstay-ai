@@ -75,7 +75,7 @@ export function Hero({ onSearchClick }: HeroProps) {
               <Search className="w-5 h-5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Ask the Agent Assistant to plan your trip..."
+                placeholder="Ask GovSewana Support to plan your trip..."
                 className="w-full bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-sm md:text-base"
                 readOnly
               />
@@ -101,7 +101,7 @@ export function Hero({ onSearchClick }: HeroProps) {
             href="/"
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-2"
           >
-            <span>Experience the Agent Assistant</span>
+            <span>Talk to Support</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>

@@ -84,7 +84,7 @@ export default function LandingPage() {
             {[
               { title: "Browse Bungalows", desc: "Search through a complete directory of government accommodations with rich details.", icon: Search },
               { title: "Interactive Map", desc: "Discover bungalows across Sri Lanka visually using the interactive map view.", icon: MapPin },
-              { title: "Agent Assistant", desc: "Chat with our intelligent AI Assistant to find recommendations and check availability.", icon: Sparkles },
+              { title: "GovSewana Support", desc: "Chat with our intelligent Smart Support to find recommendations and check availability.", icon: Sparkles },
               { title: "Online Booking", desc: "Reserve rooms or entire bungalows directly through the streamlined digital flow.", icon: CalendarCheck },
               { title: "Secure Verification", desc: "Upload payment slips and identification documents securely for official verification.", icon: ShieldCheck },
               { title: "Manage Bookings", desc: "Track the status of your reservations and view your complete booking history.", icon: FileText }

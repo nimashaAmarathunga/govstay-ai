@@ -73,7 +73,7 @@ export default function Navigation() {
     { name: "My Bookings", href: "/bookings" },
     { name: "Upload ID & Info", href: "/id-upload" },
     { name: "My Profile", href: "/profile" },
-    { name: "Agent Assistant", href: "/agent" },
+    { name: "GovSewana Support", href: "/agent" },
   ];
 
   const handleModeChange = (newMode: AppMode) => {
