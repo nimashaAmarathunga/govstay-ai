@@ -59,14 +59,14 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. User Protected Routes (/bookings, /profile, /id-upload)
+  // 2. User Protected Routes (/dashboard, /bookings, /profile, /id-upload)
   // ---------------------------------------------------------------------------
-  if (["/bookings", "/profile", "/id-upload"].includes(pathname)) {
+  if (["/dashboard", "/bookings", "/profile", "/id-upload"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
     if (!hasValidUserToken) {
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/sign-in", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -75,16 +75,19 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 3. User Login Page (/login)
+  // 3. Auth Pages (/sign-in, /register)
   // ---------------------------------------------------------------------------
-  if (pathname === "/login") {
+  if (["/sign-in", "/register"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
-    // If user is already authenticated and visits /login with ?redirect, honor it or let them switch tabs
-    const redirectParam = request.nextUrl.searchParams.get("redirect");
-    if (hasValidUserToken && redirectParam) {
-      return NextResponse.redirect(new URL(redirectParam, request.url));
+    // If user is already authenticated and visits /sign-in or /register
+    if (hasValidUserToken) {
+      const redirectParam = request.nextUrl.searchParams.get("redirect");
+      if (redirectParam) {
+        return NextResponse.redirect(new URL(redirectParam, request.url));
+      }
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     return NextResponse.next();
@@ -94,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/login", "/bookings", "/profile", "/id-upload"],
+  matcher: ["/admin", "/admin/:path*", "/sign-in", "/register", "/dashboard", "/bookings", "/profile", "/id-upload"],
 };

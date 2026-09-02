@@ -31,10 +31,10 @@ function AuthPageContent() {
   const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/bookings";
   const initialTab = searchParams.get("tab") || "login";
 
-  // If user navigated with tab=register, redirect directly to the Upload ID & Info registration page
+  // If user navigated with tab=register, redirect to the new register page
   useEffect(() => {
     if (initialTab === "register") {
-      router.push("/id-upload");
+      router.push("/register");
     }
   }, [initialTab, router]);
 
@@ -162,24 +162,7 @@ function AuthPageContent() {
           </span>
         </div>
 
-        {/* Tab Switcher: Sign In vs Register (Redirects to ID Upload) */}
-        <div className="relative flex p-1 bg-slate-100/80 rounded-2xl border border-slate-200/70 mb-6">
-          <button
-            type="button"
-            className="relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl transition-all font-bold text-slate-900 bg-white shadow-sm border border-slate-200/80 cursor-default"
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>Sign In</span>
-          </button>
 
-          <Link
-            href="/id-upload"
-            className="relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl transition-all text-slate-500 hover:text-slate-900 font-medium hover:bg-slate-200/50 cursor-pointer"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Register (ID Upload)</span>
-          </Link>
-        </div>
 
         {/* Alerts */}
         {loginError && (
@@ -304,11 +287,11 @@ function AuthPageContent() {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900 truncate">New to GovSewana?</p>
-              <p className="text-[11px] text-slate-500 truncate">Upload your ID & register in 1 step</p>
+              <p className="text-[11px] text-slate-500 truncate">Create an account to book bungalows</p>
             </div>
           </div>
           <Link
-            href="/id-upload"
+            href="/register"
             className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>Register</span>

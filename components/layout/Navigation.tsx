@@ -66,13 +66,14 @@ export default function Navigation() {
   const publicNavLinks = [
     { name: "Browse", href: "/browse" },
     { name: "Map View", href: "/map" },
-    { name: "Agent Assistant", href: "/agent" },
   ];
 
   const authNavLinks = [
+    { name: "Dashboard", href: "/dashboard" },
     { name: "My Bookings", href: "/bookings" },
     { name: "Upload ID & Info", href: "/id-upload" },
     { name: "My Profile", href: "/profile" },
+    { name: "Agent Assistant", href: "/agent" },
   ];
 
   const handleModeChange = (newMode: AppMode) => {
@@ -114,7 +115,7 @@ export default function Navigation() {
   const handleUserLogout = async () => {
     await logout();
     setDropdownOpen(false);
-    router.push("/login");
+    router.push("/");
     router.refresh();
   };
 
@@ -183,7 +184,6 @@ export default function Navigation() {
               </Link>
             );
           })}
-          
           {/* Authenticated Links (Only visible if logged in) */}
           {activeUser && authNavLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -209,33 +209,29 @@ export default function Navigation() {
               </Link>
             );
           })}
-          
-          {/* Login / Register Link (Only visible if NOT logged in) */}
-          {!activeUser && (
-            <Link
-              href="/login"
-              className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
-                pathname === "/login"
-                  ? "text-blue-600 font-bold"
-                  : "text-blue-600 hover:text-blue-700"
-              }`}
-            >
-              Login / Register
-              {pathname === "/login" && (
-                <motion.div
-                  layoutId="navbar-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </Link>
-          )}
         </nav>
       </div>
 
       {/* Right Controls */}
       <div className="flex items-center gap-3">
+        {/* Auth Buttons for Unauthenticated Users */}
+        {!activeUser && (
+          <div className="flex items-center gap-2 mr-2">
+            <Link
+              href="/sign-in"
+              className="px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/register"
+              className="px-4 py-2 text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+            >
+              Register
+            </Link>
+          </div>
+        )}
+
         {/* Mode Toggle Pills */}
         <div className="hidden lg:flex items-center p-1 bg-slate-50 rounded-xl border border-slate-100/60 gap-1">
           <button
