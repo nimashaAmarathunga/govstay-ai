@@ -201,7 +201,7 @@ function AuthPageContent() {
               <input
                 type="text"
                 required
-                placeholder="e.g. ravidu_245503b or 245503B"
+                placeholder="e.g. john_doe or 123456V"
                 value={loginIdentifier}
                 onChange={(e) => setLoginIdentifier(e.target.value)}
                 className="w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
