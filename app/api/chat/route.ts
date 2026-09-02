@@ -7,8 +7,9 @@ export async function POST(req: NextRequest) {
     console.log(`[Next.js API] Received chat request from frontend. Body: ${JSON.stringify(body)}`);
 
     // Proxy the request to the custom Agent Kernel local server running on port 8000
-    console.log("[Next.js API] Sending fetch to http://127.0.0.1:8000/api/v1/chat...");
-    const response = await fetch("http://127.0.0.1:8000/api/v1/chat", {
+    const agentKernelUrl = process.env.AGENT_KERNEL_URL || "http://127.0.0.1:8000";
+    console.log(`[Next.js API] Sending fetch to ${agentKernelUrl}/api/v1/chat...`);
+    const response = await fetch(`${agentKernelUrl}/api/v1/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -17,6 +18,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         prompt: body.text,
         session_id: body.session_id || "default-session",
+        user: body.user,
       }),
     });
     console.log(`[Next.js API] Fetch completed with status: ${response.status} ${response.statusText}`);

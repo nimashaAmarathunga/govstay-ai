@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@/components/context/UserContext";
 import { 
   Send, Paperclip, Map, ShieldCheck, 
   CalendarDays, Bell, CheckCircle2, 
@@ -35,10 +36,17 @@ export default function Page() {
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
   const [draftState, setDraftState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number; booking_id?: string; status?: string }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
   const [activeBooking, setActiveBooking] = useState<any>(null);
-  const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
+  const [agentStates, setAgentStates] = useState<Record<string, "STANDBY" | "WORKING" | "COMPLETED" | "ERROR">>({
+    verification_agent: "STANDBY",
+    travel_agent: "STANDBY",
+    booking_agent: "STANDBY",
+    notification_agent: "STANDBY",
+  });
   const [isBookingMode, setIsBookingMode] = useState(false);
   const [sessionId] = useState(() => `demo-session-${Date.now()}`);
   const router = useRouter();
+  
+  const { activeUser } = useUser();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -138,7 +146,14 @@ export default function Page() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 text: text + systemContext, 
-                session_id: "demo-session-govsewana",
+                session_id: sessionId,
+                user: activeUser ? {
+                  id: activeUser.id,
+                  name: activeUser.name,
+                  email: activeUser.emailAddress,
+                  authenticated: true,
+                  empId: activeUser.empId
+                } : null,
                 attachments: currentAttachment ? [{ content_type: "image/png", data: currentAttachment }] : []
             })
         });
@@ -168,8 +183,12 @@ export default function Page() {
                             fetchActiveBooking(data.ui_state.booking_id);
                           }
                         }
-                        if (data.agent) {
-                          setActiveAgent(data.agent);
+                        if (data.status && data.agent) {
+                          setAgentStates(prev => ({ ...prev, [data.agent]: data.status }));
+                        }
+                        // Also keep activeAgent logic fallback for old styling if needed, or we just rely on status
+                        if (data.agent && data.status === "WORKING") {
+                          setAgentStates(prev => ({ ...prev, [data.agent]: "WORKING" }));
                         }
                         
                         setMessages((prev) => 
@@ -250,31 +269,38 @@ export default function Page() {
                 <div 
                   key={agent.id}
                   className={`p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
-                    activeAgent === agent.id 
+                    agentStates[agent.id] === "WORKING"
                       ? 'bg-emerald-50 border-emerald-200 shadow-sm ring-1 ring-emerald-500/20' 
+                      : agentStates[agent.id] === "COMPLETED" 
+                      ? 'bg-blue-50 border-blue-200' 
                       : 'bg-transparent border-transparent hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-3 relative z-10">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm ${
-                      activeAgent === agent.id ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-100 text-slate-500'
+                      agentStates[agent.id] === "WORKING" ? 'bg-emerald-500 text-white animate-pulse' : 
+                      agentStates[agent.id] === "COMPLETED" ? 'bg-blue-500 text-white' : 
+                      'bg-slate-100 text-slate-500'
                     }`}>
-                      {agentIcons[agent.id]}
+                      {agentStates[agent.id] === "COMPLETED" ? <CheckCircle2 className="w-4 h-4" /> : agentIcons[agent.id]}
                     </div>
                     <div>
                       <h3 className={`text-[13px] font-bold transition-colors ${
-                        activeAgent === agent.id ? 'text-emerald-900' : 'text-slate-600'
+                        agentStates[agent.id] === "WORKING" ? 'text-emerald-900' : 
+                        agentStates[agent.id] === "COMPLETED" ? 'text-blue-900' : 'text-slate-600'
                       }`}>
                         {agent.name}
                       </h3>
                       <p className={`text-[11px] font-semibold mt-0.5 ${
-                        activeAgent === agent.id ? 'text-emerald-600' : 'text-slate-400'
+                        agentStates[agent.id] === "WORKING" ? 'text-emerald-600' : 
+                        agentStates[agent.id] === "COMPLETED" ? 'text-blue-600' : 'text-slate-400'
                       }`}>
-                        {activeAgent === agent.id ? '● Active Now' : 'Standby'}
+                        {agentStates[agent.id] === "WORKING" ? '● Working' : 
+                         agentStates[agent.id] === "COMPLETED" ? '✓ Completed' : 'Standby'}
                       </p>
                     </div>
                   </div>
-                  {activeAgent === agent.id && (
+                  {agentStates[agent.id] === "WORKING" && (
                     <motion.div 
                       layoutId="active-agent"
                       className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"
