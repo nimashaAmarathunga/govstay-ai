@@ -59,7 +59,23 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. User Login Page (/login)
+  // 2. User Protected Routes (/bookings, /profile, /id-upload)
+  // ---------------------------------------------------------------------------
+  if (["/bookings", "/profile", "/id-upload"].includes(pathname)) {
+    const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
+    const hasValidUserToken = await isValidToken(userToken, "user");
+
+    if (!hasValidUserToken) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    return NextResponse.next();
+  }
+
+  // ---------------------------------------------------------------------------
+  // 3. User Login Page (/login)
   // ---------------------------------------------------------------------------
   if (pathname === "/login") {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
@@ -78,5 +94,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/login"],
+  matcher: ["/admin", "/admin/:path*", "/login", "/bookings", "/profile", "/id-upload"],
 };

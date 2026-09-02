@@ -63,14 +63,16 @@ export default function Navigation() {
   }, [mode, pathname]);
 
   // Main navigation links
-  const allNavLinks = [
-    { name: "Agent Assistant", href: "/" },
+  const publicNavLinks = [
     { name: "Browse", href: "/browse" },
     { name: "Map View", href: "/map" },
+    { name: "Agent Assistant", href: "/agent" },
+  ];
+
+  const authNavLinks = [
     { name: "My Bookings", href: "/bookings" },
     { name: "Upload ID & Info", href: "/id-upload" },
     { name: "My Profile", href: "/profile" },
-    { name: "Login", href: "/login" },
   ];
 
   const handleModeChange = (newMode: AppMode) => {
@@ -156,7 +158,8 @@ export default function Navigation() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">
-          {allNavLinks.map((link) => {
+          {/* Public Links */}
+          {publicNavLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -180,6 +183,54 @@ export default function Navigation() {
               </Link>
             );
           })}
+          
+          {/* Authenticated Links (Only visible if logged in) */}
+          {activeUser && authNavLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
+                  isActive
+                    ? "text-slate-900 font-bold"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                {link.name}
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-indicator"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+          
+          {/* Login / Register Link (Only visible if NOT logged in) */}
+          {!activeUser && (
+            <Link
+              href="/login"
+              className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
+                pathname === "/login"
+                  ? "text-blue-600 font-bold"
+                  : "text-blue-600 hover:text-blue-700"
+              }`}
+            >
+              Login / Register
+              {pathname === "/login" && (
+                <motion.div
+                  layoutId="navbar-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </Link>
+          )}
         </nav>
       </div>
 

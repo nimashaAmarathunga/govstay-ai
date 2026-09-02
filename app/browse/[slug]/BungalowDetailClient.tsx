@@ -56,7 +56,10 @@ interface BungalowDetailClientProps {
   bungalow: DbBungalowDetails;
 }
 
+import { useRouter } from "next/navigation";
+
 export default function BungalowDetailClient({ bungalow }: BungalowDetailClientProps) {
+  const router = useRouter();
   const { activeUser } = useUser();
   const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
 
@@ -701,7 +704,13 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                   {/* Proceed to Payment Step Button */}
                   <button
-                    onClick={() => setShowPaymentStep(true)}
+                    onClick={() => {
+                      if (!activeUser) {
+                        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+                        return;
+                      }
+                      setShowPaymentStep(true);
+                    }}
                     disabled={!checkIn || !checkOut}
                     className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
                       checkIn && checkOut
