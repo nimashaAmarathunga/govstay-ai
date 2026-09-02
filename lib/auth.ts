@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
-import argon2 from "argon2";
+import { argon2id, argon2Verify } from "hash-wasm";
 
 // Secret key for JWT signing - sourced from environment variable with fallback
 const JWT_SECRET_STRING =
@@ -32,18 +32,6 @@ export interface AdminJwtPayload {
 // ─── Argon2 Password Hashing & Security ──────────────────────────────────────
 
 /**
- * Recommended OWASP Argon2id configuration options.
- * Argon2id combines resistance to side-channel cache timing attacks (Argon2i)
- * and GPU/ASIC brute-force attacks (Argon2d).
- */
-const ARGON2_OPTIONS = {
-  type: argon2.argon2id,
-  memoryCost: 65536, // 64 MB
-  timeCost: 3,       // 3 iterations
-  parallelism: 4,    // 4 parallel threads
-} as const;
-
-/**
  * Hashes a plain-text password using Argon2id with cryptographically secure random salt.
  *
  * @param password Plain-text password to hash
@@ -53,7 +41,17 @@ export async function hashPassword(password: string): Promise<string> {
   if (!password || typeof password !== "string") {
     throw new Error("Password must be a non-empty string.");
   }
-  return await argon2.hash(password, ARGON2_OPTIONS);
+  const salt = new Uint8Array(crypto.randomBytes(16));
+  const hash = await argon2id({
+    password: password,
+    salt: salt,
+    parallelism: 4,
+    iterations: 3,
+    memorySize: 65536,
+    hashLength: 32,
+    outputType: "encoded"
+  });
+  return hash;
 }
 
 /**
@@ -108,7 +106,10 @@ export async function verifyPassword(password: string, stored: string): Promise<
   // 1. Primary path: Verify using modern Argon2id
   if (stored.startsWith("$argon2")) {
     try {
-      return await argon2.verify(stored, password);
+      return await argon2Verify({
+        password: password,
+        hash: stored
+      });
     } catch {
       return false;
     }

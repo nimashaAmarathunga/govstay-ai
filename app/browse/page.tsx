@@ -43,6 +43,8 @@ export default async function BrowsePage() {
         roomType: r.roomType,
         items: r.items,
         noOfBeds: r.noOfBeds,
+        bed_count: r.bed_count,
+        capacity: r.capacity,
         price: r.price
       })),
       bookings: b.bookings.map((bk: any) => ({

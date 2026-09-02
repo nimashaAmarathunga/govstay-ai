@@ -268,43 +268,41 @@ export default function Page() {
               ].map(agent => (
                 <div 
                   key={agent.id}
-                  className={`p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
+                  className={`p-3 rounded-lg border transition-all duration-300 relative overflow-hidden flex items-center gap-3 ${
                     agentStates[agent.id] === "WORKING"
-                      ? 'bg-emerald-50 border-emerald-200 shadow-sm ring-1 ring-emerald-500/20' 
+                      ? 'bg-emerald-50 border-emerald-200' 
                       : agentStates[agent.id] === "COMPLETED" 
-                      ? 'bg-blue-50 border-blue-200' 
+                      ? 'bg-slate-50 border-slate-200' 
                       : 'bg-transparent border-transparent hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-3 relative z-10">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm ${
-                      agentStates[agent.id] === "WORKING" ? 'bg-emerald-500 text-white animate-pulse' : 
-                      agentStates[agent.id] === "COMPLETED" ? 'bg-blue-500 text-white' : 
-                      'bg-slate-100 text-slate-500'
+                    <div className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
+                      agentStates[agent.id] === "WORKING" ? 'bg-emerald-100 text-emerald-700' : 
+                      agentStates[agent.id] === "COMPLETED" ? 'bg-slate-200 text-slate-700' : 
+                      'bg-slate-100 text-slate-400'
                     }`}>
                       {agentStates[agent.id] === "COMPLETED" ? <CheckCircle2 className="w-4 h-4" /> : agentIcons[agent.id]}
                     </div>
                     <div>
                       <h3 className={`text-[13px] font-bold transition-colors ${
                         agentStates[agent.id] === "WORKING" ? 'text-emerald-900' : 
-                        agentStates[agent.id] === "COMPLETED" ? 'text-blue-900' : 'text-slate-600'
+                        agentStates[agent.id] === "COMPLETED" ? 'text-slate-900' : 'text-slate-600'
                       }`}>
                         {agent.name}
                       </h3>
                       <p className={`text-[11px] font-semibold mt-0.5 ${
-                        agentStates[agent.id] === "WORKING" ? 'text-emerald-600' : 
-                        agentStates[agent.id] === "COMPLETED" ? 'text-blue-600' : 'text-slate-400'
+                        agentStates[agent.id] === "WORKING" ? 'text-emerald-700' : 
+                        agentStates[agent.id] === "COMPLETED" ? 'text-slate-500' : 'text-slate-400'
                       }`}>
-                        {agentStates[agent.id] === "WORKING" ? '● Working' : 
-                         agentStates[agent.id] === "COMPLETED" ? '✓ Completed' : 'Standby'}
+                        {agentStates[agent.id] === "WORKING" ? 'Working...' : 
+                         agentStates[agent.id] === "COMPLETED" ? 'Completed' : 'Standby'}
                       </p>
                     </div>
                   </div>
                   {agentStates[agent.id] === "WORKING" && (
-                    <motion.div 
-                      layoutId="active-agent"
-                      className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"
                     />
                   )}
                 </div>
@@ -319,8 +317,8 @@ export default function Page() {
             <div className="max-w-3xl mx-auto w-full space-y-8">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center opacity-70 mt-32">
-                   <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
-                     <Sparkles className="w-8 h-8 text-slate-900" />
+                   <div className="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mb-6">
+                     <MessageSquare className="w-8 h-8 text-slate-700" />
                    </div>
                    <h2 className="text-xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
                    <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
@@ -340,7 +338,7 @@ export default function Page() {
                      key={message.id} 
                      className="flex flex-col items-end gap-1.5"
                    >
-                     <div className="max-w-[85%] md:max-w-2xl bg-slate-900 text-white px-6 py-4 rounded-[24px] rounded-tr-[8px] shadow-[0_4px_14px_0_rgb(0,0,0,0.05)]">
+                     <div className="max-w-[85%] md:max-w-2xl bg-slate-900 text-white px-5 py-3 rounded-xl rounded-tr-sm shadow-sm">
                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
                      </div>
                    </motion.div>
@@ -367,7 +365,7 @@ export default function Page() {
                        </span>
                      </div>
                    )}
-                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-100 px-6 py-4 rounded-[24px] rounded-tl-[8px] shadow-[0_2px_10px_rgb(0,0,0,0.02)] text-slate-800">
+                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-200 px-5 py-3 rounded-xl rounded-tl-sm shadow-sm text-slate-800">
                      {message.text ? (
                        <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-slate-700">
                          {message.text.split('\n').map((line, i) => {
@@ -440,11 +438,11 @@ export default function Page() {
                  </button>
                </div>
                
-               <div className="relative flex items-center bg-white border border-slate-200 rounded-3xl p-2 shadow-[0_2px_20px_rgb(0,0,0,0.03)] focus-within:ring-4 focus-within:ring-slate-100 focus-within:border-slate-300 transition-all">
+               <div className="relative flex items-center bg-white border border-slate-300 rounded-xl p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-slate-200 focus-within:border-slate-400 transition-all">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 
-                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors shrink-0 ${
+                   className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
                      attachment ? 'text-slate-900 bg-slate-100' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50'
                    }`}
                  >
@@ -461,7 +459,7 @@ export default function Page() {
                  <button
                    onClick={() => handleSendMessage()}
                    disabled={(!inputText.trim() && !attachment)}
-                   className="w-12 h-12 shrink-0 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2"
+                   className="w-10 h-10 shrink-0 rounded-lg bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2"
                  >
                    <ArrowRight className="w-5 h-5" />
                  </button>
