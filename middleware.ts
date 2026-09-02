@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
     const hasValidUserToken = await isValidToken(userToken, "user");
 
     if (!hasValidUserToken) {
-      const loginUrl = new URL("/sign-in", request.url);
+      const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -75,9 +75,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 3. Auth Pages (/sign-in, /id-upload)
+  // 3. Auth Pages (/login, /id-upload)
   // ---------------------------------------------------------------------------
-  if (["/sign-in", "/id-upload"].includes(pathname)) {
+  if (["/login", "/id-upload"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
@@ -97,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/sign-in", "/id-upload", "/dashboard", "/bookings", "/profile"],
+  matcher: ["/admin", "/admin/:path*", "/login", "/id-upload", "/dashboard", "/bookings", "/profile"],
 };

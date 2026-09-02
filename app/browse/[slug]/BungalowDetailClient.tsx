@@ -706,7 +706,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   <button
                     onClick={() => {
                       if (!activeUser) {
-                        router.push(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+                        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
                         return;
                       }
                       setShowPaymentStep(true);
