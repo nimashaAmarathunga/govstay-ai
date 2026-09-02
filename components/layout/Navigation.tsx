@@ -69,10 +69,7 @@ export default function Navigation() {
   ];
 
   const authNavLinks = [
-    { name: "Dashboard", href: "/dashboard" },
     { name: "My Bookings", href: "/bookings" },
-    { name: "Upload ID & Info", href: "/id-upload" },
-    { name: "My Profile", href: "/profile" },
     { name: "GovSewana Support", href: "/agent" },
   ];
 

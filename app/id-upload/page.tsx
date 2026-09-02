@@ -210,8 +210,8 @@ export default function IdUploadPage() {
       }
 
       await refreshUsers();
-      setCreatedRecord(userData as AppUser);
-
+      router.push("/browse");
+      router.refresh();
     } catch (err: any) {
       console.error("Submission error:", err);
       setErrorMessage(err.message || "An unexpected error occurred during registration.");
@@ -252,7 +252,7 @@ export default function IdUploadPage() {
             <Sparkles className="w-3.5 h-3.5" />
             Verified User Registration
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Upload ID & User Registration</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">GovSewana Registration</h1>
           <p className="mt-2 text-slate-300 max-w-2xl text-sm md:text-base leading-relaxed">
             Register your account by uploading your official identity document. Your details will be verified, securely stored, and automatically synced with your booking profile.
           </p>
@@ -345,14 +345,7 @@ export default function IdUploadPage() {
               </div>
 
               <div className="mt-8 flex flex-wrap gap-4 pt-6 border-t border-slate-100">
-                <button
-                  onClick={() => router.push("/profile")}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md active:scale-95 cursor-pointer text-sm"
-                >
-                  <User className="w-4 h-4" />
-                  <span>Go to My Profile</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+
 
                 <button
                   onClick={() => router.push("/browse")}

@@ -28,7 +28,7 @@ function AuthPageContent() {
   const router = useRouter();
   const { setActiveUser, checkAuthSession } = useUser();
 
-  const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/bookings";
+  const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/browse";
   const initialTab = searchParams.get("tab") || "login";
 
   // If user navigated with tab=register, redirect to the id-upload page
