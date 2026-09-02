@@ -59,9 +59,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. User Protected Routes (/dashboard, /bookings, /profile, /id-upload)
+  // 2. User Protected Routes (/dashboard, /bookings, /profile)
   // ---------------------------------------------------------------------------
-  if (["/dashboard", "/bookings", "/profile", "/id-upload"].includes(pathname)) {
+  if (["/dashboard", "/bookings", "/profile"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
@@ -75,9 +75,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 3. Auth Pages (/sign-in, /register)
+  // 3. Auth Pages (/sign-in, /id-upload)
   // ---------------------------------------------------------------------------
-  if (["/sign-in", "/register"].includes(pathname)) {
+  if (["/sign-in", "/id-upload"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
@@ -97,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/sign-in", "/register", "/dashboard", "/bookings", "/profile", "/id-upload"],
+  matcher: ["/admin", "/admin/:path*", "/sign-in", "/id-upload", "/dashboard", "/bookings", "/profile"],
 };

@@ -232,48 +232,8 @@ export default function Navigation() {
           </div>
         )}
 
-        {/* Mode Toggle Pills */}
-        <div className="hidden lg:flex items-center p-1 bg-slate-50 rounded-xl border border-slate-100/60 gap-1">
-          <button
-            onClick={() => handleModeChange("user")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-              mode === "user"
-                ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-            title="Switch to User Mode"
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>User</span>
-          </button>
-          <button
-            onClick={() => handleModeChange("admin")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-              mode === "admin"
-                ? "bg-slate-900 text-white shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-            title="Switch to Admin Mode"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Admin</span>
-          </button>
-          <button
-            onClick={() => handleModeChange("developer")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-              mode === "developer"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-            title="Switch to Developer View"
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span>Developer</span>
-          </button>
-        </div>
-
         {/* Profile / Account Selector Dropdown */}
-        {showDropdown && (
+        {activeUser && (
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
@@ -296,85 +256,27 @@ export default function Navigation() {
                 >
                   <div className="px-5 py-4 border-b border-slate-50">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                      {dropdownHeader}
+                      My Account
                     </p>
-                    {activeUser ? (
-                      <div className="mt-1">
-                        <p className="text-[13px] font-bold text-slate-900 truncate">
-                          {activeUser.name}
-                        </p>
-                        <p className="text-[11px] text-slate-500 truncate">
-                          @{activeUser.username} {activeUser.empId ? `(ID: ${activeUser.empId})` : ""}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-[12px] text-slate-500 mt-1">Not authenticated</p>
-                    )}
+                    <div className="mt-1">
+                      <p className="text-[13px] font-bold text-slate-900 truncate">
+                        {activeUser.name}
+                      </p>
+                      <p className="text-[11px] text-slate-500 truncate">
+                        @{activeUser.username} {activeUser.empId ? `(ID: ${activeUser.empId})` : ""}
+                      </p>
+                    </div>
                   </div>
 
-                  <ul className="max-h-[260px] overflow-y-auto p-2 space-y-0.5">
-                    {isLoading ? (
-                      <li className="px-4 py-6 text-center text-[13px] text-slate-400">Loading…</li>
-                    ) : dropdownUsers.length === 0 ? (
-                      <li className="px-4 py-6 text-center text-[13px] text-slate-400">
-                        No {mode === "admin" ? "admins" : "users"} found.
-                      </li>
-                    ) : (
-                      dropdownUsers.map((user) => {
-                        const isSelected = activeUser?.id === user.id;
-                        return (
-                          <li key={user.id}>
-                            <button
-                              onClick={() => handleSelectUser(user)}
-                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors cursor-pointer ${
-                                isSelected ? "bg-slate-50" : "hover:bg-slate-50/50"
-                              }`}
-                            >
-                              <div
-                                className={`h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-[12px] font-semibold ${
-                                  isSelected ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
-                                }`}
-                              >
-                                {userInitial(user.name)}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-[12px] font-semibold truncate ${isSelected ? "text-slate-900" : "text-slate-700"}`}>
-                                  {user.name}
-                                </p>
-                                <p className="text-[10px] text-slate-400 truncate">
-                                  @{user.username}{user.placeOfWork ? ` · ${user.placeOfWork}` : ""}
-                                </p>
-                              </div>
-
-                              {isSelected && <CheckCircle2 className="w-4 h-4 text-slate-900 shrink-0" />}
-                            </button>
-                          </li>
-                        );
-                      })
-                    )}
-                  </ul>
-
                   {/* Actions Footer */}
-                  <div className="p-2 border-t border-slate-100 bg-slate-50/50 space-y-1">
-                    {activeUser ? (
-                      <button
-                        onClick={handleUserLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4 text-red-500" />
-                        <span>Sign Out JWT Session</span>
-                      </button>
-                    ) : (
-                      <Link
-                        href="/login"
-                        onClick={() => setDropdownOpen(false)}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
-                      >
-                        <LogIn className="w-4 h-4 text-blue-500" />
-                        <span>Sign In with Account</span>
-                      </Link>
-                    )}
+                  <div className="p-2 bg-slate-50/50 space-y-1">
+                    <button
+                      onClick={handleUserLogout}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-red-500" />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
                 </motion.div>
               )}
