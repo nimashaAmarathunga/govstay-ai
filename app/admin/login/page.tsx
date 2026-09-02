@@ -217,42 +217,7 @@ function AdminLoginContent() {
           </button>
         </form>
 
-        {/* Quick Credentials Preset (Demo Helper) */}
-        <div className="mt-6 pt-5 border-t border-slate-100">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mb-2.5">
-            <KeyRound className="w-3.5 h-3.5 text-blue-600" />
-            <span>Development Quick-Fill Credentials:</span>
-          </div>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickFill("superadmin", "adminpassword123")}
-              className="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 hover:border-slate-300 transition-all group flex items-center justify-between cursor-pointer"
-            >
-              <div>
-                <p className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                  Super Admin (Ministry DG)
-                </p>
-                <p className="text-[11px] text-slate-500 font-mono mt-0.5">superadmin / adminpassword123</p>
-              </div>
-              <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-colors" />
-            </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickFill("pubadmin_admin", "deptpassword123")}
-              className="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 hover:border-slate-300 transition-all group flex items-center justify-between cursor-pointer"
-            >
-              <div>
-                <p className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                  Dept Admin (Public Admin)
-                </p>
-                <p className="text-[11px] text-slate-500 font-mono mt-0.5">pubadmin_admin / deptpassword123</p>
-              </div>
-              <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-colors" />
-            </button>
-          </div>
-        </div>
       </motion.div>
 
       {/* Footer Return Link */}
