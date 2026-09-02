@@ -233,6 +233,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const handleBooking = async () => {
     if (!checkIn || !checkOut) return;
     setBookingStatus("booking");
+    setShowPaymentStep(true);
     
     try {
       const formatYYYYMMDD = (d: Date) => {
@@ -259,7 +260,8 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
         throw new Error(err.error || 'Failed to submit booking');
       }
 
-      const booking = await response.json();
+      const resData = await response.json();
+      const booking = resData.bookings ? resData.bookings[0] : resData;
       setActiveBookingId(booking.id || booking.bookingId);
       
       const selectedRoomNums = bungalow.rooms
@@ -272,6 +274,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
       console.error("Booking error:", error);
       alert(error.message || "An error occurred while booking. Please try again.");
       setBookingStatus("idle");
+      setShowPaymentStep(false);
     }
   };
 
@@ -709,19 +712,28 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
                         return;
                       }
-                      setShowPaymentStep(true);
+                      handleBooking();
                     }}
-                    disabled={!checkIn || !checkOut}
+                    disabled={!checkIn || !checkOut || bookingStatus === "booking"}
                     className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
-                      checkIn && checkOut
+                      checkIn && checkOut && bookingStatus !== "booking"
                         ? "bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
                         : "bg-slate-200 text-slate-400 cursor-not-allowed"
                     }`}
                   >
-                    {selectedRoomIds.length > 0
-                      ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
-                      : "Book Entire Bungalow"}
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    {bookingStatus === "booking" ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                        Creating Reservation...
+                      </>
+                    ) : (
+                      <>
+                        {selectedRoomIds.length > 0
+                          ? `Book Selected (${selectedRoomIds.length} ${selectedRoomIds.length === 1 ? 'Room' : 'Rooms'})`
+                          : "Book Entire Bungalow"}
+                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                      </>
+                    )}
                   </button>
                 </>
               ) : (
@@ -736,7 +748,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                   <h4 className="font-bold text-slate-900 text-base mb-1">Upload Payment Slip</h4>
                   <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
-                    Attach your bank transfer or deposit slip to submit this manual booking request.
+                    Attach your bank transfer or deposit slip to complete your booking request.
                   </p>
 
                   {/* Summary Card */}
@@ -765,34 +777,22 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     </div>
                   </div>
 
-                  {/* Submit Button */}
-                  {bookingStatus === "idle" && (
-                    <button
-                      onClick={handleBooking}
-                      className="w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
-                    >
-                      <span>Submit Reservation</span>
-                      <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                    </button>
-                  )}
-
                   {bookingStatus === "booking" && (
-                    <button
-                      disabled
-                      className="w-full py-4 bg-slate-700 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-wait text-sm"
-                    >
-                      <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
-                      Submitting Reservation...
-                    </button>
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center my-4">
+                      <span className="material-symbols-outlined animate-spin text-3xl text-slate-700 mb-2">sync</span>
+                      <p className="text-xs font-semibold text-slate-700">Creating your reservation...</p>
+                    </div>
                   )}
 
-                  {/* Payment Slip Upload Component */}
+                  {/* Payment Slip Upload Component displayed directly */}
                   {bookingStatus === "awaiting-slip" && activeBookingId && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-5 shadow-sm">
-                      <h4 className="font-bold text-amber-900 text-base mb-2">Upload Payment Slip</h4>
-                      <p className="text-xs text-amber-700 font-medium mb-4">
-                        Your reservation is pending. Please upload your payment slip to confirm.
-                      </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-5 shadow-sm space-y-4">
+                      <div>
+                        <h4 className="font-bold text-amber-900 text-base mb-1">Upload Payment Slip</h4>
+                        <p className="text-xs text-amber-700 font-medium">
+                          Your reservation is created with status <strong>PENDING</strong>. Upload your payment receipt below to submit for approval.
+                        </p>
+                      </div>
                       <PaymentSlipUpload
                         onUploadComplete={(url) => {
                           setPaymentSlipUrl(url);
@@ -805,6 +805,12 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         bookingId={activeBookingId}
                         userId={activeUser?.id}
                       />
+                      <button
+                        onClick={() => setBookingStatus("success")}
+                        className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                      >
+                        Skip Upload for Now
+                      </button>
                     </div>
                   )}
 

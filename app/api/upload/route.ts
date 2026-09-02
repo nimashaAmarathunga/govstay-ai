@@ -11,9 +11,9 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'govstay_super_secret_jwt_key_2026_production_grade'
 );
 
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+// Initialize Supabase client lazily or with fallbacks to avoid build-time errors
+const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function POST(request: Request) {
