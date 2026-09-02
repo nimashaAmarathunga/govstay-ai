@@ -102,8 +102,8 @@ function startAgentKernel() {
 
     const fullPath = path.resolve(process.cwd(), agentKernelPath);
     if (!fs.existsSync(fullPath)) {
-      console.error(`[Agent Kernel] Error: Path ${fullPath} does not exist.`);
-      resolve(false);
+      console.warn(`[Agent Kernel] Warning: Path ${fullPath} does not exist. Skipping local Agent startup.`);
+      resolve(true);
       return;
     }
 

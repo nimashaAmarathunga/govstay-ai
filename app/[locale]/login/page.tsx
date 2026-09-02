@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -24,6 +25,8 @@ import {
 import { useUser, AppUser } from "@/components/context/UserContext";
 
 function AuthPageContent() {
+  const t = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
   const router = useRouter();
   const { setActiveUser, checkAuthSession } = useUser();
@@ -31,16 +34,12 @@ function AuthPageContent() {
   const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/bookings";
   const initialTab = searchParams.get("tab") || "login";
 
-  // If user navigated with tab=register, redirect directly to the Upload ID & Info registration page
   useEffect(() => {
     if (initialTab === "register") {
       router.push("/id-upload");
     }
   }, [initialTab, router]);
 
-  // ---------------------------------------------------------------------------
-  // Login State & Handlers
-  // ---------------------------------------------------------------------------
   const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
@@ -84,12 +83,12 @@ function AuthPageContent() {
       const data = await res.json();
 
       if (!res.ok) {
-        setLoginError(data.error || "Login failed. Please check your credentials.");
+        setLoginError(data.error || t("invalidCredentials"));
         setLoginLoading(false);
         return;
       }
 
-      setLoginSuccess("Authenticated successfully! Redirecting...");
+      setLoginSuccess(t("loginSuccess"));
       setActiveUser(data.user as AppUser);
       await checkAuthSession();
 
@@ -111,7 +110,7 @@ function AuthPageContent() {
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header Logo (GovSewana Logo) */}
+      {/* Header Logo */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -133,7 +132,7 @@ function AuthPageContent() {
               GovSewana
             </h1>
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest">
-              User & Employee Portal
+              {t("userLoginTitle")}
             </p>
           </div>
         </Link>
@@ -151,10 +150,10 @@ function AuthPageContent() {
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <BadgeCheck className="w-5 h-5 text-blue-600" />
-              <span>User Portal Access</span>
+              <span>{t("userLoginTitle")}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Sign in with your verified government credentials
+              {t("userLoginSubtitle")}
             </p>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
@@ -169,7 +168,7 @@ function AuthPageContent() {
             className="relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl transition-all font-bold text-slate-900 bg-white shadow-sm border border-slate-200/80 cursor-default"
           >
             <LogIn className="w-3.5 h-3.5" />
-            <span>Sign In</span>
+            <span>{t("signInButton")}</span>
           </button>
 
           <Link
@@ -177,7 +176,7 @@ function AuthPageContent() {
             className="relative flex-1 flex items-center justify-center gap-2 py-2.5 text-xs rounded-xl transition-all text-slate-500 hover:text-slate-900 font-medium hover:bg-slate-200/50 cursor-pointer"
           >
             <UserPlus className="w-3.5 h-3.5" />
-            <span>Register (ID Upload)</span>
+            <span>{t("registerNow")}</span>
           </Link>
         </div>
 
@@ -209,7 +208,7 @@ function AuthPageContent() {
           {/* Username / Employee ID */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">
-              Email, Username or Employee ID
+              {t("usernameLabel")}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -230,14 +229,14 @@ function AuthPageContent() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Password
+                {t("passwordLabel")}
               </label>
               <button
                 type="button"
                 onClick={() => alert("Password reset link sent to your registered email.")}
                 className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
               >
-                Forgot?
+                {t("forgotPassword")}
               </button>
             </div>
             <div className="relative">
@@ -272,7 +271,7 @@ function AuthPageContent() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 accent-slate-900"
               />
-              <span className="text-xs text-slate-600 font-medium">Keep me signed in</span>
+              <span className="text-xs text-slate-600 font-medium">{t("rememberMe")}</span>
             </label>
           </div>
 
@@ -285,11 +284,11 @@ function AuthPageContent() {
             {loginLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Authenticating...</span>
+                <span>{t("signingIn")}</span>
               </>
             ) : (
               <>
-                <span>Sign In to Account</span>
+                <span>{t("signInButton")}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -303,15 +302,15 @@ function AuthPageContent() {
               <FileCheck2 className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">New to GovSewana?</p>
-              <p className="text-[11px] text-slate-500 truncate">Upload your ID & register in 1 step</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{t("noAccount")}</p>
+              <p className="text-[11px] text-slate-500 truncate">Upload ID & register in 1 step</p>
             </div>
           </div>
           <Link
             href="/id-upload"
             className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
-            <span>Register</span>
+            <span>{t("registerNow")}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

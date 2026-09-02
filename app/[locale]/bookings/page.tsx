@@ -2,45 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { 
   Calendar, CreditCard, MoreVertical, FileText,
   HelpCircle, XCircle, Search, Clock, CheckCircle2,
   AlertCircle, Paperclip, Loader2, Sparkles
 } from "lucide-react";
-
-const INITIAL_BOOKINGS = [
-  {
-    id: "BKG-2024-892",
-    bookingId: "BKG-2024-892",
-    title: "Nuwara Eliya Rest House",
-    date: "Sept 14 - Sept 16, 2024",
-    status: "Confirmed",
-    amount: "LKR 38,200",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHtjFwAj-lsUvWvMM4b5izQJgtLPrniT_NaZ-YiGrw33YJ8RniIPjmTjSUw8FYJuKsHIvNV-bCVhSpjQmZXftPv6MvjkVYu--XWXSnEEOrYKb8kSgvMlvP9n0aFegBq7P46C_SlEcyZhVnfmyJVGXybDENXRBVKIL-4GFglCZGhqGfITPMZQGP9OXoJAFn19ilHm-WduLmEUl3IEbSe6lBKWeRfdJXvKUpJKf1nAQ1PoM31nZXCwnJ",
-  },
-  {
-    id: "BKG-2024-710",
-    bookingId: "BKG-2024-710",
-    title: "Galle Fort Heritage Bungalow",
-    date: "Aug 02 - Aug 05, 2024",
-    status: "Completed",
-    amount: "LKR 67,500",
-    image: "https://images.unsplash.com/photo-1582610116397-edb318620f90?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "BKG-2023-112",
-    bookingId: "BKG-2023-112",
-    title: "Kandy Lake View Circuit",
-    date: "Dec 10 - Dec 12, 2023",
-    status: "Completed",
-    amount: "LKR 31,000",
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  }
-];
-
 import { useUser } from "@/components/context/UserContext";
 
 export default function BookingsPage() {
+  const t = useTranslations("Bookings");
+  const tCommon = useTranslations("Common");
   const [bookings, setBookings] = useState<any[]>([]);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const { activeUser } = useUser();
@@ -97,22 +69,19 @@ export default function BookingsPage() {
         const totalCost = group.reduce((sum, b) => sum + (b.totalCost || 0), 0);
         const roomNumbers = group.map((b) => b.room.roomNumber).sort().join(", ");
         
-        const isEntire = group.length === first.circuitBungalow.noOfRooms;
-        const title = isEntire 
-          ? `${first.circuitBungalow.name} (Entire Bungalow)`
-          : `${first.circuitBungalow.name} (Room${group.length > 1 ? "s" : ""}: ${roomNumbers})`;
-
         return {
           id: first.id,
           ids: group.map(b => b.id),
-          bookingId: first.bookingId || first.id,
-          title,
+          bookingId: first.bookingId || first.id.substring(0, 8).toUpperCase(),
+          title: first.circuitBungalow.name,
           date: dateStr,
           status: displayStatus,
+          statusCode: first.status,
           amount: `LKR ${totalCost.toLocaleString()}`,
-          image: first.circuitBungalow.image,
+          image: first.circuitBungalow.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
           paymentSlipUrl: first.paymentSlipUrl,
           approvalReason: first.approvalReason,
+          roomNumbers
         };
       });
 
@@ -123,30 +92,12 @@ export default function BookingsPage() {
   };
 
   useEffect(() => {
-    const load = async () => {
-      await fetchBookings();
-    };
-    load();
+    fetchBookings();
   }, [activeUser]);
 
-  useEffect(() => {
-    const hasPending = bookings.some(b => b.status === "Pending");
-    if (hasPending) {
-      const timeoutId = setTimeout(() => {
-        fetchBookings();
-      }, 1500);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [bookings]);
-
   const handleCancelBooking = async (id: string) => {
-    if (id.startsWith("BKG")) {
-      setBookings(bookings.map(b => b.id === id ? { ...b, status: "Cancelled" } : b));
-      setMenuOpenId(null);
-      return;
-    }
-
-    const bookingGroup = bookings.find(b => b.id === id);
+    if (!confirm(t("cancelBooking") + "?")) return;
+    const bookingGroup = bookings.find((b) => b.id === id);
     const idsToCancel = bookingGroup && bookingGroup.ids ? bookingGroup.ids : [id];
 
     try {
@@ -178,16 +129,16 @@ export default function BookingsPage() {
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            {status}
+            {t("confirmed")}
           </span>
         );
       case 'Pending':
-        const reasonText = booking.approvalReason || "Agent Kernel is initializing...";
+        const reasonText = booking.approvalReason || "Verifying...";
         return (
           <div className="flex flex-col items-end gap-1">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/60 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              Verifying
+              {t("pending")}
             </span>
             <span className="text-[10px] text-blue-600 font-medium flex items-center gap-1 max-w-[200px] text-right">
               <Sparkles className="w-3 h-3 flex-shrink-0" />
@@ -198,14 +149,14 @@ export default function BookingsPage() {
       case 'Completed':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-            {status}
+            {t("completed")}
           </span>
         );
-      default: // Cancelled or Rejected
+      default:
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-200/60">
             <AlertCircle className="w-3.5 h-3.5" />
-            {status}
+            {t("cancelled")}
           </span>
         );
     }
@@ -218,19 +169,19 @@ export default function BookingsPage() {
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">My Reservations</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">{t("title")}</h1>
               <p className="text-[15px] text-slate-500 font-medium">
-                Manage your upcoming stays and view your booking history.
+                {t("subtitle")}
               </p>
             </div>
           </div>
 
           <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-visible relative">
             <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-5 border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400 rounded-t-[24px]">
-              <div className="col-span-5">Accommodation</div>
-              <div className="col-span-3">Dates</div>
-              <div className="col-span-2">Amount</div>
-              <div className="col-span-2">Status</div>
+              <div className="col-span-5">{tCommon("viewDetails")}</div>
+              <div className="col-span-3">{t("dates")}</div>
+              <div className="col-span-2">{t("totalAmount")}</div>
+              <div className="col-span-2">{t("status")}</div>
             </div>
             
             <div className="divide-y divide-slate-100/80">
@@ -316,17 +267,9 @@ export default function BookingsPage() {
                                 className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 cursor-pointer"
                               >
                                 <Paperclip className="w-4 h-4 text-slate-400" />
-                                View Payment Slip
+                                {t("downloadSlip")}
                               </a>
                             )}
-                            <button className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 cursor-pointer">
-                              <FileText className="w-4 h-4 text-slate-400" />
-                              View Receipt
-                            </button>
-                            <button className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 cursor-pointer">
-                              <HelpCircle className="w-4 h-4 text-slate-400" />
-                              Contact Support
-                            </button>
                             {(booking.status === "Confirmed" || booking.status === "Pending") && (
                               <>
                                 <div className="h-px bg-slate-100 my-1"></div>
@@ -335,7 +278,7 @@ export default function BookingsPage() {
                                   className="w-full text-left px-4 py-2.5 text-[13px] font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 cursor-pointer"
                                 >
                                   <XCircle className="w-4 h-4 text-red-500" />
-                                  Cancel Booking
+                                  {t("cancelBooking")}
                                 </button>
                               </>
                             )}
@@ -352,8 +295,8 @@ export default function BookingsPage() {
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                     <Calendar className="w-8 h-8 text-slate-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-1">No reservations yet</h3>
-                  <p className="text-slate-500 text-[14px]">When you book a bungalow, it will appear here.</p>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-1">{t("noBookingsTitle")}</h3>
+                  <p className="text-slate-500 text-[14px]">{t("noBookingsDesc")}</p>
                 </div>
               )}
             </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { 
   Search, SearchX, Star, MapPin, Users, BedDouble, ChevronRight
@@ -58,6 +59,8 @@ interface BrowseBungalowsClientProps {
 }
 
 export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClientProps) {
+  const t = useTranslations("Browse");
+  const tCommon = useTranslations("Common");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredBungalows = bungalows.filter((b) =>
@@ -77,9 +80,9 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">Discover Circuit Bungalows</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">{t("title")}</h1>
               <p className="text-[15px] text-slate-500 font-medium">
-                Find and book government rest houses and suites across Sri Lanka.
+                {t("subtitle")}
               </p>
             </div>
             <div className="w-full md:w-[320px]">
@@ -87,7 +90,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search locations, departments..."
+                  placeholder={t("searchPlaceholder")}
                   className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 text-sm font-medium text-slate-900 placeholder:text-slate-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -101,8 +104,8 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <SearchX className="w-8 h-8 text-slate-400" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">No bungalows found</h3>
-              <p className="text-slate-500 text-[15px]">Try adjusting your search terms or location.</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">{t("noResultsTitle")}</h3>
+              <p className="text-slate-500 text-[15px]">{t("noResultsDesc")}</p>
             </div>
           )}
 
@@ -148,17 +151,12 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     <div className="flex items-center gap-4 text-[13px] font-medium text-slate-600 mb-6 border-b border-slate-100 pb-5">
                       <span className="flex items-center gap-2">
                         <BedDouble className="w-4 h-4 text-slate-400" />
-                        {bungalow.rooms && bungalow.rooms.length > 0 ? bungalow.rooms.length : bungalow.noOfRooms} Rooms
-                      </span>
-                      <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                      <span className="flex items-center gap-2">
-                        <BedDouble className="w-4 h-4 text-slate-400" />
-                        {bungalow.rooms?.reduce((total, r) => total + (r as any).bed_count, 0) || 0} Beds
+                        {bungalow.rooms && bungalow.rooms.length > 0 ? bungalow.rooms.length : bungalow.noOfRooms} {t("rooms")}
                       </span>
                       <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
                       <span className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-slate-400" />
-                        Sleeps {bungalow.capacity}
+                        {t("capacity")}: {bungalow.capacity}
                       </span>
                     </div>
 
@@ -180,10 +178,9 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
 
                     <div className="flex justify-between items-center mt-auto">
                       <div>
-                        <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Starting at</span>
                         <div className="flex items-baseline gap-1">
                           <span className="font-extrabold text-2xl text-slate-900">{formatPrice(bungalow.price)}</span>
-                          <span className="text-[12px] text-slate-500 font-medium">/ night</span>
+                          <span className="text-[12px] text-slate-500 font-medium">/ {t("perNight")}</span>
                         </div>
                       </div>
                       <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-slate-900 flex items-center justify-center transition-colors">

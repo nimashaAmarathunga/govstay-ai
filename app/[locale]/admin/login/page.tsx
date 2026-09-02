@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   ShieldCheck,
   Lock,
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 
 function AdminLoginContent() {
+  const t = useTranslations("AdminAuth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
@@ -107,7 +109,7 @@ function AdminLoginContent() {
               GovSewana
             </h1>
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest">
-              Administrative Portal
+              {t("portalLabel")}
             </p>
           </div>
         </Link>
@@ -124,10 +126,10 @@ function AdminLoginContent() {
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-blue-600" />
-              Admin Portal Access
+              {t("title")}
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Sign in with your department admin credentials
+              {t("subtitle")}
             </p>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
@@ -152,7 +154,7 @@ function AdminLoginContent() {
           {/* Username / Employee ID */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">
-              Username or Employee ID
+              {t("usernameLabel")}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -172,7 +174,7 @@ function AdminLoginContent() {
           {/* Password */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">
-              Password
+              {t("passwordLabel")}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -206,11 +208,11 @@ function AdminLoginContent() {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Authenticating ...</span>
+                <span>{t("signingIn")}</span>
               </>
             ) : (
               <>
-                <span>Sign In to Admin Dashboard</span>
+                <span>{t("signInButton")}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -263,7 +265,7 @@ function AdminLoginContent() {
         className="mt-6 text-center text-xs text-slate-500 relative z-10"
       >
         <Link href="/" className="hover:text-slate-800 transition-colors font-medium underline underline-offset-4">
-          ← Back to GovSewana Public Site
+          {t("backToSite")}
         </Link>
       </motion.div>
     </div>

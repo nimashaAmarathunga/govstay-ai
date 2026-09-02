@@ -3,21 +3,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 interface HeroProps {
   onSearchClick?: () => void;
 }
 
 export function Hero({ onSearchClick }: HeroProps) {
-  const handleSearchClick = () => {
-    if (onSearchClick) {
-      onSearchClick();
-    } else {
-      // Navigate to browse page
-      window.location.href = "/browse";
-    }
-  };
+  const tAbout = useTranslations("About");
+  const tNav = useTranslations("Navigation");
 
   return (
     <section className="relative min-h-[600px] md:min-h-[700px] lg:min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
@@ -38,7 +33,7 @@ export function Hero({ onSearchClick }: HeroProps) {
           className="mb-6 flex items-center justify-center gap-2"
         >
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-            Welcome to GovSewana
+            GovSewana
           </span>
         </motion.div>
 
@@ -49,8 +44,8 @@ export function Hero({ onSearchClick }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
         >
-          Book Circuit Bungalows
-          <span className="block text-emerald-400">Smarter & Faster</span>
+          {tAbout("title")}
+          <span className="block text-emerald-400 mt-2 text-2xl md:text-3xl font-semibold">{tAbout("subtitle")}</span>
         </motion.h1>
 
         {/* Subheading */}
@@ -60,7 +55,7 @@ export function Hero({ onSearchClick }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed"
         >
-          Eliminate endless paperwork and waiting times. GovSewana uses intelligent automation to instantly process your government circuit bungalow reservations across Sri Lanka.
+          {tAbout("description")}
         </motion.p>
 
         {/* Search Card */}
@@ -75,16 +70,16 @@ export function Hero({ onSearchClick }: HeroProps) {
               <Search className="w-5 h-5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Ask the Agent Assistant to plan your trip..."
+                placeholder="GovSewana AI Assistant..."
                 className="w-full bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-sm md:text-base"
                 readOnly
               />
             </div>
             <Link
               href="/"
-              className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2 cursor-pointer"
             >
-              <span>Try Assistant</span>
+              <span>{tNav("home")}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -99,9 +94,9 @@ export function Hero({ onSearchClick }: HeroProps) {
         >
           <Link
             href="/"
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-2"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
           >
-            <span>Experience the Agent Assistant</span>
+            <span>{tNav("home")}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>

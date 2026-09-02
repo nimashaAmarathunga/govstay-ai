@@ -182,6 +182,14 @@ body {
   min-height: 100vh;
 }
 
+.font-sinhala,
+.font-sinhala input,
+.font-sinhala select,
+.font-sinhala textarea,
+.font-sinhala button {
+  font-family: 'Noto Sans Sinhala', 'Inter', -apple-system, sans-serif !important;
+}
+
 /* Leaflet Map overrides */
 .custom-popup .leaflet-popup-content-wrapper {
   border-radius: 1rem;

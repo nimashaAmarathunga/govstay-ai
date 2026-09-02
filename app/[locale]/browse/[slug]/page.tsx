@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import BungalowDetailClient, { DbBungalowDetails } from "./BungalowDetailClient";
 
 type BungalowDetailsPageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -55,8 +55,8 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
       roomType: r.roomType,
       items: r.items,
       noOfBeds: r.noOfBeds,
-      bed_count: r.bed_count,
-      capacity: r.capacity,
+      bed_count: r.bed_count ?? undefined,
+      capacity: r.capacity ?? undefined,
       price: r.price
     })),
     bookings: bungalow.bookings.map(bk => ({

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/components/context/UserContext";
@@ -28,6 +29,8 @@ interface Message {
 }
 
 export default function Page() {
+  const t = useTranslations("Assistant");
+  const tCommon = useTranslations("Common");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
@@ -186,7 +189,6 @@ export default function Page() {
                         if (data.status && data.agent) {
                           setAgentStates(prev => ({ ...prev, [data.agent]: data.status }));
                         }
-                        // Also keep activeAgent logic fallback for old styling if needed, or we just rely on status
                         if (data.agent && data.status === "WORKING") {
                           setAgentStates(prev => ({ ...prev, [data.agent]: "WORKING" }));
                         }
@@ -231,7 +233,6 @@ export default function Page() {
       alert("Please upload your payment slip first before verifying.");
       return;
     }
-    // Optimistic update
     setActiveBooking((prev: any) => prev ? { ...prev, status: "PENDING" } : prev);
     handleSendMessage(`I have reviewed the details and submitted the form. Here is my payment slip: ${paymentSlipUrl}. Please finalize the booking for ${draftState.booking_id || activeBooking?.bookingId}.`, true);
   };
@@ -256,15 +257,15 @@ export default function Page() {
         {/* Left Column: Agent Status */}
         <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col min-h-0 hidden lg:flex">
            <div className="p-6 pb-2">
-             <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">System Agents</h2>
+             <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">{t("systemAgents")}</h2>
            </div>
            <div className="flex-1 overflow-y-auto p-4 space-y-2">
               
               {[
-                { id: "verification_agent", name: "Verification" },
-                { id: "travel_agent", name: "Travel & Discovery" },
-                { id: "booking_agent", name: "Booking" },
-                { id: "notification_agent", name: "Notifications" }
+                { id: "verification_agent", name: t("verificationAgent") },
+                { id: "travel_agent", name: t("travelAgent") },
+                { id: "booking_agent", name: t("bookingAgent") },
+                { id: "notification_agent", name: t("notificationAgent") }
               ].map(agent => (
                 <div 
                   key={agent.id}
@@ -295,8 +296,8 @@ export default function Page() {
                         agentStates[agent.id] === "WORKING" ? 'text-emerald-700' : 
                         agentStates[agent.id] === "COMPLETED" ? 'text-slate-500' : 'text-slate-400'
                       }`}>
-                        {agentStates[agent.id] === "WORKING" ? 'Working...' : 
-                         agentStates[agent.id] === "COMPLETED" ? 'Completed' : 'Standby'}
+                        {agentStates[agent.id] === "WORKING" ? t("working") : 
+                         agentStates[agent.id] === "COMPLETED" ? t("completed") : t("standby")}
                       </p>
                     </div>
                   </div>
@@ -320,9 +321,9 @@ export default function Page() {
                    <div className="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mb-6">
                      <MessageSquare className="w-8 h-8 text-slate-700" />
                    </div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
+                   <h2 className="text-xl font-bold text-slate-900 mb-2">{t("welcomeTitle")}</h2>
                    <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
-                     I can help you search for circuit bungalows, check availability, or manage your bookings.
+                     {t("welcomeSubtitle")}
                    </p>
                 </div>
               )}
@@ -369,7 +370,6 @@ export default function Page() {
                      {message.text ? (
                        <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-slate-700">
                          {message.text.split('\n').map((line, i) => {
-                           // Simple markdown bold parsing for better looks
                            if (line.includes('**')) {
                              const parts = line.split('**');
                              return (
@@ -412,7 +412,7 @@ export default function Page() {
                            </div>
                            <div className="text-right">
                              <span className="text-slate-900 font-bold text-xl">{message.propertyCard.price}</span>
-                             <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">per night</p>
+                             <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">{t("perNight")}</p>
                            </div>
                          </div>
                        </div>
@@ -428,13 +428,13 @@ export default function Page() {
           <div className="p-6 md:p-8 shrink-0">
              <div className="max-w-3xl mx-auto">
                <div className="flex gap-2 mb-4 px-1 overflow-x-auto no-scrollbar">
-                 <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
+                 <button onClick={() => handleSendMessage(t("quickAmenitiesPrompt"))} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm cursor-pointer">
                    <Sparkles className="w-3.5 h-3.5" />
-                   Amenities
+                   {t("quickAmenities")}
                  </button>
-                 <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
+                 <button onClick={() => handleSendMessage(t("quickSearchPrompt"))} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm cursor-pointer">
                    <Search className="w-3.5 h-3.5" />
-                   Search bungalows
+                   {t("quickSearch")}
                  </button>
                </div>
                
@@ -442,7 +442,7 @@ export default function Page() {
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 
-                   className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
+                   className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
                      attachment ? 'text-slate-900 bg-slate-100' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50'
                    }`}
                  >
@@ -450,7 +450,7 @@ export default function Page() {
                  </button>
                  <input
                    className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 px-3 py-4"
-                   placeholder="Type your message..."
+                   placeholder={t("typeMessage")}
                    type="text"
                    value={inputText}
                    onChange={(e) => setInputText(e.target.value)}
@@ -459,7 +459,7 @@ export default function Page() {
                  <button
                    onClick={() => handleSendMessage()}
                    disabled={(!inputText.trim() && !attachment)}
-                   className="w-10 h-10 shrink-0 rounded-lg bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2"
+                   className="w-10 h-10 shrink-0 rounded-lg bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2 cursor-pointer"
                  >
                    <ArrowRight className="w-5 h-5" />
                  </button>
@@ -482,13 +482,13 @@ export default function Page() {
                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
                  <FileText className="w-4 h-4 text-slate-700" />
                </div>
-               <h2 className="text-[14px] font-bold text-slate-900">Booking Summary</h2>
+               <h2 className="text-[14px] font-bold text-slate-900">{t("bookingSummary")}</h2>
              </div>
              
               <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
                 
                 <div className="flex flex-col gap-1.5">
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
+                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("employeeId")}</label>
                    <input 
                      type="text" 
                      value={activeBooking?.user?.empId || draftState.emp_id || ""} 
@@ -499,7 +499,7 @@ export default function Page() {
                    />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Room</label>
+                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("room")}</label>
                    <input 
                      type="text" 
                      value={activeBooking?.room?.roomNumber || draftState.room_number || ""} 
@@ -512,7 +512,7 @@ export default function Page() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-in</label>
+                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("checkIn")}</label>
                      <input 
                        type="date" 
                        value={activeBooking?.fromDate ? new Date(activeBooking.fromDate).toISOString().split('T')[0] : (draftState.from_date || "")} 
@@ -522,7 +522,7 @@ export default function Page() {
                      />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-out</label>
+                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("checkOut")}</label>
                      <input 
                        type="date" 
                        value={activeBooking?.toDate ? new Date(activeBooking.toDate).toISOString().split('T')[0] : (draftState.to_date || "")} 
@@ -535,7 +535,7 @@ export default function Page() {
 
                 {(activeBooking?.totalCost || draftState.total_cost) && (
                    <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-xl mt-2 shadow-sm">
-                     <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Total Cost</span>
+                     <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">{t("totalCost")}</span>
                      <span className="text-[16px] font-extrabold text-slate-900">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
                    </div>
                 )}
@@ -551,20 +551,20 @@ export default function Page() {
                 <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mt-auto flex flex-col gap-5">
                    
                     <div className="flex justify-between items-center pb-5 border-b border-white/10">
-                       <span className="text-white/60 text-[13px] font-medium">Status</span>
+                       <span className="text-white/60 text-[13px] font-medium">{t("status")}</span>
                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
                          activeBooking?.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-400' : 
                          activeBooking?.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400' : 
                          (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? 'bg-blue-500/20 text-blue-400' :
                          'bg-white/10 text-white'
                       }`}>
-                         {activeBooking?.status === 'CONFIRMED' ? '✓ Confirmed' : activeBooking?.status === 'PENDING' ? '⏳ Payment Verification' : (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? '⏳ Awaiting Payment Slip' : 'Draft'}
+                         {activeBooking?.status === 'CONFIRMED' ? `✓ ${t("confirmed")}` : activeBooking?.status === 'PENDING' ? `⏳ ${t("paymentVerification")}` : (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? `⏳ ${t("awaitingSlip")}` : t("draft")}
                       </span>
                    </div>
                    
                    {(activeBooking?.bookingId || draftState.booking_id) && (
                      <div className="flex justify-between items-center">
-                       <span className="text-white/60 text-[13px] font-medium">Booking ID</span>
+                       <span className="text-white/60 text-[13px] font-medium">{t("bookingId")}</span>
                        <span className="text-white text-[13px] font-bold">{activeBooking?.bookingId || draftState.booking_id}</span>
                      </div>
                    )}
@@ -572,7 +572,7 @@ export default function Page() {
                    <div className="flex items-center justify-between">
                      <label className="text-[13px] font-medium text-white/90 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
                        <MessageSquare className="w-4 h-4 text-emerald-400" />
-                       WhatsApp Updates
+                       {t("whatsappUpdates")}
                      </label>
                      <div className="relative inline-block w-10 h-5">
                        <input
@@ -593,7 +593,7 @@ export default function Page() {
                        onClick={triggerConfirmBooking}
                        className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
-                       {activeBooking?.bookingId || draftState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
+                       {activeBooking?.bookingId || draftState.booking_id ? t("verifySlip") : t("confirmDetails")}
                      </button>
                    ) : activeBooking?.status === "PENDING" ? (
                      <button
@@ -601,7 +601,7 @@ export default function Page() {
                        className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
                      >
                        <Loader2 className="w-5 h-5 animate-spin" />
-                       Verification in progress
+                       {t("verifyingProgress")}
                      </button>
                    ) : (
                      <button
@@ -609,7 +609,7 @@ export default function Page() {
                        className="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl shadow-md mt-2 flex items-center justify-center gap-2"
                      >
                        <CheckCircle2 className="w-5 h-5" />
-                       Confirmed
+                       {t("confirmed")}
                      </button>
                    )}
                 </div>

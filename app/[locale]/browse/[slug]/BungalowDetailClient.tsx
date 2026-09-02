@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import DateRangePicker from "@/components/booking/DateRangePicker";
 import PaymentSlipUpload from "@/components/booking/PaymentSlipUpload";
 import { useUser } from "@/components/context/UserContext";

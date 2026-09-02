@@ -3,9 +3,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function SearchBanner() {
+  const t = useTranslations("SearchBanner");
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
@@ -27,10 +29,10 @@ export function SearchBanner() {
           className="text-center mb-8"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Find Your Perfect Stay
+            {t("searchButton")}
           </h2>
           <p className="text-slate-500 text-lg">
-            Search by location, amenities, or budget
+            {t("quickFilter")}
           </p>
         </motion.div>
 
@@ -57,7 +59,7 @@ export function SearchBanner() {
 
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white px-8 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
+            className="bg-slate-900 hover:bg-slate-800 text-white px-8 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2 whitespace-nowrap cursor-pointer"
           >
             <span className="hidden sm:inline">Search</span>
             <ArrowRight className="w-4 h-4" />
@@ -72,7 +74,7 @@ export function SearchBanner() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm"
         >
-          <span className="text-slate-500">Popular searches:</span>
+          <span className="text-slate-500">{t("quickFilter")}</span>
           <div className="flex flex-wrap gap-3 justify-center">
             {["Nuwara Eliya", "Kandy", "Galle", "Ella"].map((location) => (
               <button
@@ -83,7 +85,7 @@ export function SearchBanner() {
                     `/browse?search=${encodeURIComponent(location)}`
                   );
                 }}
-                className="text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-4 py-2 rounded-full transition-all font-medium"
+                className="text-slate-600 hover:text-slate-900 hover:bg-slate-50 px-4 py-2 rounded-full transition-all font-medium cursor-pointer"
               >
                 {location}
               </button>

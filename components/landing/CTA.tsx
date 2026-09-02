@@ -3,9 +3,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function CTA() {
+  const tNav = useTranslations("Navigation");
+  const tAbout = useTranslations("About");
+
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="max-w-4xl mx-auto px-6 md:px-8">
@@ -17,11 +21,11 @@ export function CTA() {
           className="text-center"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-            Ready to Skip the Paperwork?
+            GovSewana
           </h2>
 
           <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Experience the future of government accommodation booking. Just drop a message and let the AI handle the rest.
+            {tAbout("missionDesc")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -31,9 +35,9 @@ export function CTA() {
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg"
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg cursor-pointer"
               >
-                <span>Talk to Agent Assistant</span>
+                <span>{tNav("home")}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>

@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
-import { argon2id, argon2Verify } from "hash-wasm";
+import argon2 from "argon2";
 
 // Secret key for JWT signing - sourced from environment variable with fallback
 const JWT_SECRET_STRING =
@@ -32,45 +32,39 @@ export interface AdminJwtPayload {
 // ─── Argon2 Password Hashing & Security ──────────────────────────────────────
 
 /**
+ * Recommended OWASP Argon2id configuration:
+ * - Type: Argon2id (resistant to GPU cracking and side-channel timing attacks)
+ * - Memory cost: 64 MB (65536 KB)
+ * - Time cost: 3 iterations
+ * - Parallelism: 4 threads
+ */
+const ARGON2_OPTIONS = {
+  type: argon2.argon2id,
+  memoryCost: 65536, // 64 MB
+  timeCost: 3,       // 3 iterations
+  parallelism: 4,    // 4 parallel threads
+} as const;
+
+/**
  * Hashes a plain-text password using Argon2id with cryptographically secure random salt.
- *
- * @param password Plain-text password to hash
- * @returns Formatted Argon2 hash string
  */
 export async function hashPassword(password: string): Promise<string> {
   if (!password || typeof password !== "string") {
     throw new Error("Password must be a non-empty string.");
   }
-  const salt = new Uint8Array(crypto.randomBytes(16));
-  const hash = await argon2id({
-    password: password,
-    salt: salt,
-    parallelism: 4,
-    iterations: 3,
-    memorySize: 65536,
-    hashLength: 32,
-    outputType: "encoded"
-  });
-  return hash;
+  return await argon2.hash(password, ARGON2_OPTIONS);
 }
 
 /**
  * Determines whether a stored password string needs to be migrated to Argon2id.
- * Returns true if the stored value is legacy plain text or older PBKDF2 hash.
- *
- * @param stored The stored password value in the database
  */
 export function needsRehash(stored: string): boolean {
   if (!stored) return true;
-  // Modern Argon2 hashes start with "$argon2"
   return !stored.startsWith("$argon2");
 }
 
 /**
  * Validates password strength policy.
- * Requirements:
- * - At least 8 characters
- * - At least 1 letter and 1 number or special character
  */
 export function validatePasswordStrength(password: string): { isValid: boolean; message?: string } {
   if (!password || typeof password !== "string") {
@@ -94,22 +88,14 @@ export function validatePasswordStrength(password: string): { isValid: boolean; 
 
 /**
  * Securely verifies a plain-text password against a stored Argon2 hash (or legacy format).
- * Safely handles migration from legacy plain-text or PBKDF2 without breaking existing users.
- *
- * @param password The plain-text password entered during login
- * @param stored The stored password hash (or legacy string) in the database
- * @returns boolean indicating if password is valid
  */
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   if (!password || !stored) return false;
 
-  // 1. Primary path: Verify using modern Argon2id
+  // 1. Primary path: Verify modern Argon2id hash
   if (stored.startsWith("$argon2")) {
     try {
-      return await argon2Verify({
-        password: password,
-        hash: stored
-      });
+      return await argon2.verify(stored, password);
     } catch {
       return false;
     }
@@ -128,8 +114,7 @@ export async function verifyPassword(password: string, stored: string): Promise<
     }
   }
 
-  // 3. Backward compatibility path: Legacy plain text (temporary fallback for unmigrated users)
-  // Constant-time comparison to prevent timing attacks
+  // 3. Backward compatibility path: Legacy plain text (for lazy migration)
   try {
     const a = Buffer.from(password);
     const b = Buffer.from(stored);

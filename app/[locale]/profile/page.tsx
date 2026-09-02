@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useUser, roleLabel, roleBadgeClass, userInitial } from "@/components/context/UserContext";
 import {
   User,
@@ -21,6 +22,8 @@ const inputClassName =
   "w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/5";
 
 export default function ProfilePage() {
+  const t = useTranslations("Profile");
+  const tCommon = useTranslations("Common");
   const { activeUser, refreshUsers } = useUser();
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,7 +112,7 @@ export default function ProfilePage() {
       <main className="flex-1 overflow-y-auto bg-slate-50 flex items-center justify-center p-12">
         <div className="flex items-center gap-3 text-slate-600">
           <Loader2 className="w-6 h-6 animate-spin text-slate-900" />
-          <span className="text-sm font-medium">Loading profile details...</span>
+          <span className="text-sm font-medium">{tCommon("loading")}</span>
         </div>
       </main>
     );
@@ -122,11 +125,11 @@ export default function ProfilePage() {
         <div className="mx-auto max-w-5xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-xs font-semibold tracking-wide uppercase mb-3 backdrop-blur-md border border-white/10">
             <Sparkles className="w-3.5 h-3.5" />
-            Active Account Profile
+            <span>GovSewana</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">My Profile</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{t("pageTitle")}</h1>
           <p className="mt-2 text-slate-300 max-w-2xl text-sm md:text-base leading-relaxed">
-            Your personal information, employment verification, and uploaded ID document are synchronized automatically across GovSewana.
+            {t("pageSubtitle")}
           </p>
         </div>
       </div>
@@ -156,14 +159,14 @@ export default function ProfilePage() {
 
               <div className="mt-6 border-t border-slate-100 pt-4 space-y-2 text-xs text-slate-600">
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-slate-400 font-medium">Status</span>
+                  <span className="text-slate-400 font-medium">{tCommon("status")}</span>
                   <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
                     {activeUser?.status === "RETIRED" ? "Retired" : "Active / Verified"}
                   </span>
                 </div>
                 {formData.memberId && (
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-400 font-medium">Emp ID</span>
+                    <span className="text-slate-400 font-medium">{t("memberId")}</span>
                     <span className="font-mono font-semibold text-slate-800">{formData.memberId}</span>
                   </div>
                 )}
@@ -175,7 +178,7 @@ export default function ProfilePage() {
               <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <CreditCard className="w-4 h-4 text-blue-600" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Verified ID Document</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">{t("uploadedDocument")}</h3>
                 </div>
                 <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 max-h-48 flex items-center justify-center p-2">
                   {idPhotoUrl.endsWith(".pdf") ? (
@@ -193,7 +196,7 @@ export default function ProfilePage() {
                 </div>
                 <p className="text-[11px] text-emerald-600 font-medium mt-3 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>ID Attached to Account</span>
+                  <span>{tCommon("verified")}</span>
                 </p>
               </div>
             )}
@@ -212,37 +215,37 @@ export default function ProfilePage() {
             <section>
               <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
                 <User className="w-5 h-5 text-slate-700" />
-                <h2 className="text-lg font-bold text-slate-900">Personal Information</h2>
+                <h2 className="text-lg font-bold text-slate-900">{t("accountDetails")}</h2>
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="md:col-span-2">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Full Name *</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("fullName")} *</span>
                   <input required name="fullName" value={formData.fullName} onChange={handleChange} type="text" placeholder="Full name" className={inputClassName} />
                 </label>
 
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">NIC Number *</span>
-                  <input required name="nic" value={formData.nic} onChange={handleChange} type="text" placeholder="National Identity Card Number" className={inputClassName} />
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("nic")} *</span>
+                  <input required name="nic" value={formData.nic} onChange={handleChange} type="text" placeholder="NIC Number" className={inputClassName} />
                 </label>
 
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Government Member / Emp ID</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("memberId")}</span>
                   <input name="memberId" value={formData.memberId} onChange={handleChange} type="text" placeholder="e.g. 245503B" className={inputClassName} />
                 </label>
 
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Mobile Number</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("phone")}</span>
                   <input name="phone" value={formData.phone} onChange={handleChange} type="tel" placeholder="077 123 4567" className={inputClassName} />
                 </label>
 
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Email Address</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("email")}</span>
                   <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="name@gov.lk" className={inputClassName} />
                 </label>
 
                 <label className="md:col-span-2">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Residential Address</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("address")}</span>
                   <input name="address" value={formData.address} onChange={handleChange} type="text" placeholder="Street, City, District" className={inputClassName} />
                 </label>
               </div>
@@ -252,22 +255,22 @@ export default function ProfilePage() {
             <section className="pt-4 border-t border-slate-100">
               <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
                 <Building className="w-5 h-5 text-slate-700" />
-                <h2 className="text-lg font-bold text-slate-900">Employment & Eligibility</h2>
+                <h2 className="text-lg font-bold text-slate-900">{t("employmentDetails")}</h2>
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Ministry or Department</span>
-                  <input name="department" value={formData.department} onChange={handleChange} type="text" placeholder="e.g. Ministry of Public Administration" className={inputClassName} />
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("department")}</span>
+                  <input name="department" value={formData.department} onChange={handleChange} type="text" placeholder="Ministry / Department" className={inputClassName} />
                 </label>
 
                 <label>
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Position / Designation</span>
-                  <input name="designation" value={formData.designation} onChange={handleChange} type="text" placeholder="e.g. Software Engineer" className={inputClassName} />
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("designation")}</span>
+                  <input name="designation" value={formData.designation} onChange={handleChange} type="text" placeholder="Position / Grade" className={inputClassName} />
                 </label>
 
                 <label className="md:col-span-2">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Preferred District</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("district")}</span>
                   <select name="district" value={formData.district} onChange={handleChange} className={inputClassName}>
                     <option value="">Select District</option>
                     <option value="Colombo">Colombo</option>
@@ -292,12 +295,7 @@ export default function ProfilePage() {
                 {isSaved && (
                   <span className="text-xs font-bold text-emerald-600 flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200/60">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Profile updated successfully!</span>
-                  </span>
-                )}
-                {!isSaved && (
-                  <span className="text-xs text-slate-400">
-                    Make modifications and click save to update your active profile.
+                    <span>{t("savedSuccess")}</span>
                   </span>
                 )}
               </div>
@@ -310,12 +308,12 @@ export default function ProfilePage() {
                 {isSaving ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Saving...</span>
+                    <span>{t("saving")}</span>
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    <span>Save Profile</span>
+                    <span>{t("saveChanges")}</span>
                   </>
                 )}
               </button>

@@ -1,27 +1,23 @@
 "use client";
 
-import Link from "next/link";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useMode, AppMode } from "@/components/context/ModeContext";
 import {
   useUser,
   AppUser,
-  roleLabel,
-  roleBadgeClass,
   userInitial,
 } from "@/components/context/UserContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 import {
-  Building2,
   User,
   ShieldCheck,
   Terminal,
-  HelpCircle,
   CheckCircle2,
   ChevronDown,
   Settings,
-  Lock,
   LogOut,
   Sparkles,
   LogIn,
@@ -31,6 +27,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("Navigation");
+  const tCommon = useTranslations("Common");
   const { mode, setMode } = useMode();
   const { users, activeUser, setActiveUser, logout, isLoading } = useUser();
 
@@ -62,15 +60,15 @@ export default function Navigation() {
     setSettingsOpen(false);
   }, [mode, pathname]);
 
-  // Main navigation links
+  // Main navigation links with internationalization
   const allNavLinks = [
-    { name: "Agent Assistant", href: "/" },
-    { name: "Browse", href: "/browse" },
-    { name: "Map View", href: "/map" },
-    { name: "My Bookings", href: "/bookings" },
-    { name: "Upload ID & Info", href: "/id-upload" },
-    { name: "My Profile", href: "/profile" },
-    { name: "Login", href: "/login" },
+    { name: t("home"), href: "/" },
+    { name: t("browse"), href: "/browse" },
+    { name: t("map"), href: "/map" },
+    { name: t("myBookings"), href: "/bookings" },
+    { name: t("idUpload"), href: "/id-upload" },
+    { name: t("myProfile"), href: "/profile" },
+    { name: t("signIn"), href: "/login" },
   ];
 
   const handleModeChange = (newMode: AppMode) => {
@@ -141,7 +139,7 @@ export default function Navigation() {
   return (
     <header className="flex-none h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-50 sticky top-0">
       {/* Brand & Left Navigation */}
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="relative h-10 w-10 flex items-center justify-center transition-transform group-hover:scale-105">
             <Image
@@ -160,9 +158,9 @@ export default function Navigation() {
             const isActive = pathname === link.href;
             return (
               <Link
-                key={link.name}
+                key={link.href}
                 href={link.href}
-                className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
+                className={`relative px-3.5 h-full flex items-center text-[13px] font-medium transition-colors ${
                   isActive
                     ? "text-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
@@ -185,6 +183,9 @@ export default function Navigation() {
 
       {/* Right Controls */}
       <div className="flex items-center gap-3">
+        {/* Language Switcher Component */}
+        <LanguageSwitcher />
+
         {/* Mode Toggle Pills */}
         <div className="hidden lg:flex items-center p-1 bg-slate-50 rounded-xl border border-slate-100/60 gap-1">
           <button
@@ -267,7 +268,7 @@ export default function Navigation() {
 
                   <ul className="max-h-[260px] overflow-y-auto p-2 space-y-0.5">
                     {isLoading ? (
-                      <li className="px-4 py-6 text-center text-[13px] text-slate-400">Loading…</li>
+                      <li className="px-4 py-6 text-center text-[13px] text-slate-400">{tCommon("loading")}</li>
                     ) : dropdownUsers.length === 0 ? (
                       <li className="px-4 py-6 text-center text-[13px] text-slate-400">
                         No {mode === "admin" ? "admins" : "users"} found.
@@ -316,7 +317,7 @@ export default function Navigation() {
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                       >
                         <LogOut className="w-4 h-4 text-red-500" />
-                        <span>Sign Out JWT Session</span>
+                        <span>{t("signOut")}</span>
                       </button>
                     ) : (
                       <Link
@@ -325,7 +326,7 @@ export default function Navigation() {
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                       >
                         <LogIn className="w-4 h-4 text-blue-500" />
-                        <span>Sign In with Account</span>
+                        <span>{t("signIn")}</span>
                       </Link>
                     )}
                   </div>
@@ -365,7 +366,7 @@ export default function Navigation() {
                     Application Settings
                   </span>
                   <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                    Admin Portal
+                    {t("adminPortal")}
                   </span>
                 </div>
 
@@ -381,7 +382,7 @@ export default function Navigation() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-xs font-bold leading-tight flex items-center gap-1.5">
-                        <span>Admin Portal Login</span>
+                        <span>{t("adminPortal")}</span>
                         <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
                       </h4>
                       <p className="text-[10px] text-slate-300 group-hover:text-blue-100 truncate mt-0.5">
@@ -396,7 +397,7 @@ export default function Navigation() {
                       className="w-full flex items-center gap-3 p-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors text-left text-xs font-semibold cursor-pointer"
                     >
                       <LogOut className="w-4 h-4 shrink-0 text-red-500" />
-                      <span>Sign Out Admin Session</span>
+                      <span>{t("signOut")}</span>
                     </button>
                   )}
                 </div>

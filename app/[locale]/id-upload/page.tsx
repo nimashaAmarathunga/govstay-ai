@@ -2,7 +2,8 @@
 
 import { useState, useRef, FormEvent, ChangeEvent, DragEvent } from "react";
 import { useUser, AppUser } from "@/components/context/UserContext";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import {
   UploadCloud,
   FileText,
@@ -28,6 +29,8 @@ const inputClassName =
   "w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/5";
 
 export default function IdUploadPage() {
+  const t = useTranslations("IdUpload");
+  const tCommon = useTranslations("Common");
   const { setActiveUser, refreshUsers, checkAuthSession } = useUser();
   const router = useRouter();
 
@@ -75,14 +78,12 @@ export default function IdUploadPage() {
   const handleFileChange = (file: File | null) => {
     if (!file) return;
 
-    // Validate type
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       setErrorMessage("Please select a valid image (JPG, PNG, WEBP) or a PDF document.");
       return;
     }
 
-    // Validate size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       setErrorMessage("File size exceeds maximum limit of 10MB.");
       return;
@@ -154,7 +155,6 @@ export default function IdUploadPage() {
     try {
       setIsSubmitting(true);
 
-      // 1. Upload ID Card file to server
       const uploadBody = new FormData();
       uploadBody.append("file", selectedFile);
       uploadBody.append("folder", "ids");
@@ -171,7 +171,6 @@ export default function IdUploadPage() {
 
       const idCardUrl = uploadData.url;
 
-      // 2. Insert User Record in Postgres `users` table with Argon2-hashed password
       const userRes = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -187,7 +186,6 @@ export default function IdUploadPage() {
         throw new Error(userData.error || "Failed to insert user record in database.");
       }
 
-      // 3. Establish JWT Authentication session for the new user immediately
       try {
         const loginRes = await fetch("/api/auth/login", {
           method: "POST",
@@ -220,29 +218,6 @@ export default function IdUploadPage() {
     }
   };
 
-  const resetForm = () => {
-    setCreatedRecord(null);
-    setSelectedFile(null);
-    setFilePreview(null);
-    setShowPassword(false);
-    setFormData({
-      name: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-      nicNumber: "",
-      empId: "",
-      mobileNumber: "",
-      emailAddress: "",
-      placeOfWork: "",
-      position: "",
-      status: "WORKING",
-      role: "GOV_EMPLOYEE",
-      preferredDistrict: "",
-      residentialAddress: ""
-    });
-  };
-
   return (
     <main className="flex-1 overflow-y-auto bg-slate-50/60 pb-16">
       {/* Header Banner */}
@@ -250,11 +225,11 @@ export default function IdUploadPage() {
         <div className="mx-auto max-w-6xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-xs font-semibold tracking-wide uppercase mb-3 backdrop-blur-md border border-white/10">
             <Sparkles className="w-3.5 h-3.5" />
-            Verified User Registration
+            <span>GovSewana</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Upload ID & User Registration</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{t("pageTitle")}</h1>
           <p className="mt-2 text-slate-300 max-w-2xl text-sm md:text-base leading-relaxed">
-            Register your account by uploading your official identity document. Your details will be verified, securely stored, and automatically synced with your booking profile.
+            {t("pageSubtitle")}
           </p>
         </div>
       </div>
@@ -276,15 +251,15 @@ export default function IdUploadPage() {
                 </div>
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/50">
-                    Registration & Profile Sync Complete
+                    {t("successMessage")}
                   </span>
-                  <h2 className="text-2xl font-bold text-slate-900 mt-1">Account Registered & Profile Populated</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 mt-1">{createdRecord.name}</h2>
                 </div>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="rounded-2xl bg-slate-50 p-6 border border-slate-100 space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Synced Profile Details</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Profile Details</h3>
 
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
@@ -292,23 +267,23 @@ export default function IdUploadPage() {
                       <span className="font-mono text-slate-800 text-xs font-semibold bg-white px-2 py-0.5 rounded border border-slate-200">{createdRecord.id}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">Full Name</span>
+                      <span className="text-slate-500 font-medium">{t("fullName")}</span>
                       <span className="font-semibold text-slate-900">{createdRecord.name}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">Username</span>
+                      <span className="text-slate-500 font-medium">{t("username")}</span>
                       <span className="font-mono text-slate-800 font-semibold">@{createdRecord.username}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">Employee / Member ID</span>
+                      <span className="text-slate-500 font-medium">{t("serviceNumber")}</span>
                       <span className="font-semibold text-slate-900">{createdRecord.empId || "N/A"}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">NIC Number</span>
+                      <span className="text-slate-500 font-medium">{t("nicNumber")}</span>
                       <span className="font-semibold text-slate-900">{createdRecord.nicNumber || "N/A"}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">Ministry / Dept</span>
+                      <span className="text-slate-500 font-medium">{t("department")}</span>
                       <span className="font-semibold text-slate-900">{createdRecord.placeOfWork || "N/A"}</span>
                     </div>
                   </div>
@@ -316,7 +291,7 @@ export default function IdUploadPage() {
 
                 <div className="rounded-2xl bg-slate-50 p-6 border border-slate-100 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Verified Identity Document</h3>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">{t("uploadIdCard")}</h3>
                     {createdRecord.empIdPhoto ? (
                       <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-white max-h-56 flex items-center justify-center p-2 shadow-sm">
                         {createdRecord.empIdPhoto.endsWith(".pdf") ? (
@@ -333,7 +308,7 @@ export default function IdUploadPage() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-slate-400 text-sm italic">No ID photo stored.</p>
+                      <p className="text-slate-400 text-sm italic">No ID document stored.</p>
                     )}
                   </div>
 
@@ -386,7 +361,7 @@ export default function IdUploadPage() {
                       <CreditCard className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-base font-bold text-slate-900">ID Card Document *</h2>
+                      <h2 className="text-base font-bold text-slate-900">{t("uploadIdCard")}</h2>
                       <p className="text-xs text-slate-500">Official Government ID, Member ID or NIC</p>
                     </div>
                   </div>
@@ -435,7 +410,7 @@ export default function IdUploadPage() {
                           className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
-                          Remove file
+                          {t("removeFile")}
                         </button>
                       </div>
                     ) : (
@@ -445,7 +420,7 @@ export default function IdUploadPage() {
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-slate-800">
-                            Click or drag ID card image / PDF
+                            {t("uploadPrompt")}
                           </p>
                           <p className="text-xs text-slate-400 mt-1">
                             Supports JPG, PNG, WEBP or PDF (max 10MB)
@@ -481,12 +456,12 @@ export default function IdUploadPage() {
                 <section>
                   <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
                     <UserCheck className="w-5 h-5 text-slate-700" />
-                    <h2 className="text-lg font-bold text-slate-900">Personal Information</h2>
+                    <h2 className="text-lg font-bold text-slate-900">{t("step1")}</h2>
                   </div>
 
                   <div className="grid gap-5 md:grid-cols-2">
                     <label className="md:col-span-2">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Full Name *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("fullName")} *</span>
                       <input
                         required
                         type="text"
@@ -499,7 +474,7 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">NIC Number *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("nicNumber")} *</span>
                       <input
                         required
                         type="text"
@@ -512,19 +487,19 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Username (Optional)</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("username")}</span>
                       <input
                         type="text"
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        placeholder="Auto-generated if left blank"
+                        placeholder="Username"
                         className={inputClassName}
                       />
                     </label>
 
                     <label className="relative">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Account Password * (min. 8 chars)</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("password")} *</span>
                       <div className="relative">
                         <input
                           required
@@ -532,7 +507,7 @@ export default function IdUploadPage() {
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                          placeholder="Create secure password"
+                          placeholder="Create password"
                           className={`${inputClassName} pr-10`}
                         />
                         <button
@@ -546,7 +521,7 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Confirm Password *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("confirmPassword")} *</span>
                       <input
                         required
                         type={showPassword ? "text" : "password"}
@@ -559,20 +534,20 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Mobile Number *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("mobileNumber")} *</span>
                       <input
                         required
                         type="tel"
                         name="mobileNumber"
                         value={formData.mobileNumber}
                         onChange={handleInputChange}
-                        placeholder="e.g. 077 123 4567"
+                        placeholder="077 123 4567"
                         className={inputClassName}
                       />
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Email Address *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("emailAddress")} *</span>
                       <input
                         required
                         type="email"
@@ -585,7 +560,7 @@ export default function IdUploadPage() {
                     </label>
 
                     <label className="md:col-span-2">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Residential Address</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("address")}</span>
                       <input
                         type="text"
                         name="residentialAddress"
@@ -602,12 +577,12 @@ export default function IdUploadPage() {
                 <section className="pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
                     <Building className="w-5 h-5 text-slate-700" />
-                    <h2 className="text-lg font-bold text-slate-900">Employment & Eligibility</h2>
+                    <h2 className="text-lg font-bold text-slate-900">{t("step2")}</h2>
                   </div>
 
                   <div className="grid gap-5 md:grid-cols-2">
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Government Member / Emp ID</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("serviceNumber")}</span>
                       <input
                         type="text"
                         name="empId"
@@ -619,7 +594,7 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Ministry / Department</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("department")}</span>
                       <input
                         type="text"
                         name="placeOfWork"
@@ -631,46 +606,45 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Position / Designation</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("designation")}</span>
                       <input
                         type="text"
                         name="position"
                         value={formData.position}
                         onChange={handleInputChange}
-                        placeholder="e.g. Senior Administrative Officer"
+                        placeholder="e.g. Administrative Officer"
                         className={inputClassName}
                       />
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Work Status</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("serviceStatus")}</span>
                       <select
                         name="status"
                         value={formData.status}
                         onChange={handleInputChange}
                         className={inputClassName}
                       >
-                        <option value="WORKING">Working Employee</option>
-                        <option value="RETIRED">Retired Employee</option>
+                        <option value="WORKING">{t("statusWorking")}</option>
+                        <option value="RETIRED">{t("statusRetired")}</option>
                       </select>
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Role Classification</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("userRole")}</span>
                       <select
                         name="role"
                         value={formData.role}
                         onChange={handleInputChange}
                         className={inputClassName}
                       >
-                        <option value="GOV_EMPLOYEE">Government Employee</option>
-                        <option value="PUBLIC_USER">Public User</option>
-                        <option value="DEPT_ADMIN">Department Admin</option>
+                        <option value="GOV_EMPLOYEE">{t("roleGovEmployee")}</option>
+                        <option value="PUBLIC_USER">{t("rolePublicUser")}</option>
                       </select>
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Preferred District</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">{t("district")}</span>
                       <select
                         name="preferredDistrict"
                         value={formData.preferredDistrict}
@@ -702,7 +676,7 @@ export default function IdUploadPage() {
                     className="group relative inline-flex items-center justify-between pl-6 pr-1.5 py-1.5 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white font-medium shadow-[0_10px_25px_-5px_rgba(15,23,42,0.4)] border border-slate-700/80 hover:border-slate-500 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     <span className="text-[15px] font-medium tracking-wide text-slate-100 pr-4 select-none">
-                      {isSubmitting ? "Registering & Syncing Profile..." : "Register Account & Upload ID"}
+                      {isSubmitting ? t("submitting") : t("submitVerification")}
                     </span>
 
                     <div className="h-10 w-10 rounded-full bg-gradient-to-b from-white to-slate-100 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.25)] border border-slate-200/80 shrink-0 transition-transform group-hover:translate-x-0.5">

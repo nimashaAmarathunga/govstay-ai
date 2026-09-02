@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/components/context/UserContext";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import {
   Building2, Users, CalendarDays, Plus, Search,
   Edit2, Trash2, X, Save, AlertCircle, Loader2,

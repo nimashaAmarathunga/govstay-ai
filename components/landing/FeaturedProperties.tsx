@@ -3,8 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Star, MapPin, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DbBungalow {
   id: string;
@@ -27,6 +28,7 @@ export function FeaturedProperties({
   properties = [],
   limit = 4,
 }: FeaturedPropertiesProps) {
+  const tBrowse = useTranslations("Browse");
   const displayProperties = properties.slice(0, limit);
 
   const containerVariants = {
@@ -64,10 +66,10 @@ export function FeaturedProperties({
           className="mb-10 md:mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Featured Properties
+            {tBrowse("title")}
           </h2>
           <p className="text-slate-500 text-lg">
-            Discover our most popular circuit bungalows
+            {tBrowse("subtitle")}
           </p>
         </motion.div>
 
@@ -126,11 +128,11 @@ export function FeaturedProperties({
                     <div className="flex gap-3 mt-auto pt-4 border-t border-slate-100 text-xs font-semibold text-slate-600">
                       <div className="flex items-center gap-1.5">
                         <Users className="w-4 h-4" />
-                        <span>{property.capacity} guests</span>
+                        <span>{property.capacity} {tBrowse("capacity")}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span>•</span>
-                        <span>{(property as any).rooms && (property as any).rooms.length > 0 ? (property as any).rooms.length : property.noOfRooms} rooms</span>
+                        <span>{(property as any).rooms && (property as any).rooms.length > 0 ? (property as any).rooms.length : property.noOfRooms} {tBrowse("rooms")}</span>
                       </div>
                     </div>
                   </div>
@@ -152,7 +154,7 @@ export function FeaturedProperties({
             href="/browse"
             className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-semibold hover:bg-slate-800 transition-all duration-300 hover:shadow-lg"
           >
-            View All Properties
+            {tBrowse("title")}
             <svg
               className="w-4 h-4"
               fill="none"

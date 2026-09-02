@@ -2,31 +2,35 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Users, Award, Zap } from "lucide-react";
-import Link from "next/link";
-
-const benefits = [
-  {
-    icon: CheckCircle2,
-    title: "Government Verified",
-    description:
-      "All properties are officially registered and maintained to the highest standards.",
-  },
-  {
-    icon: Users,
-    title: "Employee Exclusive",
-    description:
-      "Special rates and benefits available only for government employees and their families.",
-  },
-  {
-    icon: Award,
-    title: "Priority Support",
-    description:
-      "Dedicated support team ensures smooth bookings and hassle-free stays.",
-  },
-];
+import { CheckCircle2, Users, Award } from "lucide-react";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function EmployeeBenefits() {
+  const tNav = useTranslations("Navigation");
+  const tAbout = useTranslations("About");
+
+  const benefits = [
+    {
+      icon: CheckCircle2,
+      title: "Government Verified",
+      description:
+        "All properties are officially registered and maintained to the highest standards.",
+    },
+    {
+      icon: Users,
+      title: "Employee Exclusive",
+      description:
+        "Special rates and benefits available only for government employees and their families.",
+    },
+    {
+      icon: Award,
+      title: "Priority Support",
+      description:
+        "Dedicated support team ensures smooth bookings and hassle-free stays.",
+    },
+  ];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -59,18 +63,17 @@ export function EmployeeBenefits() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Designed for Public Servants
+              {tAbout("mission")}
             </h2>
             <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              GovSewana is engineered specifically for Sri Lankan government employees
-              and their families. We understand the pain of manual administrative processes, which is why we built an AI layer to handle verification, scheduling, and notifications.
+              {tAbout("missionDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/"
-                className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg text-center"
+                className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg text-center cursor-pointer"
               >
-                Chat with Agent Assistant
+                {tNav("home")}
               </Link>
             </div>
           </motion.div>
