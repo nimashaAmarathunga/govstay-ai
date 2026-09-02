@@ -33,24 +33,35 @@ export default function Page() {
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [whatsappEnabled, setWhatsappEnabled] = useState(true);
-  const [bookingStatus, setBookingStatus] = useState<"draft" | "confirming" | "confirmed">("draft");
-  
-  const [isBookingMode, setIsBookingMode] = useState(false);
+  const [draftState, setDraftState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number; booking_id?: string; status?: string }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
+  const [activeBooking, setActiveBooking] = useState<any>(null);
   const [activeAgent, setActiveAgent] = useState<string>("travel_agent");
-  const [uiState, setUiState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
+  const [isBookingMode, setIsBookingMode] = useState(false);
   const [sessionId] = useState(() => `demo-session-${Date.now()}`);
   const router = useRouter();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (bookingStatus === "confirmed") {
+    if (activeBooking?.status === "CONFIRMED") {
       const timer = setTimeout(() => {
         router.push('/bookings');
       }, 2500);
       return () => clearTimeout(timer);
     }
-  }, [bookingStatus, router]);
+  }, [activeBooking?.status, router]);
+
+  const fetchActiveBooking = async (id: string) => {
+    try {
+      const res = await fetch(`/api/bookings/${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setActiveBooking(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch active booking", e);
+    }
+  };
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -119,7 +130,7 @@ export default function Page() {
 
     try {
         const systemContext = isBookingMode 
-          ? `\n\n(System Context - Current Form State: ${JSON.stringify(uiState)})`
+          ? `\n\n(System Context - Current Form State: ${JSON.stringify(draftState)})`
           : "";
           
         const res = await fetch("/api/chat", {
@@ -148,14 +159,14 @@ export default function Page() {
                     try {
                         const data = JSON.parse(line.slice(6));
                         
-                        if (data.delta?.toLowerCase().includes("payment is now being verified") || data.delta?.toLowerCase().includes("payment slip uploaded successfully")) {
-                          setBookingStatus("confirmed");
-                        }
                         if (data.agent === "booking_agent" || data.delta?.toLowerCase().includes("booking")) {
                           setIsBookingMode(true);
                         }
                         if (data.ui_state) {
-                          setUiState(prev => ({ ...prev, ...data.ui_state }));
+                          setDraftState(prev => ({ ...prev, ...data.ui_state }));
+                          if (data.ui_state.booking_id) {
+                            fetchActiveBooking(data.ui_state.booking_id);
+                          }
                         }
                         if (data.agent) {
                           setActiveAgent(data.agent);
@@ -196,13 +207,14 @@ export default function Page() {
   };
 
   const triggerConfirmBooking = () => {
-    if (bookingStatus !== "draft") return;
+    if (activeBooking?.status !== "PENDING_UPLOAD" && !draftState.booking_id) return;
     if (!paymentSlipUrl) {
-      alert("Please upload your payment slip first before confirming.");
+      alert("Please upload your payment slip first before verifying.");
       return;
     }
-    setBookingStatus("confirming");
-    handleSendMessage(`I have reviewed the details and submitted the form. Here is my payment slip: ${paymentSlipUrl}. Please finalize the booking.`, true);
+    // Optimistic update
+    setActiveBooking((prev: any) => prev ? { ...prev, status: "PENDING" } : prev);
+    handleSendMessage(`I have reviewed the details and submitted the form. Here is my payment slip: ${paymentSlipUrl}. Please finalize the booking for ${draftState.booking_id || activeBooking?.bookingId}.`, true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -449,14 +461,15 @@ export default function Page() {
                <h2 className="text-[14px] font-bold text-slate-900">Booking Summary</h2>
              </div>
              
-             <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
+              <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
                 
                 <div className="flex flex-col gap-1.5">
                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
                    <input 
                      type="text" 
-                     value={uiState.emp_id || ""} 
-                     onChange={e => setUiState({...uiState, emp_id: e.target.value})}
+                     value={activeBooking?.user?.empId || draftState.emp_id || ""} 
+                     onChange={e => !activeBooking && setDraftState({...draftState, emp_id: e.target.value})}
+                     readOnly={!!activeBooking}
                      className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
                      placeholder="e.g. EMP-123"
                    />
@@ -465,8 +478,9 @@ export default function Page() {
                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Room</label>
                    <input 
                      type="text" 
-                     value={uiState.room_number || ""} 
-                     onChange={e => setUiState({...uiState, room_number: e.target.value})}
+                     value={activeBooking?.room?.roomNumber || draftState.room_number || ""} 
+                     onChange={e => !activeBooking && setDraftState({...draftState, room_number: e.target.value})}
+                     readOnly={!!activeBooking}
                      className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
                      placeholder="e.g. OLD-101"
                    />
@@ -477,8 +491,9 @@ export default function Page() {
                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-in</label>
                      <input 
                        type="date" 
-                       value={uiState.from_date || ""} 
-                       onChange={e => setUiState({...uiState, from_date: e.target.value})}
+                       value={activeBooking?.fromDate ? new Date(activeBooking.fromDate).toISOString().split('T')[0] : (draftState.from_date || "")} 
+                       onChange={e => !activeBooking && setDraftState({...draftState, from_date: e.target.value})}
+                       readOnly={!!activeBooking}
                        className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
                   </div>
@@ -486,17 +501,18 @@ export default function Page() {
                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-out</label>
                      <input 
                        type="date" 
-                       value={uiState.to_date || ""} 
-                       onChange={e => setUiState({...uiState, to_date: e.target.value})}
+                       value={activeBooking?.toDate ? new Date(activeBooking.toDate).toISOString().split('T')[0] : (draftState.to_date || "")} 
+                       onChange={e => !activeBooking && setDraftState({...draftState, to_date: e.target.value})}
+                       readOnly={!!activeBooking}
                        className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
                   </div>
                 </div>
 
-                {uiState.total_cost && (
+                {(activeBooking?.totalCost || draftState.total_cost) && (
                    <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-xl mt-2 shadow-sm">
                      <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Total Cost</span>
-                     <span className="text-[16px] font-extrabold text-slate-900">LKR {uiState.total_cost.toLocaleString()}</span>
+                     <span className="text-[16px] font-extrabold text-slate-900">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
                    </div>
                 )}
 
@@ -513,19 +529,19 @@ export default function Page() {
                     <div className="flex justify-between items-center pb-5 border-b border-white/10">
                        <span className="text-white/60 text-[13px] font-medium">Status</span>
                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
-                         bookingStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 
-                         bookingStatus === 'confirming' ? 'bg-amber-500/20 text-amber-400' : 
-                         uiState.booking_id ? 'bg-blue-500/20 text-blue-400' :
+                         activeBooking?.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-400' : 
+                         activeBooking?.status === 'PENDING' ? 'bg-amber-500/20 text-amber-400' : 
+                         (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? 'bg-blue-500/20 text-blue-400' :
                          'bg-white/10 text-white'
                       }`}>
-                         {bookingStatus === 'confirmed' ? '✓ Confirmed' : bookingStatus === 'confirming' ? '⏳ Payment Verification' : uiState.booking_id ? '⏳ Awaiting Payment Slip' : 'Draft'}
+                         {activeBooking?.status === 'CONFIRMED' ? '✓ Confirmed' : activeBooking?.status === 'PENDING' ? '⏳ Payment Verification' : (activeBooking?.status === 'PENDING_UPLOAD' || draftState.booking_id) ? '⏳ Awaiting Payment Slip' : 'Draft'}
                       </span>
                    </div>
                    
-                   {uiState.booking_id && (
+                   {(activeBooking?.bookingId || draftState.booking_id) && (
                      <div className="flex justify-between items-center">
                        <span className="text-white/60 text-[13px] font-medium">Booking ID</span>
-                       <span className="text-white text-[13px] font-bold">{uiState.booking_id}</span>
+                       <span className="text-white text-[13px] font-bold">{activeBooking?.bookingId || draftState.booking_id}</span>
                      </div>
                    )}
 
@@ -538,7 +554,7 @@ export default function Page() {
                        <input
                          checked={whatsappEnabled}
                          onChange={(e) => setWhatsappEnabled(e.target.checked)}
-                         disabled={bookingStatus !== "draft"}
+                         disabled={!!activeBooking}
                          className="sr-only peer disabled:opacity-50"
                          id="whatsapp-toggle"
                          type="checkbox"
@@ -548,20 +564,20 @@ export default function Page() {
                      </div>
                    </div>
 
-                   {bookingStatus === "draft" ? (
+                   {(!activeBooking || activeBooking?.status === "PENDING_UPLOAD") ? (
                      <button
                        onClick={triggerConfirmBooking}
                        className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
-                       {uiState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
+                       {activeBooking?.bookingId || draftState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
                      </button>
-                   ) : bookingStatus === "confirming" ? (
+                   ) : activeBooking?.status === "PENDING" ? (
                      <button
                        disabled
                        className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
                      >
                        <Loader2 className="w-5 h-5 animate-spin" />
-                       Processing
+                       Verification in progress
                      </button>
                    ) : (
                      <button
