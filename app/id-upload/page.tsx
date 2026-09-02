@@ -19,7 +19,8 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Navigation
+  Navigation,
+  User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,7 +28,7 @@ const inputClassName =
   "w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/5";
 
 export default function IdUploadPage() {
-  const { setActiveUser, refreshUsers } = useUser();
+  const { setActiveUser, refreshUsers, checkAuthSession } = useUser();
   const router = useRouter();
 
   // Form states
@@ -140,8 +141,8 @@ export default function IdUploadPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long.");
+    if (formData.password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters long.");
       return;
     }
 
@@ -170,7 +171,7 @@ export default function IdUploadPage() {
 
       const idCardUrl = uploadData.url;
 
-      // 2. Insert User Record in Postgres `users` table
+      // 2. Insert User Record in Postgres `users` table with Argon2-hashed password
       const userRes = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,14 +187,34 @@ export default function IdUploadPage() {
         throw new Error(userData.error || "Failed to insert user record in database.");
       }
 
-      // 3. Success! Update User Context and state
-      setCreatedRecord(userData);
+      // 3. Establish JWT Authentication session for the new user immediately
+      try {
+        const loginRes = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            identifier: userData.username,
+            password: formData.password,
+          }),
+        });
+
+        if (loginRes.ok) {
+          const loginData = await loginRes.json();
+          setActiveUser(loginData.user as AppUser);
+          await checkAuthSession();
+        } else {
+          setActiveUser(userData as AppUser);
+        }
+      } catch {
+        setActiveUser(userData as AppUser);
+      }
+
       await refreshUsers();
-      setActiveUser(userData);
+      setCreatedRecord(userData as AppUser);
 
     } catch (err: any) {
       console.error("Submission error:", err);
-      setErrorMessage(err.message || "An unexpected error occurred during data insertion.");
+      setErrorMessage(err.message || "An unexpected error occurred during registration.");
     } finally {
       setIsSubmitting(false);
     }
@@ -229,11 +250,11 @@ export default function IdUploadPage() {
         <div className="mx-auto max-w-6xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-400 text-xs font-semibold tracking-wide uppercase mb-3 backdrop-blur-md border border-white/10">
             <Sparkles className="w-3.5 h-3.5" />
-            Database Integration Active
+            Verified User Registration
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Upload ID & User Info</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Upload ID & User Registration</h1>
           <p className="mt-2 text-slate-300 max-w-2xl text-sm md:text-base leading-relaxed">
-            Upload your official identity card document and details. A verified record will be created in the system database for authentication and stay eligibility.
+            Register your account by uploading your official identity document. Your details will be verified, securely stored, and automatically synced with your booking profile.
           </p>
         </div>
       </div>
@@ -255,19 +276,19 @@ export default function IdUploadPage() {
                 </div>
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/50">
-                    Data Insertion Successful
+                    Registration & Profile Sync Complete
                   </span>
-                  <h2 className="text-2xl font-bold text-slate-900 mt-1">User Record Created in Database</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 mt-1">Account Registered & Profile Populated</h2>
                 </div>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="rounded-2xl bg-slate-50 p-6 border border-slate-100 space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Database Record Details</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Synced Profile Details</h3>
 
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
-                      <span className="text-slate-500 font-medium">Record ID</span>
+                      <span className="text-slate-500 font-medium">User ID</span>
                       <span className="font-mono text-slate-800 text-xs font-semibold bg-white px-2 py-0.5 rounded border border-slate-200">{createdRecord.id}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
@@ -276,7 +297,7 @@ export default function IdUploadPage() {
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
                       <span className="text-slate-500 font-medium">Username</span>
-                      <span className="font-mono text-slate-800">@{createdRecord.username}</span>
+                      <span className="font-mono text-slate-800 font-semibold">@{createdRecord.username}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-slate-200/60">
                       <span className="text-slate-500 font-medium">Employee / Member ID</span>
@@ -295,7 +316,7 @@ export default function IdUploadPage() {
 
                 <div className="rounded-2xl bg-slate-50 p-6 border border-slate-100 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Uploaded ID Card Document</h3>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Verified Identity Document</h3>
                     {createdRecord.empIdPhoto ? (
                       <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-white max-h-56 flex items-center justify-center p-2 shadow-sm">
                         {createdRecord.empIdPhoto.endsWith(".pdf") ? (
@@ -318,33 +339,33 @@ export default function IdUploadPage() {
 
                   <div className="mt-6 pt-4 border-t border-slate-200/60 flex items-center gap-2 text-xs text-emerald-700 font-medium bg-emerald-50/80 p-3 rounded-xl border border-emerald-200/50">
                     <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600" />
-                    User activated in workspace session automatically.
+                    <span>JWT Session active. Your Profile is ready for booking bungalows!</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 flex flex-wrap gap-4 pt-6 border-t border-slate-100">
                 <button
-                  onClick={() => router.push("/bookings")}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 text-white font-medium hover:bg-slate-800 transition-colors shadow-sm cursor-pointer text-sm"
+                  onClick={() => router.push("/profile")}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md active:scale-95 cursor-pointer text-sm"
                 >
-                  <span>Go to My Bookings</span>
+                  <User className="w-4 h-4" />
+                  <span>Go to My Profile</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
                   onClick={() => router.push("/browse")}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors shadow-sm cursor-pointer text-sm"
                 >
                   <span>Browse Bungalows</span>
                 </button>
 
                 <button
-                  onClick={resetForm}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-slate-500 hover:text-slate-800 transition-colors cursor-pointer text-sm ml-auto"
+                  onClick={() => router.push("/bookings")}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-slate-700 font-semibold border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer text-sm"
                 >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Insert Another Record</span>
+                  <span>My Bookings</span>
                 </button>
               </div>
             </motion.div>
@@ -365,8 +386,8 @@ export default function IdUploadPage() {
                       <CreditCard className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-base font-bold text-slate-900">ID Card Document</h2>
-                      <p className="text-xs text-slate-500">Government ID or NIC scan</p>
+                      <h2 className="text-base font-bold text-slate-900">ID Card Document *</h2>
+                      <p className="text-xs text-slate-500">Official Government ID, Member ID or NIC</p>
                     </div>
                   </div>
 
@@ -377,7 +398,7 @@ export default function IdUploadPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative rounded-2xl border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${isDragging
-                        ? "border-indigo-500 bg-indigo-50/50 scale-[1.01]"
+                        ? "border-blue-500 bg-blue-50/50 scale-[1.01]"
                         : selectedFile
                           ? "border-emerald-300 bg-emerald-50/30"
                           : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"
@@ -411,7 +432,7 @@ export default function IdUploadPage() {
                             e.stopPropagation();
                             removeFile();
                           }}
-                          className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors"
+                          className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
                           Remove file
@@ -437,7 +458,7 @@ export default function IdUploadPage() {
                   <div className="mt-5 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-xs text-slate-600 space-y-2">
                     <div className="flex items-start gap-2">
                       <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>The uploaded ID is securely linked to your record in the <code className="font-mono text-slate-800">users</code> database table.</span>
+                      <span>The uploaded ID document is securely attached to your profile and used for reservation eligibility verification.</span>
                     </div>
                   </div>
                 </div>
@@ -503,7 +524,7 @@ export default function IdUploadPage() {
                     </label>
 
                     <label className="relative">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Account Password *</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Account Password * (min. 8 chars)</span>
                       <div className="relative">
                         <input
                           required
@@ -517,7 +538,7 @@ export default function IdUploadPage() {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -538,8 +559,9 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Mobile Number</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Mobile Number *</span>
                       <input
+                        required
                         type="tel"
                         name="mobileNumber"
                         value={formData.mobileNumber}
@@ -550,8 +572,9 @@ export default function IdUploadPage() {
                     </label>
 
                     <label>
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Email Address</span>
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600">Email Address *</span>
                       <input
+                        required
                         type="email"
                         name="emailAddress"
                         value={formData.emailAddress}
@@ -664,6 +687,8 @@ export default function IdUploadPage() {
                         <option value="Jaffna">Jaffna</option>
                         <option value="Trincomalee">Trincomalee</option>
                         <option value="Ratnapura">Ratnapura</option>
+                        <option value="Kurunegala">Kurunegala</option>
+                        <option value="Gampaha">Gampaha</option>
                       </select>
                     </label>
                   </div>
@@ -677,7 +702,7 @@ export default function IdUploadPage() {
                     className="group relative inline-flex items-center justify-between pl-6 pr-1.5 py-1.5 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white font-medium shadow-[0_10px_25px_-5px_rgba(15,23,42,0.4)] border border-slate-700/80 hover:border-slate-500 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   >
                     <span className="text-[15px] font-medium tracking-wide text-slate-100 pr-4 select-none">
-                      {isSubmitting ? "Saving to Database..." : "Upload ID & Save User Record"}
+                      {isSubmitting ? "Registering & Syncing Profile..." : "Register Account & Upload ID"}
                     </span>
 
                     <div className="h-10 w-10 rounded-full bg-gradient-to-b from-white to-slate-100 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.25)] border border-slate-200/80 shrink-0 transition-transform group-hover:translate-x-0.5">
