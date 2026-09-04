@@ -41,7 +41,7 @@ export default function Navigation() {
   const settingsRef = useRef<HTMLDivElement>(null);
 
   // Hide the public navigation bar entirely if we're on an admin page
-  if (pathname.startsWith("/admin")) {
+  if (pathname?.startsWith("/admin")) {
     return null;
   }
 
