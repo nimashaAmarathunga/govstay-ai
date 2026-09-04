@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from "@/components/context/UserContext";
+import { useUser, AppUser } from "@/components/context/UserContext";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, CalendarDays, Plus, Search,
