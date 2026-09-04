@@ -34,7 +34,7 @@ const features = [
     icon: Building2,
     title: "AI Travel Assistant",
     description:
-      "Not sure where to go? Simply ask the Agent Assistant for recommendations based on your preferences and budget.",
+      "Not sure where to go? Simply ask the Support desk for recommendations based on your preferences and budget.",
   },
   {
     icon: Calendar,

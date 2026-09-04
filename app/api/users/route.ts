@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { hashPassword, validatePasswordStrength } from "@/lib/auth";
 
-// Fields to expose — never return the password
+// Fields to expose — never return the password hash
 const userSelect = {
   id: true,
   name: true,
@@ -60,20 +61,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-generate username if not provided (e.g. from email/empId/name + random suffix)
+    const rawPassword = password || "userPass123";
+
+    // Validate password strength policy
+    const strengthCheck = validatePasswordStrength(rawPassword);
+    if (!strengthCheck.isValid) {
+      return Response.json(
+        { error: strengthCheck.message || "Password does not meet strength requirements." },
+        { status: 400 }
+      );
+    }
+
+    // Hash password with Argon2id before storing in database
+    const hashedPassword = await hashPassword(rawPassword);
+
+    // Auto-generate username if not provided
     const finalUsername =
       username ||
-      (emailAddress ? emailAddress.split('@')[0] : null) ||
-      (empId ? empId.toLowerCase().replace(/[^a-z0-9]/g, '') : null) ||
-      `user_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const finalPassword = password || "userPass123";
+      (emailAddress ? emailAddress.split("@")[0] : null) ||
+      (empId ? empId.toLowerCase().replace(/[^a-z0-9]/g, "") : null) ||
+      `user_${name.toLowerCase().replace(/[^a-z0-9]/g, "")}_${Math.floor(1000 + Math.random() * 9000)}`;
 
     const user = await prisma.user.create({
       data: {
         name,
         username: finalUsername,
-        password: finalPassword,
+        password: hashedPassword, // Store ONLY the Argon2 hash
         role: role ?? "GOV_EMPLOYEE",
         empId: empId || undefined,
         status: status ?? "WORKING",
@@ -86,7 +99,7 @@ export async function POST(request: NextRequest) {
         residentialAddress: residentialAddress || undefined,
         preferredDistrict: preferredDistrict || undefined,
       },
-      select: userSelect,
+      select: userSelect, // Guarantees password hash is never returned
     });
 
     return Response.json(user, { status: 201 });

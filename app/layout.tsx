@@ -7,6 +7,11 @@ import AppProviders from "@/components/providers/AppProviders";
 export const metadata: Metadata = {
   title: "GovSewana AI - Government Accommodation Booking & Verification",
   description: "Centralized discovery, real-time status monitoring, and automated allocation platform for government circuit bungalows and rest houses in Sri Lanka.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

@@ -13,6 +13,8 @@ export type DbRoom = {
   roomType: "AC" | "NON_AC";
   items: string[];
   noOfBeds: number;
+  bed_count?: number;
+  capacity?: number;
   price: number;
 };
 
@@ -86,7 +88,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                 <input
                   type="text"
                   placeholder="Search locations, departments..."
-                  className="w-full pl-11 pr-4 py-3.5 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm focus:bg-white focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-[0_2px_10px_rgb(0,0,0,0.02)]"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 text-sm font-medium text-slate-900 placeholder:text-slate-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -108,26 +110,27 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
             {filteredBungalows.map((bungalow, idx) => (
               <Link key={bungalow.id} href={`/browse/${bungalow.slug}`} className="block h-full">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-white rounded-[24px] border border-slate-100 overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer h-full"
+                  className="bg-white rounded-[12px] border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col cursor-pointer h-full"
                 >
-                  <div className="h-56 w-full relative overflow-hidden shrink-0">
+                  <div className="h-48 w-full relative overflow-hidden shrink-0">
                     <img
                       src={bungalow.image}
                       alt={bungalow.name}
+                      onError={(e) => {
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
-                    
-                    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl shadow-[0_4px_12px_rgb(0,0,0,0.1)] flex items-center gap-1.5 border border-white/20">
+                    <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded-md shadow-sm flex items-center gap-1 border border-slate-100">
                       <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                       <span className="text-[13px] font-bold text-slate-900 leading-none">{bungalow.rating}</span>
                     </div>
                     
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="bg-slate-900/80 backdrop-blur-md w-max px-3 py-1.5 rounded-lg text-white text-[10px] font-bold uppercase tracking-widest mb-2 border border-white/10">
+                    <div className="absolute bottom-3 left-3">
+                      <div className="bg-slate-900 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide">
                         {bungalow.department}
                       </div>
                     </div>
@@ -149,8 +152,13 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                       </span>
                       <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
                       <span className="flex items-center gap-2">
+                        <BedDouble className="w-4 h-4 text-slate-400" />
+                        {bungalow.rooms?.reduce((total, r) => total + (r as any).bed_count, 0) || 0} Beds
+                      </span>
+                      <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                      <span className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-slate-400" />
-                        Up to {bungalow.capacity}
+                        Sleeps {bungalow.capacity}
                       </span>
                     </div>
 

@@ -60,6 +60,7 @@ model User {
   updatedAt   DateTime    @updatedAt
 
   bookings    Booking[]   @relation("UserBookings")
+  paymentSlips PaymentSlip[] @relation("UserPaymentSlips")
   sessions    AgentSession[]
 
   @@map("users")
@@ -146,7 +147,9 @@ model Booking {
   toDate            DateTime
   status            BookingStatus   @default(PENDING)
   totalCost         Float?
+  
   paymentSlipUrl    String?
+  paymentSlip       PaymentSlip?    @relation("BookingPaymentSlip")
 
   approvalReason    String?         @db.Text
   confidenceScore   Float?
@@ -155,6 +158,28 @@ model Booking {
   updatedAt         DateTime        @updatedAt
 
   @@map("bookings")
+}
+
+model PaymentSlip {
+  id                String    @id @default(uuid())
+  
+  bookingId         String    @unique
+  booking           Booking   @relation("BookingPaymentSlip", fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  userId            String
+  user              User      @relation("UserPaymentSlips", fields: [userId], references: [id], onDelete: Cascade)
+
+  storagePath       String
+  originalFilename  String
+  mimeType          String
+  fileSize          Int
+  
+  verificationStatus String   @default("PENDING")
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("payment_slips")
 }
 
 model AgentSession {

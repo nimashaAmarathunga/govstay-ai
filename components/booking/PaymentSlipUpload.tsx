@@ -5,10 +5,13 @@ import React, { useState, useRef } from "react";
 interface PaymentSlipUploadProps {
   onUploadComplete: (url: string | null) => void;
   value?: string | null;
+  bookingId: string;
+  userId?: string;
 }
 
-export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSlipUploadProps) {
+export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, userId }: PaymentSlipUploadProps) {
   const [fileUrl, setFileUrl] = useState<string | null>(value || null);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
   const [fileSize, setFileSize] = useState<string | null>(null);
@@ -49,9 +52,17 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
     setFileType(isPdf ? "pdf" : "image");
     setFileSize(formatBytes(file.size));
 
+    // Create a local preview URL
+    const objectUrl = URL.createObjectURL(file);
+    setLocalPreviewUrl(objectUrl);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("bookingId", bookingId);
+      if (userId) {
+        formData.append("userId", userId);
+      }
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -64,8 +75,8 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
         throw new Error(data.error || "Failed to upload payment slip.");
       }
 
-      setFileUrl(data.url);
-      onUploadComplete(data.url);
+      setFileUrl(data.paymentSlipId);
+      onUploadComplete(data.paymentSlipId);
     } catch (err: any) {
       console.error("Upload error:", err);
       setError(err.message || "Failed to upload file. Please try again.");
@@ -102,6 +113,10 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
 
   const handleRemove = () => {
     setFileUrl(null);
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl);
+      setLocalPreviewUrl(null);
+    }
     setFileName(null);
     setFileType(null);
     setFileSize(null);
@@ -128,8 +143,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-200 ${
+          className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 ${
             isDragging
               ? "border-blue-500 bg-blue-50/80 scale-[0.99]"
               : "border-slate-300 hover:border-blue-400 bg-slate-50/60 hover:bg-blue-50/30"
@@ -140,7 +154,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
             ref={fileInputRef}
             onChange={handleFileChange}
             accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
-            className="hidden"
+            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           <div className="flex flex-col items-center justify-center space-y-1.5">
             <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
@@ -176,7 +190,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
             ) : (
               <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-emerald-200 bg-white">
                 <img
-                  src={fileUrl}
+                  src={localPreviewUrl || ""}
                   alt="Payment slip preview"
                   className="w-full h-full object-cover"
                 />
@@ -196,15 +210,6 @@ export default function PaymentSlipUpload({ onUploadComplete, value }: PaymentSl
           </div>
 
           <div className="flex items-center space-x-1 shrink-0 ml-2">
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-white rounded-lg transition-colors"
-              title="View File"
-            >
-              <span className="material-symbols-outlined text-lg">open_in_new</span>
-            </a>
             <button
               type="button"
               onClick={handleRemove}

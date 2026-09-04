@@ -55,6 +55,8 @@ export default async function BungalowDetailsPage({ params }: BungalowDetailsPag
       roomType: r.roomType,
       items: r.items,
       noOfBeds: r.noOfBeds,
+      bed_count: r.bed_count !== null ? r.bed_count : undefined,
+      capacity: r.capacity !== null ? r.capacity : undefined,
       price: r.price
     })),
     bookings: bungalow.bookings.map(bk => ({

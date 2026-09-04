@@ -3,3 +3,6 @@ DATABASE_URL="postgresql://postgres.jcogzodipzjchvpcmqnu:password@aws-0-eu-west-
 
 # Connect to Postgres via the shared session-mode pooler (used for migrations)
 DIRECT_URL="postgresql://postgres.jcogzodipzjchvpcmqnu:password@aws-0-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require&sslaccept=accept_invalid_certs"
+
+AGENT_KERNEL_URL="http://127.0.0.1:8000"
+AGENT_KERNEL_PATH="../agent-kernel/use-cases/govstay-agent"

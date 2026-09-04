@@ -38,20 +38,51 @@ export async function PUT(request: Request) {
 
     const body = await request.json();
     
-    // We only update the profile fields
+    // Build update data — support both legacy mapped names and direct Prisma field names
+    const updateData: Record<string, unknown> = {};
+
+    // Name
+    if (body.fullName !== undefined) updateData.name = body.fullName;
+    else if (body.name !== undefined) updateData.name = body.name;
+
+    // NIC
+    if (body.nic !== undefined) updateData.nicNumber = body.nic;
+    else if (body.nicNumber !== undefined) updateData.nicNumber = body.nicNumber;
+
+    // Employee ID
+    if (body.memberId !== undefined) updateData.empId = body.memberId;
+    else if (body.empId !== undefined) updateData.empId = body.empId;
+
+    // Mobile
+    if (body.phone !== undefined) updateData.mobileNumber = body.phone;
+    else if (body.mobileNumber !== undefined) updateData.mobileNumber = body.mobileNumber;
+
+    // Email
+    if (body.email !== undefined) updateData.emailAddress = body.email;
+    else if (body.emailAddress !== undefined) updateData.emailAddress = body.emailAddress;
+
+    // Department / Place of Work
+    if (body.department !== undefined) updateData.placeOfWork = body.department;
+    else if (body.placeOfWork !== undefined) updateData.placeOfWork = body.placeOfWork;
+
+    // Position / Designation
+    if (body.designation !== undefined) updateData.position = body.designation;
+    else if (body.position !== undefined) updateData.position = body.position;
+
+    // District
+    if (body.district !== undefined) updateData.preferredDistrict = body.district;
+    else if (body.preferredDistrict !== undefined) updateData.preferredDistrict = body.preferredDistrict;
+
+    // Address
+    if (body.address !== undefined) updateData.residentialAddress = body.address;
+    else if (body.residentialAddress !== undefined) updateData.residentialAddress = body.residentialAddress;
+
+    // Employee ID Photo
+    if (body.empIdPhoto !== undefined) updateData.empIdPhoto = body.empIdPhoto;
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: {
-        name: body.fullName,
-        nicNumber: body.nic,
-        empId: body.memberId,
-        mobileNumber: body.phone,
-        emailAddress: body.email,
-        placeOfWork: body.department,
-        position: body.designation,
-        preferredDistrict: body.district,
-        residentialAddress: body.address
-      }
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, user: updatedUser });

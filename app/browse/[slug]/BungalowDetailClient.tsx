@@ -12,6 +12,8 @@ export type DbRoom = {
   roomType: "AC" | "NON_AC";
   items: string[];
   noOfBeds: number;
+  bed_count?: number;
+  capacity?: number;
   price: number;
 };
 
@@ -54,8 +56,12 @@ interface BungalowDetailClientProps {
   bungalow: DbBungalowDetails;
 }
 
+import { useRouter } from "next/navigation";
+
 export default function BungalowDetailClient({ bungalow }: BungalowDetailClientProps) {
+  const router = useRouter();
   const { activeUser } = useUser();
+  const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
 
   const getTomorrow = () => {
     const d = new Date();
@@ -75,7 +81,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const [checkOut, setCheckOut] = useState<Date | null>(getDayAfterTomorrow());
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [roomFilter, setRoomFilter] = useState<"ALL" | "AC" | "NON_AC">("ALL");
-  const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success">("idle");
+  const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success" | "awaiting-slip">("idle");
   const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
@@ -244,28 +250,34 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
           fromDate: formatYYYYMMDD(checkIn),
           toDate: formatYYYYMMDD(checkOut),
           totalCost: totalCost,
-          paymentSlipUrl: paymentSlipUrl,
           userId: activeUser?.id,
-        }),
+        })
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to make reservation");
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to submit booking');
       }
 
-      setBookingStatus("success");
+      const data = await response.json();
+      
+      let createdBookingId = null;
+      if (data.bookings && data.bookings.length > 0) {
+        createdBookingId = data.bookings[0].bookingId;
+      } else {
+        createdBookingId = data.id || data.bookingId;
+      }
+      
+      setActiveBookingId(createdBookingId);
+      
       const selectedRoomNums = bungalow.rooms
         .filter((r) => selectedRoomIds.includes(r.id))
         .map((r) => r.roomNumber);
       setBookedRoomNumbers(selectedRoomNums.length > 0 ? selectedRoomNums : ["Entire Bungalow"]);
-      
-      // Reload page after success to refresh bookings calendar
-      setTimeout(() => {
-        window.location.reload();
-      }, 2500);
-      
+
+      setBookingStatus("awaiting-slip");
     } catch (error: any) {
+      console.error("Booking error:", error);
       alert(error.message || "An error occurred while booking. Please try again.");
       setBookingStatus("idle");
     }
@@ -302,7 +314,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
         {/* Hero Card */}
         <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="relative h-72 sm:h-96 lg:h-[28rem]">
-            <img src={bungalow.image} alt={bungalow.name} className="h-full w-full object-cover" />
+            <img 
+              src={bungalow.image} 
+              alt={bungalow.name} 
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
+              }}
+              className="h-full w-full object-cover" 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
             
             <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 shadow-md backdrop-blur-md">
@@ -541,7 +560,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                             <span className="material-symbols-outlined text-[16px] text-slate-400">
                               bed
                             </span>
-                            <span>{room.noOfBeds} Beds available</span>
+                            <span>{room.bed_count || room.noOfBeds} Beds available (Sleeps {room.capacity})</span>
                           </div>
 
                           {/* In-Room Items */}
@@ -693,7 +712,13 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                   {/* Proceed to Payment Step Button */}
                   <button
-                    onClick={() => setShowPaymentStep(true)}
+                    onClick={() => {
+                      if (!activeUser) {
+                        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+                        return;
+                      }
+                      setShowPaymentStep(true);
+                    }}
                     disabled={!checkIn || !checkOut}
                     className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
                       checkIn && checkOut
@@ -717,9 +742,9 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     Change Rooms or Dates
                   </button>
 
-                  <h4 className="font-bold text-slate-900 text-base mb-1">Upload Payment Slip</h4>
+                  <h4 className="font-bold text-slate-900 text-base mb-1">Review Reservation</h4>
                   <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
-                    Attach your bank transfer or deposit slip to submit this manual booking request.
+                    Review your booking details and submit the reservation request. You will be prompted to upload your payment slip in the next step.
                   </p>
 
                   {/* Summary Card */}
@@ -748,26 +773,11 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     </div>
                   </div>
 
-                  {/* Payment Slip Upload Component */}
-                  {bookingStatus === "idle" && (
-                    <div className="mb-5">
-                      <PaymentSlipUpload
-                        onUploadComplete={(url) => setPaymentSlipUrl(url)}
-                        value={paymentSlipUrl}
-                      />
-                    </div>
-                  )}
-
                   {/* Submit Button */}
                   {bookingStatus === "idle" && (
                     <button
                       onClick={handleBooking}
-                      disabled={!paymentSlipUrl}
-                      className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm ${
-                        paymentSlipUrl
-                          ? "bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
-                          : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                      }`}
+                      className="w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
                     >
                       <span>Submit Reservation</span>
                       <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -782,6 +792,28 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
                       Submitting Reservation...
                     </button>
+                  )}
+
+                  {/* Payment Slip Upload Component */}
+                  {bookingStatus === "awaiting-slip" && activeBookingId && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-5 shadow-sm">
+                      <h4 className="font-bold text-amber-900 text-base mb-2">Upload Payment Slip</h4>
+                      <p className="text-xs text-amber-700 font-medium mb-4">
+                        Your reservation is pending. Please upload your payment slip to confirm.
+                      </p>
+                      <PaymentSlipUpload
+                        onUploadComplete={(url) => {
+                          setPaymentSlipUrl(url);
+                          setBookingStatus("success");
+                          setTimeout(() => {
+                            window.location.reload();
+                          }, 3500);
+                        }}
+                        value={paymentSlipUrl}
+                        bookingId={activeBookingId}
+                        userId={activeUser?.id}
+                      />
+                    </div>
                   )}
 
                   {bookingStatus === "success" && (
