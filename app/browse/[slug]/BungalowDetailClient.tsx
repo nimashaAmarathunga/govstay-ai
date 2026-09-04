@@ -259,8 +259,16 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
         throw new Error(err.error || 'Failed to submit booking');
       }
 
-      const booking = await response.json();
-      setActiveBookingId(booking.id || booking.bookingId);
+      const data = await response.json();
+      
+      let createdBookingId = null;
+      if (data.bookings && data.bookings.length > 0) {
+        createdBookingId = data.bookings[0].bookingId;
+      } else {
+        createdBookingId = data.id || data.bookingId;
+      }
+      
+      setActiveBookingId(createdBookingId);
       
       const selectedRoomNums = bungalow.rooms
         .filter((r) => selectedRoomIds.includes(r.id))

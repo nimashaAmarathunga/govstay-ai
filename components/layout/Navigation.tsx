@@ -275,14 +275,6 @@ export default function Navigation() {
                       <User className="w-4 h-4 text-slate-500" />
                       <span>My Profile</span>
                     </Link>
-                    <Link
-                      href="/id-upload"
-                      onClick={() => setDropdownOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
-                      <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                      <span>Upload ID Document</span>
-                    </Link>
                   </div>
                   <div className="p-2 border-t border-slate-50">
                     <button
