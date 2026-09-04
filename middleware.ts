@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
   // ---------------------------------------------------------------------------
   // 2. User Protected Routes (/bookings)
   // ---------------------------------------------------------------------------
-  if (["/bookings"].includes(pathname)) {
+  if (["/bookings", "/profile"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
@@ -97,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/login", "/register", "/id-upload", "/bookings"],
+  matcher: ["/admin", "/admin/:path*", "/login", "/register", "/id-upload", "/bookings", "/profile"],
 };

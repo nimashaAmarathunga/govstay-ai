@@ -169,10 +169,16 @@ export async function POST(request: Request) {
       }
     }
 
-    // For non-slip uploads (like IDs), just return success without public URL
+    // For non-slip uploads (like IDs), return the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from(safeFolder)
+      .getPublicUrl(storagePath);
+
     return NextResponse.json({
       success: true,
       message: 'File uploaded successfully.',
+      url: publicUrlData?.publicUrl || null,
+      storagePath,
     });
 
   } catch (error: any) {
