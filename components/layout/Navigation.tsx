@@ -40,6 +40,11 @@ export default function Navigation() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
 
+  // Hide the public navigation bar entirely if we're on an admin page
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
   // Close dropdowns on outside click
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {

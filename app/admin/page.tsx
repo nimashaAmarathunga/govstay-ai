@@ -151,7 +151,7 @@ export default function AdminPage() {
   const router = useRouter();
   const { activeUser, setActiveUser } = useUser();
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
-  const [activeTab, setActiveTab] = useState<"bungalows" | "bookings">("bungalows");
+  const [activeTab, setActiveTab] = useState<"bungalows" | "bookings" | "admins">("bungalows");
 
   // Verify Admin Authentication on Mount
   useEffect(() => {
@@ -189,6 +189,7 @@ export default function AdminPage() {
   // Data State
   const [bungalows, setBungalows] = useState<DbBungalow[]>([]);
   const [bookings, setBookings] = useState<DbBooking[]>([]);
+  const [admins, setAdmins] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -311,12 +312,27 @@ export default function AdminPage() {
     }
   };
 
+  const fetchAdmins = async () => {
+    try {
+      const res = await fetch("/api/admin/users");
+      const json = await res.json();
+      if (json.success) {
+        setAdmins(json.data);
+      }
+    } catch (err) {
+      console.error("Error fetching admins:", err);
+    }
+  };
+
   useEffect(() => {
     if (isAdminAuthenticated === true) {
       fetchBungalows();
       fetchBookings();
+      if (activeUser?.role === "SUPER_ADMIN") {
+        fetchAdmins();
+      }
     }
-  }, [adminDepartment, isAdminAuthenticated]);
+  }, [adminDepartment, isAdminAuthenticated, activeUser?.role]);
 
   // --- Handlers ---
   const handleAddBungalow = () => {
@@ -713,6 +729,15 @@ export default function AdminPage() {
                 </span>
               )}
             </button>
+            {activeUser?.role === "SUPER_ADMIN" && (
+              <button
+                onClick={() => setActiveTab("admins")}
+                className={`px-6 py-2.5 text-[14px] font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${activeTab === "admins" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"
+                  }`}
+              >
+                <span>Admin Management</span>
+              </button>
+            )}
           </div>
 
           {errorMsg && (
@@ -1068,6 +1093,99 @@ export default function AdminPage() {
                 )}
               </motion.div>
             )}
+            
+            {activeTab === "admins" && activeUser?.role === "SUPER_ADMIN" && (
+              <motion.div key="admins" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Manage Department Admins</h2>
+                    <p className="text-sm text-slate-500">Create new admin accounts and assign them to departments.</p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
+                  <h3 className="font-bold text-slate-900 mb-4">Add New Admin</h3>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.currentTarget);
+                    const payload = Object.fromEntries(fd.entries());
+                    try {
+                      setSaving(true);
+                      const res = await fetch("/api/admin/users", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                      });
+                      const json = await res.json();
+                      if (json.success) {
+                        alert("Admin created successfully!");
+                        e.currentTarget.reset();
+                        fetchAdmins();
+                      } else {
+                        alert(json.error || "Failed to create admin");
+                      }
+                    } catch (err: any) {
+                      alert("Error: " + err.message);
+                    } finally {
+                      setSaving(false);
+                    }
+                  }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Full Name</label>
+                      <input name="name" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. John Doe" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Username</label>
+                      <input name="username" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. john_admin" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Password</label>
+                      <input name="password" type="password" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="••••••••" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Department / Ministry</label>
+                      <input name="placeOfWork" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. Ministry of Public Administration" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Email</label>
+                      <input name="emailAddress" type="email" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="john@gov.lk" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Mobile Number</label>
+                      <input name="mobileNumber" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="07XXXXXXXX" />
+                    </div>
+                    <div className="md:col-span-2 mt-2">
+                      <button type="submit" disabled={saving} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all cursor-pointer">
+                        {saving ? "Creating..." : "Create Admin Account"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                  <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+                    <h3 className="font-bold text-slate-900">Existing Department Admins ({admins.length})</h3>
+                  </div>
+                  <div className="divide-y divide-slate-100">
+                    {admins.map((a) => (
+                      <div key={a.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{a.name} <span className="text-xs text-slate-400 font-normal ml-2">(@{a.username})</span></p>
+                          <p className="text-xs text-slate-500 mt-0.5">{a.placeOfWork}</p>
+                        </div>
+                        <div className="text-right text-xs text-slate-500">
+                          <p>{a.emailAddress}</p>
+                          <p>{a.mobileNumber}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {admins.length === 0 && (
+                      <div className="p-8 text-center text-slate-500 text-sm">No department admins found.</div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
@@ -1144,10 +1262,12 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Department</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-100 disabled:text-slate-500"
                             placeholder="Department"
                             value={bungalowForm.department}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, department: e.target.value }))}
+                            disabled={activeUser?.role === "DEPT_ADMIN"}
+                            title={activeUser?.role === "DEPT_ADMIN" ? "Department is locked to your assigned Ministry" : undefined}
                           />
                         </div>
                         <div>
