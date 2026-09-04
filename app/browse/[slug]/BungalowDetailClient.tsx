@@ -742,9 +742,9 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     Change Rooms or Dates
                   </button>
 
-                  <h4 className="font-bold text-slate-900 text-base mb-1">Upload Payment Slip</h4>
+                  <h4 className="font-bold text-slate-900 text-base mb-1">Review Reservation</h4>
                   <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
-                    Attach your bank transfer or deposit slip to submit this manual booking request.
+                    Review your booking details and submit the reservation request. You will be prompted to upload your payment slip in the next step.
                   </p>
 
                   {/* Summary Card */}
