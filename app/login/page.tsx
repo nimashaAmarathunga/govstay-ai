@@ -31,10 +31,10 @@ function AuthPageContent() {
   const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/browse";
   const initialTab = searchParams.get("tab") || "login";
 
-  // If user navigated with tab=register, redirect to the id-upload page
+  // If user navigated with tab=register, redirect to the register page
   useEffect(() => {
     if (initialTab === "register") {
-      router.push("/id-upload");
+      router.push("/register");
     }
   }, [initialTab, router]);
 
@@ -291,7 +291,7 @@ function AuthPageContent() {
             </div>
           </div>
           <Link
-            href="/id-upload"
+            href="/register"
             className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>Register</span>

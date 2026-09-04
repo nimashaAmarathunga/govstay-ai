@@ -50,7 +50,8 @@ export async function PUT(request: Request) {
         placeOfWork: body.department,
         position: body.designation,
         preferredDistrict: body.district,
-        residentialAddress: body.address
+        residentialAddress: body.address,
+        empIdPhoto: body.empIdPhoto !== undefined ? body.empIdPhoto : undefined
       }
     });
 

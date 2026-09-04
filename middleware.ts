@@ -75,9 +75,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 3. Auth Pages (/login, /id-upload)
+  // 3. Auth Pages (/login, /register, /id-upload)
   // ---------------------------------------------------------------------------
-  if (["/login", "/id-upload"].includes(pathname)) {
+  if (["/login", "/register", "/id-upload"].includes(pathname)) {
     const userToken = request.cookies.get(USER_COOKIE_NAME)?.value;
     const hasValidUserToken = await isValidToken(userToken, "user");
 
@@ -97,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/login", "/id-upload", "/bookings"],
+  matcher: ["/admin", "/admin/:path*", "/login", "/register", "/id-upload", "/bookings"],
 };
