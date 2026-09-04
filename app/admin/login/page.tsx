@@ -215,6 +215,27 @@ function AdminLoginContent() {
               </>
             )}
           </button>
+
+          {/* Sample Logins */}
+          <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">Quick Fill Sample Logins</span>
+            <div className="grid grid-cols-2 gap-2">
+               <button 
+                 type="button" 
+                 onClick={() => { setUsername("superadmin"); setPassword("adminpassword123"); }} 
+                 className="py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
+               >
+                  Super Admin
+               </button>
+               <button 
+                 type="button" 
+                 onClick={() => { setUsername("pubadmin_admin"); setPassword("deptpassword123"); }} 
+                 className="py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
+               >
+                  Dept Admin
+               </button>
+            </div>
+          </div>
         </form>
 
 
