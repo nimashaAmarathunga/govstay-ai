@@ -87,7 +87,7 @@ export async function middleware(request: NextRequest) {
       if (redirectParam) {
         return NextResponse.redirect(new URL(redirectParam, request.url));
       }
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/browse", request.url));
     }
 
     return NextResponse.next();

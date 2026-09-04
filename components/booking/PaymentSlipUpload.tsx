@@ -143,8 +143,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-200 ${
+          className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 ${
             isDragging
               ? "border-blue-500 bg-blue-50/80 scale-[0.99]"
               : "border-slate-300 hover:border-blue-400 bg-slate-50/60 hover:bg-blue-50/30"
@@ -155,7 +154,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
             ref={fileInputRef}
             onChange={handleFileChange}
             accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
-            className="hidden"
+            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           <div className="flex flex-col items-center justify-center space-y-1.5">
             <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">

@@ -116,11 +116,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (!authenticatedUser) {
         try {
-          const savedId = localStorage.getItem(STORAGE_KEY);
-          if (savedId) {
-            const found = allUsers.find((u) => u.id === savedId) ?? null;
-            if (found) setActiveUserState(found);
-          }
+          // If the backend session is missing but local storage has a key, clear the key
+          localStorage.removeItem(STORAGE_KEY);
         } catch {
           // localStorage unavailable
         }
