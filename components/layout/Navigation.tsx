@@ -40,10 +40,7 @@ export default function Navigation() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
 
-  // Hide the public navigation bar entirely if we're on an admin page
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
+
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -142,6 +139,11 @@ export default function Navigation() {
   const avatarBg = activeUser ? "bg-slate-900" : "bg-white border border-slate-200";
   const dropdownHeader = mode === "user" ? "Account / Switch User" : "Admin Profiles";
   const isAdminUser = activeUser && (activeUser.role === "DEPT_ADMIN" || activeUser.role === "SUPER_ADMIN");
+
+  // Hide the public navigation bar entirely if we're on an admin page
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="flex-none h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-50 sticky top-0">
