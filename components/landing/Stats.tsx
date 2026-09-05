@@ -20,8 +20,8 @@ export function Stats({
       icon: Hotel,
       label: "Circuit Bungalows",
       value: totalBungalows,
-      color: "bg-blue-50",
-      iconColor: "text-blue-600",
+      color: "bg-brand-primary/5",
+      iconColor: "text-brand-primary",
     },
     {
       icon: BedDouble,
@@ -75,9 +75,9 @@ export function Stats({
               <motion.div
                 key={idx}
                 variants={itemVariants}
-                className={`${stat.color} rounded-3xl p-6 md:p-8 shadow-[0_2px_12px_rgb(0,0,0,0.03)] border border-slate-100 flex items-center gap-5`}
+                className={`${stat.color} rounded-md p-6 md:p-8 shadow-[0_2px_12px_rgb(0,0,0,0.03)] border border-slate-100 flex items-center gap-5`}
               >
-                <div className={`w-14 h-14 rounded-2xl ${stat.color} flex items-center justify-center`}>
+                <div className={`w-14 h-14 rounded-md ${stat.color} flex items-center justify-center`}>
                   <Icon className={`w-7 h-7 ${stat.iconColor}`} />
                 </div>
                 <div>

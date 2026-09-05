@@ -183,7 +183,7 @@ export default function DateRangePicker({
       <div className="grid grid-cols-2 gap-2.5">
         <div 
           onClick={() => setIsOpen(true)}
-          className={`flex flex-col p-3 border rounded-xl cursor-pointer transition-all ${
+          className={`flex flex-col p-3 border rounded-md cursor-pointer transition-all ${
             isOpen ? "border-slate-900 bg-slate-50 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
           }`}
         >
@@ -198,7 +198,7 @@ export default function DateRangePicker({
 
         <div 
           onClick={() => setIsOpen(true)}
-          className={`flex flex-col p-3 border rounded-xl cursor-pointer transition-all ${
+          className={`flex flex-col p-3 border rounded-md cursor-pointer transition-all ${
             isOpen ? "border-slate-900 bg-slate-50 shadow-sm" : "border-slate-200 hover:border-slate-300 bg-white"
           }`}
         >
@@ -214,7 +214,7 @@ export default function DateRangePicker({
 
       {/* Dynamic Duration Info Badge */}
       {checkIn && checkOut && (
-        <div className="mt-3 bg-slate-100 border border-slate-200 text-slate-900 px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between animate-fade-in">
+        <div className="mt-3 bg-slate-100 border border-slate-200 text-slate-900 px-3 py-2 rounded-md text-xs font-semibold flex items-center justify-between animate-fade-in">
           <span className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[16px] text-slate-900">bedtime</span>
             <span>{nightsCount} {nightsCount === 1 ? "Night" : "Nights"} Stay</span>
@@ -229,7 +229,7 @@ export default function DateRangePicker({
 
       {/* Calendar Dropdown Card */}
       {isOpen && (
-        <div className="absolute top-[102%] left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 animate-fade-in w-full min-w-[280px]">
+        <div className="absolute top-[102%] left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-md shadow-xl p-4 animate-fade-in w-full min-w-[280px]">
           {/* Calendar Header */}
           <div className="flex justify-between items-center mb-4">
             <button
@@ -289,9 +289,9 @@ export default function DateRangePicker({
 
               // Highlight start/end selection
               if (dateType === "start") {
-                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-900 text-white shadow-md z-10 scale-105 ";
+                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-brand-primary text-white shadow-md z-10 scale-105 ";
               } else if (dateType === "end") {
-                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-900 text-white shadow-md z-10 scale-105 ";
+                cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-brand-primary text-white shadow-md z-10 scale-105 ";
               }
 
               // Underline today
@@ -306,7 +306,7 @@ export default function DateRangePicker({
                   <span className={cellClass}>
                     {date.getDate()}
                     {isToday && dateType === null && (
-                      <span className="absolute bottom-1 w-1 h-1 rounded-full bg-slate-900"></span>
+                      <span className="absolute bottom-1 w-1 h-1 rounded-full bg-brand-primary"></span>
                     )}
                   </span>
                 </div>

@@ -168,7 +168,7 @@ function AuthPageContent() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
           >
             <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
             <span className="leading-relaxed font-medium">{loginError}</span>
@@ -179,7 +179,7 @@ function AuthPageContent() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start gap-2.5"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <span className="leading-relaxed font-medium">{loginSuccess}</span>
@@ -312,7 +312,7 @@ function AuthPageContent() {
           ← Back to GovSewana Home
         </Link>
         <span className="text-slate-300">•</span>
-        <Link href="/admin/login" className="hover:text-blue-600 transition-colors font-medium underline underline-offset-4">
+        <Link href="/admin/login" className="hover:text-brand-primary transition-colors font-medium underline underline-offset-4">
           Admin Portal Login →
         </Link>
       </motion.div>

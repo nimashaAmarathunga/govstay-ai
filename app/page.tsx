@@ -10,8 +10,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-brand-primary opacity-90 pointer-events-none" />
         
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 relative z-10 text-center">
-          {/* <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+          {/* <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/5 border border-brand-primary/10 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
+            <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
             Official Government Portal
           </div> */}
           <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6">

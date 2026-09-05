@@ -252,7 +252,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-5">
             {/* Avatar */}
             <div className="relative">
-              <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl border-2 border-white/20">
+              <div className="h-20 w-20 rounded-md bg-brand-primary flex items-center justify-center shadow-xl border-2 border-white/20">
                 <span className="text-3xl font-bold text-white select-none">{userInitial(activeUser.name)}</span>
               </div>
               <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-emerald-500 border-2 border-slate-900 flex items-center justify-center">
@@ -282,7 +282,7 @@ export default function ProfilePage() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/10 cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/10 cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 Edit Profile
@@ -291,7 +291,7 @@ export default function ProfilePage() {
               <div className="hidden sm:flex items-center gap-2">
                 <button
                   onClick={() => { setIsEditing(false); setError(null); }}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-all border border-white/10 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-all border border-white/10 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                   Cancel
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                   {saving ? "Saving..." : "Save Changes"}
@@ -318,7 +318,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5"
+              className="mb-4 p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5"
             >
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <span className="leading-relaxed font-medium">{error}</span>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-start gap-2.5"
+              className="mb-4 p-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-start gap-2.5"
             >
               <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
               <span className="leading-relaxed font-medium">{success}</span>
@@ -343,16 +343,16 @@ export default function ProfilePage() {
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900 text-white text-sm font-bold cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-brand-primary text-white text-sm font-bold cursor-pointer"
             >
               <Edit3 className="w-4 h-4" /> Edit Profile
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <button onClick={() => { setIsEditing(false); setError(null); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium cursor-pointer">
+              <button onClick={() => { setIsEditing(false); setError(null); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-md bg-slate-100 text-slate-700 text-sm font-medium cursor-pointer">
                 <X className="w-4 h-4" /> Cancel
               </button>
-              <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold cursor-pointer disabled:opacity-50">
+              <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-md bg-emerald-600 text-white text-sm font-bold cursor-pointer disabled:opacity-50">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -361,10 +361,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Details Card */}
-        <div className="rounded-3xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="rounded-md bg-white border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <User className="w-4 h-4 text-blue-600" />
+              <User className="w-4 h-4 text-brand-primary" />
               Profile Information
             </h3>
             {isEditing && (
@@ -381,7 +381,7 @@ export default function ProfilePage() {
 
               return (
                 <div key={field.key} className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
-                  <div className="h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <div className="h-9 w-9 rounded-md bg-slate-100 flex items-center justify-center shrink-0">
                     <Icon className="w-4 h-4 text-slate-600" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -408,7 +408,7 @@ export default function ProfilePage() {
         </div>
 
         {/* ID Document Section */}
-        <div className="mt-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="mt-6 rounded-md bg-white border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Shield className="w-4 h-4 text-emerald-600" />
@@ -428,7 +428,7 @@ export default function ProfilePage() {
           <div className="p-6">
             {profileData.empIdPhoto && !showUpload ? (
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                <div className="h-16 w-16 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
                   <FileText className="w-7 h-7 text-emerald-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -437,7 +437,7 @@ export default function ProfilePage() {
                 </div>
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   Re-upload
@@ -451,9 +451,9 @@ export default function ProfilePage() {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative rounded-2xl border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${
+                  className={`relative rounded-md border-2 border-dashed p-6 text-center cursor-pointer transition-all duration-200 ${
                     isDragging
-                      ? "border-blue-500 bg-blue-50/50 scale-[1.01]"
+                      ? "border-blue-500 bg-brand-primary/5/50 scale-[1.01]"
                       : selectedFile
                       ? "border-emerald-300 bg-emerald-50/30"
                       : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"
@@ -470,7 +470,7 @@ export default function ProfilePage() {
                   {selectedFile ? (
                     <div className="relative">
                       {filePreview ? (
-                        <div className="rounded-xl overflow-hidden max-h-40 border border-slate-200 bg-white">
+                        <div className="rounded-md overflow-hidden max-h-40 border border-slate-200 bg-white">
                           <img src={filePreview} alt="Preview" className="w-full object-contain max-h-40" />
                         </div>
                       ) : (
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleIdUpload}
                     disabled={isUploading || !selectedFile}
-                    className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
+                    className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
                   >
                     {isUploading ? (
                       <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...</>
@@ -523,7 +523,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Info Footer */}
-        <div className="mt-6 mb-12 rounded-2xl bg-slate-100/80 border border-slate-200/80 p-5">
+        <div className="mt-6 mb-12 rounded-md bg-slate-100/80 border border-slate-200/80 p-5">
           <div className="flex items-center gap-3 text-xs text-slate-500">
             <Shield className="w-4 h-4 text-slate-400 shrink-0" />
             <span>

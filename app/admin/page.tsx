@@ -596,7 +596,7 @@ export default function AdminPage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[70vh] bg-slate-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
           <p className="text-sm font-semibold text-slate-600">Verifying administrator access...</p>
         </div>
       </div>
@@ -617,8 +617,8 @@ export default function AdminPage() {
             </div>
             {activeUser && (
               <div className="flex items-center gap-3 self-start md:self-auto">
-                <div className="bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-sm flex items-center gap-3.5 border border-slate-800">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
+                <div className="bg-brand-primary text-white px-5 py-3 rounded-md shadow-sm flex items-center gap-3.5 border border-slate-800">
+                  <div className="w-9 h-9 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
                     {activeUser.name.charAt(0)}
                   </div>
                   <div>
@@ -635,7 +635,7 @@ export default function AdminPage() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                  className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-md text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
                   title="Sign out of Admin Portal"
                 >
                   <LogOut className="w-4 h-4" />
@@ -647,8 +647,8 @@ export default function AdminPage() {
 
           {/* Stats calculation & counts */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white border border-slate-100 rounded-3xl p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
+              <div className="w-13 h-13 rounded-md bg-brand-primary/5 text-brand-primary flex items-center justify-center shrink-0 shadow-sm">
                 <Hotel className="w-6 h-6" />
               </div>
               <div>
@@ -657,8 +657,8 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white border border-slate-100 rounded-3xl p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
+              <div className="w-13 h-13 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
                 <BedDouble className="w-6 h-6" />
               </div>
               <div>
@@ -667,8 +667,8 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-100 rounded-3xl p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
+              <div className="w-13 h-13 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
                 <CalendarDays className="w-6 h-6" />
               </div>
               <div>
@@ -685,12 +685,12 @@ export default function AdminPage() {
                 setActiveTab("bookings");
                 setBookingStatusFilter("REJECTED");
               }}
-              className={`border rounded-3xl p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] ${rejectedBookings.length > 0
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] ${rejectedBookings.length > 0
                 ? "bg-rose-50/70 border-rose-200"
                 : "bg-white border-slate-100"
                 }`}
             >
-              <div className={`w-13 h-13 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${rejectedBookings.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
+              <div className={`w-13 h-13 rounded-md flex items-center justify-center shrink-0 shadow-sm ${rejectedBookings.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
                 }`}>
                 <ShieldAlert className="w-6 h-6" />
               </div>
@@ -741,7 +741,7 @@ export default function AdminPage() {
           </div>
 
           {errorMsg && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-center gap-3">
+            <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-md flex items-center gap-3">
               <AlertCircle className="w-5 h-5" />
               <p className="text-[14px] font-semibold">{errorMsg}</p>
             </div>
@@ -756,7 +756,7 @@ export default function AdminPage() {
                   </div>
                   <button
                     onClick={handleAddBungalow}
-                    className="flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors shadow-lg font-bold text-[14px] cursor-pointer"
+                    className="flex items-center gap-2 px-5 py-3 bg-brand-primary text-white rounded-md hover:bg-[#12242b] transition-colors shadow-lg font-bold text-[14px] cursor-pointer"
                   >
                     <Plus className="w-5 h-5" />
                     Add Bungalow
@@ -777,7 +777,7 @@ export default function AdminPage() {
                     <p className="text-[15px] text-slate-500 mb-6 max-w-sm">You haven't added any circuit bungalows to the system yet.</p>
                     <button
                       onClick={handleAddBungalow}
-                      className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-[14px] hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-2"
+                      className="px-6 py-3 bg-brand-primary text-white rounded-md font-bold text-[14px] hover:bg-[#12242b] transition-colors cursor-pointer flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       Add First Bungalow
@@ -798,7 +798,7 @@ export default function AdminPage() {
                         return (
                           <div key={b.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 md:px-8 py-6 items-center hover:bg-slate-50/50 transition-colors">
                             <div className="col-span-1 md:col-span-4 flex items-center gap-4">
-                              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+                              <div className="w-16 h-16 rounded-md overflow-hidden shrink-0 border border-slate-100 shadow-sm">
                                 <img src={b.image} alt={b.name} className="w-full h-full object-cover" />
                               </div>
                               <div>
@@ -884,7 +884,7 @@ export default function AdminPage() {
                       placeholder="Search ref ID, guest, bungalow..."
                       value={bookingSearchQuery}
                       onChange={(e) => setBookingSearchQuery(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-100 transition-all"
+                      className="w-full bg-white border border-slate-200 rounded-md pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-100 transition-all"
                     />
                     {bookingSearchQuery && (
                       <button
@@ -904,8 +904,8 @@ export default function AdminPage() {
                   </span>
                   <button
                     onClick={() => setBookingStatusFilter("ALL")}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${bookingStatusFilter === "ALL"
-                      ? "bg-slate-900 text-white shadow-sm"
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${bookingStatusFilter === "ALL"
+                      ? "bg-brand-primary text-white shadow-sm"
                       : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
                       }`}
                   >
@@ -914,7 +914,7 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("REJECTED")}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "REJECTED"
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "REJECTED"
                       ? "bg-rose-600 text-white shadow-sm"
                       : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
                       }`}
@@ -925,7 +925,7 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("PENDING")}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "PENDING"
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "PENDING"
                       ? "bg-amber-600 text-white shadow-sm"
                       : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
                       }`}
@@ -936,7 +936,7 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("CONFIRMED")}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "CONFIRMED"
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "CONFIRMED"
                       ? "bg-emerald-600 text-white shadow-sm"
                       : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
                       }`}
@@ -1065,9 +1065,9 @@ export default function AdminPage() {
                             <div className="col-span-1 lg:col-span-2 flex flex-wrap lg:flex-col items-start lg:items-end justify-start lg:justify-center gap-2 mt-2 lg:mt-0">
                               <button
                                 onClick={() => handleOpenReviewModal(b)}
-                                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${isRejected
+                                className={`px-3.5 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${isRejected
                                   ? "bg-rose-600 hover:bg-rose-700 text-white ring-2 ring-rose-300"
-                                  : "bg-slate-900 hover:bg-slate-800 text-white"
+                                  : "bg-brand-primary hover:bg-[#12242b] text-white"
                                   }`}
                               >
                                 <Eye className="w-3.5 h-3.5" />
@@ -1077,7 +1077,7 @@ export default function AdminPage() {
                               {isRejected && (
                                 <button
                                   onClick={() => handleQuickStatusChange(b.id, "CONFIRMED")}
-                                  className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                                  className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-md text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
                                   title="Instantly Confirm this booking"
                                 >
                                   <Check className="w-3 h-3" />
@@ -1103,7 +1103,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
+                <div className="bg-white p-6 rounded-md shadow-sm border border-slate-100 mb-8">
                   <h3 className="font-bold text-slate-900 mb-4">Add New Admin</h3>
                   <form onSubmit={async (e) => {
                     e.preventDefault();
@@ -1132,37 +1132,37 @@ export default function AdminPage() {
                   }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Full Name</label>
-                      <input name="name" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. John Doe" />
+                      <input name="name" required className="w-full border rounded-md p-2.5 text-sm" placeholder="e.g. John Doe" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Username</label>
-                      <input name="username" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. john_admin" />
+                      <input name="username" required className="w-full border rounded-md p-2.5 text-sm" placeholder="e.g. john_admin" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Password</label>
-                      <input name="password" type="password" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="••••••••" />
+                      <input name="password" type="password" required className="w-full border rounded-md p-2.5 text-sm" placeholder="••••••••" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Department / Ministry</label>
-                      <input name="placeOfWork" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="e.g. Ministry of Public Administration" />
+                      <input name="placeOfWork" required className="w-full border rounded-md p-2.5 text-sm" placeholder="e.g. Ministry of Public Administration" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Email</label>
-                      <input name="emailAddress" type="email" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="john@gov.lk" />
+                      <input name="emailAddress" type="email" required className="w-full border rounded-md p-2.5 text-sm" placeholder="john@gov.lk" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1">Mobile Number</label>
-                      <input name="mobileNumber" required className="w-full border rounded-xl p-2.5 text-sm" placeholder="07XXXXXXXX" />
+                      <input name="mobileNumber" required className="w-full border rounded-md p-2.5 text-sm" placeholder="07XXXXXXXX" />
                     </div>
                     <div className="md:col-span-2 mt-2">
-                      <button type="submit" disabled={saving} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all cursor-pointer">
+                      <button type="submit" disabled={saving} className="px-6 py-2.5 bg-brand-accent hover:bg-[#5a8640] text-white font-bold text-sm rounded-md transition-all cursor-pointer">
                         {saving ? "Creating..." : "Create Admin Account"}
                       </button>
                     </div>
                   </form>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-md shadow-sm border border-slate-100 overflow-hidden">
                   <div className="p-5 border-b border-slate-100 bg-slate-50/50">
                     <h3 className="font-bold text-slate-900">Existing Department Admins ({admins.length})</h3>
                   </div>
@@ -1198,7 +1198,7 @@ export default function AdminPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-brand-primary/60 backdrop-blur-sm"
               onClick={() => setIsBungalowModalOpen(false)}
             />
 
@@ -1207,7 +1207,7 @@ export default function AdminPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-white rounded-[32px] shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] md:max-h-[85vh] relative z-10"
+              className="bg-white rounded-[32px] shadow-md w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] md:max-h-[85vh] relative z-10"
             >
               <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <div className="flex items-center gap-3">
@@ -1242,7 +1242,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Bungalow Name</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Bungalow Name"
                             value={bungalowForm.name}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, name: e.target.value }))}
@@ -1252,7 +1252,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Address</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="e.g. No. 12 Hill Street, Nuwara Eliya"
                             value={bungalowForm.location}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, location: e.target.value }))}
@@ -1262,7 +1262,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Department</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-100 disabled:text-slate-500"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-100 disabled:text-slate-500"
                             placeholder="Department"
                             value={bungalowForm.department}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, department: e.target.value }))}
@@ -1274,7 +1274,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Capacity</label>
                           <input
                             type="number"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Capacity"
                             value={bungalowForm.capacity}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, capacity: Number(e.target.value) }))}
@@ -1284,7 +1284,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">No. of Rooms</label>
                           <input
                             type="number"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="No. of Rooms"
                             value={bungalowForm.noOfRooms}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, noOfRooms: Number(e.target.value) }))}
@@ -1294,7 +1294,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Image URL</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Image URL"
                             value={bungalowForm.image}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, image: e.target.value }))}
@@ -1303,7 +1303,7 @@ export default function AdminPage() {
                         <div className="col-span-2">
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Description</label>
                           <textarea
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Description"
                             rows={3}
                             value={bungalowForm.description}
@@ -1322,7 +1322,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Google Maps Link</label>
                           <input
                             type="url"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="https://www.google.com/maps/@6.9271,79.8612,15z"
                             value={bungalowForm.gmapLink || ""}
                             onChange={(e) => handleGmapLinkChange(e.target.value)}
@@ -1333,18 +1333,18 @@ export default function AdminPage() {
                         <div>
                           <label className="block text-[11px] font-bold text-slate-500 mb-2">Detected Coordinates</label>
                           {resolvingMapLink ? (
-                            <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-blue-700">
-                              <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                            <div className="flex items-center gap-3 bg-brand-primary/5 border border-brand-primary/20 rounded-md px-4 py-3 text-blue-700">
+                              <Loader2 className="w-4 h-4 animate-spin text-brand-primary" />
                               <span className="text-[12px] font-medium">Resolving Google Maps short link &amp; extracting coordinates...</span>
                             </div>
                           ) : bungalowForm.latitude && bungalowForm.longitude ? (
                             <div className="flex items-center gap-3 flex-wrap">
-                              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-md px-4 py-2.5">
                                 <span className="text-emerald-600 text-sm">📍</span>
                                 <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Lat</span>
                                 <span className="text-[13px] font-semibold text-emerald-900 font-mono">{bungalowForm.latitude}</span>
                               </div>
-                              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-md px-4 py-2.5">
                                 <span className="text-emerald-600 text-sm">📍</span>
                                 <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Lng</span>
                                 <span className="text-[13px] font-semibold text-emerald-900 font-mono">{bungalowForm.longitude}</span>
@@ -1352,7 +1352,7 @@ export default function AdminPage() {
                               <span className="text-[11px] text-slate-400">Auto-extracted from map link</span>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-2 bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-3 text-slate-400">
+                            <div className="flex items-center gap-2 bg-slate-50 border border-dashed border-slate-200 rounded-md px-4 py-3 text-slate-400">
                               <span className="text-sm">🗺️</span>
                               <span className="text-[12px]">Paste a valid Google Maps link above to detect coordinates automatically.</span>
                             </div>
@@ -1369,7 +1369,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Name</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Caretaker Name"
                             value={bungalowForm.caretaker.name}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, caretaker: { ...prev.caretaker, name: e.target.value } }))}
@@ -1379,7 +1379,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Address</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Caretaker Address"
                             value={bungalowForm.caretaker.address}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, caretaker: { ...prev.caretaker, address: e.target.value } }))}
@@ -1389,7 +1389,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Telephone No</label>
                           <input
                             type="text"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Telephone Number"
                             value={bungalowForm.caretaker.telephoneNo}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, caretaker: { ...prev.caretaker, telephoneNo: e.target.value } }))}
@@ -1399,7 +1399,7 @@ export default function AdminPage() {
                           <label className="block text-[11px] font-bold text-slate-500 mb-1">Email</label>
                           <input
                             type="email"
-                            className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
+                            className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-100"
                             placeholder="Email Address"
                             value={bungalowForm.caretaker.emailAddress}
                             onChange={(e) => setBungalowForm(prev => ({ ...prev, caretaker: { ...prev.caretaker, emailAddress: e.target.value } }))}
@@ -1413,14 +1413,14 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => setIsBungalowModalOpen(false)}
-                        className="px-6 py-3 rounded-xl text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="px-6 py-3 rounded-md text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={handleNextToRooms}
-                        className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-lg hover:bg-slate-800 transition-all"
+                        className="px-8 py-3 bg-brand-primary text-white rounded-md text-[14px] font-bold shadow-lg hover:bg-[#12242b] transition-all"
                       >
                         Configure Rooms
                       </button>
@@ -1434,12 +1434,12 @@ export default function AdminPage() {
                     <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
                       <h3 className="text-xl font-bold text-slate-900 mb-4">Configure Rooms</h3>
                       {bungalowForm.rooms.map((room, idx) => (
-                        <div key={idx} className="grid grid-cols-12 gap-4 bg-slate-50/20 p-4 rounded-xl mb-4">
+                        <div key={idx} className="grid grid-cols-12 gap-4 bg-slate-50/20 p-4 rounded-md mb-4">
                           <div className="col-span-12 sm:col-span-4">
                             <label className="block text-[11px] font-bold text-slate-500 mb-1">Room Number</label>
                             <input
                               type="text"
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                              className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900"
                               value={room.roomNumber}
                               onChange={(e) => handleRoomChange(idx, "roomNumber", e.target.value)}
                             />
@@ -1447,7 +1447,7 @@ export default function AdminPage() {
                           <div className="col-span-12 sm:col-span-4">
                             <label className="block text-[11px] font-bold text-slate-500 mb-1">Room Type</label>
                             <select
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                              className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900"
                               value={room.roomType}
                               onChange={(e) => handleRoomChange(idx, "roomType", e.target.value as any)}
                             >
@@ -1460,7 +1460,7 @@ export default function AdminPage() {
                             <input
                               type="number"
                               min={1}
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                              className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900"
                               value={room.noOfBeds}
                               onChange={(e) => handleRoomChange(idx, "noOfBeds", parseInt(e.target.value) || 1)}
                             />
@@ -1470,7 +1470,7 @@ export default function AdminPage() {
                             <input
                               type="number"
                               step="100"
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                              className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900"
                               value={room.price}
                               onChange={(e) => handleRoomChange(idx, "price", parseFloat(e.target.value) || 0)}
                             />
@@ -1479,7 +1479,7 @@ export default function AdminPage() {
                             <label className="block text-[11px] font-bold text-slate-500 mb-1">Included Items (comma separated)</label>
                             <input
                               type="text"
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-900"
+                              className="w-full border border-slate-200 rounded-md px-3 py-2.5 text-[13px] text-slate-900"
                               placeholder="Double Bed, Geyser, Wardrobe, Ensuite Bathroom"
                               value={room.items}
                               onChange={(e) => handleRoomChange(idx, "items", e.target.value)}
@@ -1494,7 +1494,7 @@ export default function AdminPage() {
                           onClick={handleAddRoomRow}
                           disabled={bungalowForm.rooms.length >= bungalowForm.noOfRooms}
                           title={bungalowForm.rooms.length >= bungalowForm.noOfRooms ? `Your Bungalow only has ${bungalowForm.noOfRooms} rooms.` : undefined}
-                          className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+                          className="px-4 py-2 bg-brand-primary text-white rounded-md text-sm font-medium hover:bg-[#12242b] transition-colors"
                         >
                           Add Room
                         </button>
@@ -1502,7 +1502,7 @@ export default function AdminPage() {
                           <button
                             type="button"
                             onClick={() => handleRemoveRoomRow(bungalowForm.rooms.length - 1)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+                            className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
                           >
                             Remove Last Room
                           </button>
@@ -1515,7 +1515,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => setModalStep(1)}
-                        className="px-6 py-3 rounded-xl text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="px-6 py-3 rounded-md text-[14px] font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
                       >
                         Back
                       </button>
@@ -1523,7 +1523,7 @@ export default function AdminPage() {
                         type="button"
                         onClick={saveBungalow}
                         disabled={saving}
-                        className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[14px] font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="px-8 py-3 bg-brand-primary text-white rounded-md text-[14px] font-bold shadow-lg hover:bg-[#12242b] transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                       >
                         {saving ? (
                           <>
@@ -1553,19 +1553,19 @@ export default function AdminPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedBookingForReview(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-brand-primary/60 backdrop-blur-sm"
             />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden z-10 flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-2xl bg-white rounded-md shadow-md border border-slate-100 overflow-hidden z-10 flex flex-col max-h-[90vh]"
             >
               {/* Modal Header */}
               <div className="px-6 sm:px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-md bg-brand-primary/5 text-brand-primary flex items-center justify-center font-bold">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
@@ -1592,7 +1592,7 @@ export default function AdminPage() {
               <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1">
                 {/* Status Notice Banner */}
                 {selectedBookingForReview.status === "REJECTED" && (
-                  <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3">
+                  <div className="p-4 rounded-md bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3">
                     <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-rose-900 mb-0.5">Currently Rejected Application</p>
@@ -1604,7 +1604,7 @@ export default function AdminPage() {
                 )}
 
                 {statusUpdateSuccess && (
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+                  <div className="p-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>{statusUpdateSuccess}</span>
                   </div>
@@ -1613,10 +1613,10 @@ export default function AdminPage() {
                 {/* Section 1: Guest Information */}
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                    <UserCheck className="w-3.5 h-3.5 text-brand-primary" />
                     Guest Profile & Employment
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-md border border-slate-100 text-xs">
                     <div>
                       <span className="text-slate-400 block font-medium mb-0.5">Full Name</span>
                       <span className="font-bold text-slate-800 text-sm">
@@ -1666,7 +1666,7 @@ export default function AdminPage() {
                     <Hotel className="w-3.5 h-3.5 text-indigo-600" />
                     Stay Details & Accommodation
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-md border border-slate-100 text-xs">
                     <div>
                       <span className="text-slate-400 block font-medium mb-0.5">Circuit Bungalow</span>
                       <span className="font-bold text-slate-900 text-sm">
@@ -1710,7 +1710,7 @@ export default function AdminPage() {
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     Recorded Reasoning / System Audit
                   </h4>
-                  <div className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/80 text-xs text-slate-700">
+                  <div className="p-3.5 rounded-md bg-amber-50/50 border border-amber-200/80 text-xs text-slate-700">
                     <p className="italic font-medium leading-relaxed">
                       {selectedBookingForReview.approvalReason
                         ? `"${selectedBookingForReview.approvalReason}"`
@@ -1733,7 +1733,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setReviewStatus("CONFIRMED")}
-                      className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "CONFIRMED"
+                      className={`p-3 rounded-md border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "CONFIRMED"
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300"
                         : "bg-white text-slate-700 border-slate-200 hover:bg-emerald-50/50 hover:border-emerald-300"
                         }`}
@@ -1745,7 +1745,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setReviewStatus("REJECTED")}
-                      className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "REJECTED"
+                      className={`p-3 rounded-md border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "REJECTED"
                         ? "bg-rose-600 text-white border-rose-600 shadow-md ring-2 ring-rose-300"
                         : "bg-white text-slate-700 border-slate-200 hover:bg-rose-50/50 hover:border-rose-300"
                         }`}
@@ -1757,7 +1757,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setReviewStatus("PENDING")}
-                      className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "PENDING"
+                      className={`p-3 rounded-md border text-xs font-bold transition-all flex flex-col items-center gap-1.5 cursor-pointer ${reviewStatus === "PENDING"
                         ? "bg-amber-600 text-white border-amber-600 shadow-md ring-2 ring-amber-300"
                         : "bg-white text-slate-700 border-slate-200 hover:bg-amber-50/50 hover:border-amber-300"
                         }`}
@@ -1778,7 +1778,7 @@ export default function AdminPage() {
                     placeholder="Provide justification or notes for this status change (e.g. 'Manually approved after verifying official duties with department head')..."
                     value={reviewReason}
                     onChange={(e) => setReviewReason(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-md p-3.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
                   />
                 </div>
               </div>
@@ -1788,7 +1788,7 @@ export default function AdminPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedBookingForReview(null)}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-md transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1797,7 +1797,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={handleUpdateBookingStatus}
                   disabled={isUpdatingStatus}
-                  className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-3 bg-brand-primary hover:bg-[#12242b] text-white font-bold text-xs rounded-md shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isUpdatingStatus ? (
                     <>

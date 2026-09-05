@@ -185,11 +185,11 @@ export default function BookingsPage() {
         const reasonText = booking.approvalReason || "Agent Kernel is initializing...";
         return (
           <div className="flex flex-col items-end gap-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/60 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-brand-primary/5 text-blue-700 border border-brand-primary/20/60 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Verifying
             </span>
-            <span className="text-[10px] text-blue-600 font-medium flex items-center gap-1 max-w-[200px] text-right">
+            <span className="text-[10px] text-brand-primary font-medium flex items-center gap-1 max-w-[200px] text-right">
               <Sparkles className="w-3 h-3 flex-shrink-0" />
               <span className="truncate">{reasonText}</span>
             </span>
@@ -243,7 +243,7 @@ export default function BookingsPage() {
                   className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 px-6 py-6 md:px-8 items-center hover:bg-slate-50/50 transition-colors group relative"
                 >
                   <div className="col-span-1 md:col-span-5 flex items-center gap-5">
-                    <div className="w-20 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm relative">
+                    <div className="w-20 h-14 rounded-md overflow-hidden shrink-0 border border-slate-100 shadow-sm relative">
                       <img src={booking.image} alt={booking.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
                     </div>
                     <div>
@@ -257,7 +257,7 @@ export default function BookingsPage() {
                             href={booking.paymentSlipUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60 hover:bg-blue-100 transition-colors"
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-brand-primary/5 px-2 py-0.5 rounded border border-brand-primary/20/60 hover:bg-blue-100 transition-colors"
                           >
                             <Paperclip className="w-3 h-3" />
                             Slip Attached
@@ -288,7 +288,7 @@ export default function BookingsPage() {
                         setMenuOpenId(menuOpenId === booking.id ? null : booking.id);
                       }}
                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative z-10 cursor-pointer ml-2 md:ml-4
-                        ${menuOpenId === booking.id ? 'bg-slate-900 text-white shadow-md' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'}
+                        ${menuOpenId === booking.id ? 'bg-brand-primary text-white shadow-md' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'}
                       `}
                     >
                       <MoreVertical className="w-5 h-5" />
@@ -306,7 +306,7 @@ export default function BookingsPage() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute right-0 md:right-10 top-14 md:top-10 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 overflow-hidden origin-top-right"
+                            className="absolute right-0 md:right-10 top-14 md:top-10 w-56 bg-white rounded-md shadow-xl border border-slate-100 py-2 z-50 overflow-hidden origin-top-right"
                           >
                             {booking.paymentSlipUrl && (
                               <a

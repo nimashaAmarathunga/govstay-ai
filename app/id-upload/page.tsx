@@ -161,7 +161,7 @@ export default function IdUploadPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="rounded-3xl bg-white p-8 md:p-10 shadow-[0_20px_50px_rgba(8,112,184,0.07)] border border-slate-100 text-center"
+              className="rounded-md bg-white p-8 md:p-10 shadow-[0_20px_50px_rgba(8,112,184,0.07)] border border-slate-100 text-center"
             >
               <div className="mx-auto h-16 w-16 mb-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
                 <CheckCircle2 className="w-8 h-8" />
@@ -174,10 +174,10 @@ export default function IdUploadPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               onSubmit={handleSubmit}
-              className="rounded-3xl bg-white p-6 md:p-8 shadow-sm border border-slate-200/80"
+              className="rounded-md bg-white p-6 md:p-8 shadow-sm border border-slate-200/80"
             >
               {errorMessage && (
-                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
+                <div className="mb-6 p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
                   <span>{errorMessage}</span>
                 </div>
@@ -188,9 +188,9 @@ export default function IdUploadPage() {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-md border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-200 ${
                   isDragging
-                    ? "border-blue-500 bg-blue-50/50 scale-[1.01]"
+                    ? "border-blue-500 bg-brand-primary/5/50 scale-[1.01]"
                     : selectedFile
                     ? "border-emerald-300 bg-emerald-50/30"
                     : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"
@@ -207,7 +207,7 @@ export default function IdUploadPage() {
                 {selectedFile ? (
                   <div className="relative group">
                     {filePreview ? (
-                      <div className="relative rounded-xl overflow-hidden max-h-48 border border-slate-200 bg-white">
+                      <div className="relative rounded-md overflow-hidden max-h-48 border border-slate-200 bg-white">
                         <img src={filePreview} alt="Preview" className="w-full object-contain max-h-48" />
                       </div>
                     ) : (
@@ -230,7 +230,7 @@ export default function IdUploadPage() {
                   </div>
                 ) : (
                   <div className="py-6 flex flex-col items-center gap-3 text-slate-500">
-                    <div className="h-12 w-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-md bg-white shadow-sm border border-slate-100 flex items-center justify-center">
                       <UploadCloud className="w-6 h-6 text-slate-700" />
                     </div>
                     <div>
@@ -241,7 +241,7 @@ export default function IdUploadPage() {
                 )}
               </div>
 
-              <div className="mt-5 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-xs text-slate-600">
+              <div className="mt-5 rounded-md bg-slate-50 p-3.5 border border-slate-100 text-xs text-slate-600">
                 <div className="flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span>Your document is securely stored and used only for verifying booking eligibility.</span>
@@ -252,7 +252,7 @@ export default function IdUploadPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !selectedFile}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 text-white font-medium hover:bg-slate-800 disabled:opacity-50 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-primary text-white font-medium hover:bg-[#12242b] disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {isSubmitting ? (
                     <><RefreshCw className="w-4 h-4 animate-spin" /> Uploading...</>

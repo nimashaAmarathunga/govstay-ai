@@ -103,9 +103,9 @@ export function Features() {
                 key={idx}
                 variants={itemVariants}
                 whileHover={{ y: -4 }}
-                className="bg-white rounded-2xl border border-slate-100 p-6 md:p-8 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300"
+                className="bg-white rounded-md border border-slate-100 p-6 md:p-8 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-5">
+                <div className="w-12 h-12 rounded-md bg-slate-100 flex items-center justify-center mb-5">
                   <Icon className="w-6 h-6 text-slate-900" />
                 </div>
 

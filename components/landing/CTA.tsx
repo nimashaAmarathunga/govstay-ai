@@ -31,7 +31,7 @@ export function CTA() {
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg"
+                className="inline-flex items-center gap-2 bg-brand-primary hover:bg-[#12242b] text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg"
               >
                 <span>Talk to Support Desk</span>
                 <ArrowRight className="w-4 h-4" />

@@ -136,7 +136,7 @@ export default function Navigation() {
     <User className="w-5 h-5 text-slate-500" />
   );
 
-  const avatarBg = activeUser ? "bg-slate-900" : "bg-white border border-slate-200";
+  const avatarBg = activeUser ? "bg-brand-primary" : "bg-white border border-slate-200";
   const dropdownHeader = mode === "user" ? "Account / Switch User" : "Admin Profiles";
   const isAdminUser = activeUser && (activeUser.role === "DEPT_ADMIN" || activeUser.role === "SUPER_ADMIN");
 
@@ -180,7 +180,7 @@ export default function Navigation() {
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
@@ -205,7 +205,7 @@ export default function Navigation() {
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
@@ -256,7 +256,7 @@ export default function Navigation() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden"
+                  className="absolute right-0 top-full mt-2 w-80 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden"
                 >
                   <div className="px-5 py-4 border-b border-slate-50">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -277,7 +277,7 @@ export default function Navigation() {
                     <Link
                       href="/profile"
                       onClick={() => setDropdownOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                     >
                       <User className="w-4 h-4 text-slate-500" />
                       <span>My Profile</span>
@@ -286,7 +286,7 @@ export default function Navigation() {
                   <div className="p-2 border-t border-slate-50">
                     <button
                       onClick={handleUserLogout}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4 text-red-500" />
                       <span>Sign Out</span>
@@ -302,9 +302,9 @@ export default function Navigation() {
         <div className="relative" ref={settingsRef}>
           <button
             onClick={() => setSettingsOpen((prev) => !prev)}
-            className={`p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-center ${
+            className={`p-2.5 rounded-md border transition-all cursor-pointer flex items-center justify-center ${
               settingsOpen 
-                ? "bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-blue-500/30" 
+                ? "bg-brand-primary text-white border-slate-900 shadow-md ring-2 ring-brand-primary/30" 
                 : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300"
             }`}
             title="App Settings & Admin Login"
@@ -320,14 +320,14 @@ export default function Navigation() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-2.5"
+                className="absolute right-0 top-full mt-2 w-72 bg-white rounded-md shadow-md border border-slate-100 overflow-hidden z-50 p-2.5"
               >
                 {/* Header */}
                 <div className="px-3 py-2 border-b border-slate-100 mb-1 flex items-center justify-between">
                   <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                     Application Settings
                   </span>
-                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                  <span className="text-[10px] font-bold text-brand-primary bg-brand-primary/5 px-2 py-0.5 rounded-full border border-brand-primary/10">
                     Admin Portal
                   </span>
                 </div>
@@ -337,7 +337,7 @@ export default function Navigation() {
                   <Link
                     href="/admin/login"
                     onClick={() => setSettingsOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-900 text-white hover:bg-blue-600 transition-all group shadow-sm cursor-pointer"
+                    className="flex items-center gap-3 p-3 rounded-md bg-brand-primary text-white hover:bg-brand-accent transition-all group shadow-sm cursor-pointer"
                   >
                     <div className="w-9 h-9 rounded-lg bg-white/10 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                       <ShieldCheck className="w-5 h-5" />
@@ -356,7 +356,7 @@ export default function Navigation() {
                   {isAdminUser && (
                     <button
                       onClick={handleAdminLogout}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors text-left text-xs font-semibold cursor-pointer"
+                      className="w-full flex items-center gap-3 p-2.5 rounded-md text-red-600 hover:bg-red-50 transition-colors text-left text-xs font-semibold cursor-pointer"
                     >
                       <LogOut className="w-4 h-4 shrink-0 text-red-500" />
                       <span>Sign Out Admin Session</span>

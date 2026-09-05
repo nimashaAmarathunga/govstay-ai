@@ -205,7 +205,7 @@ export function roleLabel(role: UserRole): string {
 export function roleBadgeClass(role: UserRole): string {
   const map: Record<UserRole, string> = {
     PUBLIC_USER: "bg-slate-100 text-slate-600",
-    GOV_EMPLOYEE: "bg-blue-50 text-blue-700",
+    GOV_EMPLOYEE: "bg-brand-primary/5 text-blue-700",
     DEPT_ADMIN: "bg-violet-50 text-violet-700",
     SUPER_ADMIN: "bg-amber-50 text-amber-700",
   };

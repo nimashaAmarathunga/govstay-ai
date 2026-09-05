@@ -106,7 +106,7 @@ export function FeaturedProperties({
                     </div>
 
                     {/* Department Tag */}
-                    <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                    <div className="absolute bottom-3 left-3 bg-brand-primary/80 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
                       {property.department}
                     </div>
                   </div>
@@ -150,7 +150,7 @@ export function FeaturedProperties({
         >
           <Link
             href="/browse"
-            className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-semibold hover:bg-slate-800 transition-all duration-300 hover:shadow-lg"
+            className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-[#12242b] transition-all duration-300 hover:shadow-lg"
           >
             View All Properties
             <svg

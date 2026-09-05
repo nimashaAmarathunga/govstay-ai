@@ -135,7 +135,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
           Payment Slip <span className="text-slate-400 font-normal lowercase">(optional)</span>
         </label>
-        <span className="text-[11px] text-blue-600 font-medium">JPG, PNG, WEBP or PDF</span>
+        <span className="text-[11px] text-brand-primary font-medium">JPG, PNG, WEBP or PDF</span>
       </div>
 
       {!fileUrl && !isUploading && (
@@ -143,10 +143,10 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 ${
+          className={`border-2 border-dashed rounded-md p-4 text-center transition-all duration-200 ${
             isDragging
-              ? "border-blue-500 bg-blue-50/80 scale-[0.99]"
-              : "border-slate-300 hover:border-blue-400 bg-slate-50/60 hover:bg-blue-50/30"
+              ? "border-blue-500 bg-brand-primary/5/80 scale-[0.99]"
+              : "border-slate-300 hover:border-blue-400 bg-slate-50/60 hover:bg-brand-primary/5/30"
           }`}
         >
           <input
@@ -154,10 +154,10 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
             ref={fileInputRef}
             onChange={handleFileChange}
             accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
-            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-primary/5 file:text-blue-700 hover:file:bg-blue-100"
           />
           <div className="flex flex-col items-center justify-center space-y-1.5">
-            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-blue-100 text-brand-primary flex items-center justify-center">
               <span className="material-symbols-outlined text-xl">cloud_upload</span>
             </div>
             <div>
@@ -171,8 +171,8 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
       )}
 
       {isUploading && (
-        <div className="border border-blue-200 bg-blue-50/60 rounded-xl p-4 flex items-center space-x-3">
-          <span className="material-symbols-outlined text-blue-600 animate-spin text-2xl">sync</span>
+        <div className="border border-brand-primary/20 bg-brand-primary/5 rounded-md p-4 flex items-center space-x-3">
+          <span className="material-symbols-outlined text-brand-primary animate-spin text-2xl">sync</span>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-blue-900 truncate">Uploading {fileName}...</p>
             <p className="text-[11px] text-blue-700">{fileSize || "Processing..."}</p>
@@ -181,7 +181,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
       )}
 
       {fileUrl && !isUploading && (
-        <div className="border border-emerald-200 bg-emerald-50/60 rounded-xl p-3 flex items-center justify-between">
+        <div className="border border-emerald-200 bg-emerald-50/60 rounded-md p-3 flex items-center justify-between">
           <div className="flex items-center space-x-3 min-w-0">
             {isPdfFile ? (
               <div className="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 border border-red-200">

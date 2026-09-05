@@ -57,7 +57,7 @@ export function SearchBanner() {
 
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white px-8 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
+            className="bg-brand-primary hover:bg-[#12242b] text-white px-8 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
           >
             <span className="hidden sm:inline">Search</span>
             <ArrowRight className="w-4 h-4" />

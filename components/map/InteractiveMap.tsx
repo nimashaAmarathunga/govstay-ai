@@ -138,14 +138,14 @@ export default function InteractiveMap({
               opacity={1}
               className="custom-popup bg-transparent border-0 shadow-none p-0"
             >
-              <div className="w-56 p-1 bg-white rounded-2xl shadow-2xl border border-slate-200 pointer-events-none overflow-hidden">
+              <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 pointer-events-none overflow-hidden">
                 <div className="w-full h-32 overflow-hidden mb-3">
                   <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover rounded-lg" />
                 </div>
                 <h3 className="font-bold text-sm text-slate-800 leading-tight mb-1 px-1">{bungalow.name}</h3>
                 <p className="text-xs text-slate-500 mb-2 truncate px-1">{bungalow.location}</p>
                 <div className="flex justify-between items-end mb-1 px-1">
-                  <p className="font-bold text-blue-600 text-sm">from Rs. {bungalow.price.toLocaleString()}</p>
+                  <p className="font-bold text-brand-primary text-sm">from Rs. {bungalow.price.toLocaleString()}</p>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-100 text-emerald-700">
                     Available
                   </span>
@@ -184,7 +184,7 @@ export default function InteractiveMap({
                 offset={[0, -20]}
                 className="custom-popup border-0 shadow-none p-0"
               >
-                <div className="w-56 p-1 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden m-0">
+                <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 overflow-hidden m-0">
                   {attraction.thumbnail && (
                     <div className="w-full h-24 overflow-hidden mb-2">
                       <img src={attraction.thumbnail} alt={attraction.title} className="w-full h-full object-cover rounded-lg" />

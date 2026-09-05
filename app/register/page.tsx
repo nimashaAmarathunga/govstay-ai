@@ -277,7 +277,7 @@ export default function RegisterPage() {
             </div>
 
             {error && (
-              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
+              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
                 <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                 <span className="leading-relaxed font-medium">{error}</span>
               </motion.div>
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Full Name</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><User className="w-4 h-4" /></div>
-                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. Kasun Perera" />
+                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. Kasun Perera" />
                   </div>
                 </div>
 
@@ -297,7 +297,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Username</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><User className="w-4 h-4" /></div>
-                    <input type="text" name="username" required value={formData.username} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. kasun_p" />
+                    <input type="text" name="username" required value={formData.username} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. kasun_p" />
                   </div>
                 </div>
 
@@ -305,7 +305,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Email Address</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Mail className="w-4 h-4" /></div>
-                    <input type="email" name="emailAddress" required value={formData.emailAddress} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="user@gov.lk" />
+                    <input type="email" name="emailAddress" required value={formData.emailAddress} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="user@gov.lk" />
                   </div>
                 </div>
 
@@ -313,7 +313,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Phone Number</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Phone className="w-4 h-4" /></div>
-                    <input type="tel" name="mobileNumber" required value={formData.mobileNumber} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="07XXXXXXXX" />
+                    <input type="tel" name="mobileNumber" required value={formData.mobileNumber} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="07XXXXXXXX" />
                   </div>
                 </div>
 
@@ -321,7 +321,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Employee ID (Optional)</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Hash className="w-4 h-4" /></div>
-                    <input type="text" name="empId" value={formData.empId} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. 245503B" />
+                    <input type="text" name="empId" value={formData.empId} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. 245503B" />
                   </div>
                 </div>
 
@@ -329,7 +329,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Department / Ministry</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Building2 className="w-4 h-4" /></div>
-                    <input type="text" name="placeOfWork" required value={formData.placeOfWork} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Ministry of Public Administration" />
+                    <input type="text" name="placeOfWork" required value={formData.placeOfWork} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Ministry of Public Administration" />
                   </div>
                 </div>
                 
@@ -337,7 +337,7 @@ export default function RegisterPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Password</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Lock className="w-4 h-4" /></div>
-                    <input type="password" name="password" required value={formData.password} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="••••••••••••" />
+                    <input type="password" name="password" required value={formData.password} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="••••••••••••" />
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1.5 pl-1">Min 8 characters with at least one letter and one number or special character</p>
                 </div>
@@ -346,7 +346,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                className="w-full py-4 mt-4 bg-brand-accent hover:bg-[#5a8640] text-white font-bold text-sm rounded-md shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /><span>Creating Account...</span></>
@@ -359,7 +359,7 @@ export default function RegisterPage() {
             <div className="mt-8 pt-6 border-t border-slate-100 text-center">
               <p className="text-sm text-slate-600">
                 Already have an account?{" "}
-                <Link href="/login" className="font-bold text-blue-600 hover:text-blue-700">Sign In</Link>
+                <Link href="/login" className="font-bold text-brand-primary hover:text-blue-700">Sign In</Link>
               </p>
             </div>
           </motion.div>
@@ -423,7 +423,7 @@ export default function RegisterPage() {
                 )}
 
                 {uploadError && (
-                  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
+                  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
                     <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                     <span className="leading-relaxed font-medium">{uploadError}</span>
                   </motion.div>
@@ -454,7 +454,7 @@ export default function RegisterPage() {
                   {selectedFile ? (
                     <div className="relative group">
                       {filePreview ? (
-                        <div className="relative rounded-xl overflow-hidden max-h-48 border border-slate-200 bg-white">
+                        <div className="relative rounded-md overflow-hidden max-h-48 border border-slate-200 bg-white">
                           <img src={filePreview} alt="Preview" className="w-full object-contain max-h-48" />
                         </div>
                       ) : (
@@ -477,7 +477,7 @@ export default function RegisterPage() {
                     </div>
                   ) : (
                     <div className="py-6 flex flex-col items-center gap-3 text-slate-500">
-                      <div className="h-14 w-14 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                      <div className="h-14 w-14 rounded-md bg-white shadow-sm border border-slate-100 flex items-center justify-center">
                         <UploadCloud className="w-7 h-7 text-slate-700" />
                       </div>
                       <div>
@@ -489,7 +489,7 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Security Notice */}
-                <div className="mt-4 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-xs text-slate-600">
+                <div className="mt-4 rounded-md bg-slate-50 p-3.5 border border-slate-100 text-xs text-slate-600">
                   <div className="flex items-start gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>Your document is securely stored and used only for verifying booking eligibility.</span>
@@ -501,7 +501,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={handleSkipUpload}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-slate-600 font-medium text-sm hover:bg-slate-100 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-slate-600 font-medium text-sm hover:bg-slate-100 transition-colors cursor-pointer"
                   >
                     <SkipForward className="w-4 h-4" />
                     Skip for Now
@@ -511,7 +511,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={handleUploadSubmit}
                     disabled={isUploading || !selectedFile}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer active:scale-[0.99] shadow-md"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer active:scale-[0.99] shadow-md"
                   >
                     {isUploading ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /><span>Uploading...</span></>

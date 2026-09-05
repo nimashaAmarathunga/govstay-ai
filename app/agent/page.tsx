@@ -318,7 +318,7 @@ export default function Page() {
             <div className="max-w-3xl mx-auto w-full space-y-8">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center opacity-70 mt-32">
-                   <div className="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mb-6">
+                   <div className="w-16 h-16 bg-slate-100 rounded-md flex items-center justify-center mb-6">
                      <MessageSquare className="w-8 h-8 text-slate-700" />
                    </div>
                    <h2 className="text-xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
@@ -339,7 +339,7 @@ export default function Page() {
                      key={message.id} 
                      className="flex flex-col items-end gap-1.5"
                    >
-                     <div className="max-w-[85%] md:max-w-2xl bg-slate-900 text-white px-5 py-3 rounded-xl rounded-tr-sm shadow-sm">
+                     <div className="max-w-[85%] md:max-w-2xl bg-brand-primary text-white px-5 py-3 rounded-md rounded-tr-sm shadow-sm">
                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
                      </div>
                    </motion.div>
@@ -366,7 +366,7 @@ export default function Page() {
                        </span>
                      </div>
                    )}
-                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-200 px-5 py-3 rounded-xl rounded-tl-sm shadow-sm text-slate-800">
+                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-200 px-5 py-3 rounded-md rounded-tl-sm shadow-sm text-slate-800">
                      {message.text ? (
                        <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-slate-700">
                          {message.text.split('\n').map((line, i) => {
@@ -391,7 +391,7 @@ export default function Page() {
                      )}
 
                      {message.propertyCard && (
-                       <div className="mt-6 rounded-3xl overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-all duration-300">
+                       <div className="mt-6 rounded-md overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-all duration-300">
                          <div className="h-48 w-full overflow-hidden relative">
                            <img
                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -439,7 +439,7 @@ export default function Page() {
                  </button>
                </div>
                
-               <div className="relative flex items-center bg-white border border-slate-300 rounded-xl p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-slate-200 focus-within:border-slate-400 transition-all">
+               <div className="relative flex items-center bg-white border border-slate-300 rounded-md p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-slate-200 focus-within:border-slate-400 transition-all">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 
@@ -460,7 +460,7 @@ export default function Page() {
                  <button
                    onClick={() => handleSendMessage()}
                    disabled={(!inputText.trim() && !attachment)}
-                   className="w-10 h-10 shrink-0 rounded-lg bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-slate-900 transition-colors shadow-sm ml-2"
+                   className="w-10 h-10 shrink-0 rounded-lg bg-brand-primary text-white flex items-center justify-center hover:bg-[#12242b] disabled:opacity-30 disabled:hover:bg-brand-primary transition-colors shadow-sm ml-2"
                  >
                    <ArrowRight className="w-5 h-5" />
                  </button>
@@ -495,7 +495,7 @@ export default function Page() {
                      value={activeBooking?.user?.empId || draftState.emp_id || ""} 
                      onChange={e => !activeBooking && setDraftState({...draftState, emp_id: e.target.value})}
                      readOnly={!!activeBooking}
-                     className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
                      placeholder="e.g. EMP-123"
                    />
                 </div>
@@ -506,7 +506,7 @@ export default function Page() {
                      value={activeBooking?.room?.roomNumber || draftState.room_number || ""} 
                      onChange={e => !activeBooking && setDraftState({...draftState, room_number: e.target.value})}
                      readOnly={!!activeBooking}
-                     className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
                      placeholder="e.g. OLD-101"
                    />
                 </div>
@@ -519,7 +519,7 @@ export default function Page() {
                        value={activeBooking?.fromDate ? new Date(activeBooking.fromDate).toISOString().split('T')[0] : (draftState.from_date || "")} 
                        onChange={e => !activeBooking && setDraftState({...draftState, from_date: e.target.value})}
                        readOnly={!!activeBooking}
-                       className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
+                       className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -529,13 +529,13 @@ export default function Page() {
                        value={activeBooking?.toDate ? new Date(activeBooking.toDate).toISOString().split('T')[0] : (draftState.to_date || "")} 
                        onChange={e => !activeBooking && setDraftState({...draftState, to_date: e.target.value})}
                        readOnly={!!activeBooking}
-                       className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
+                       className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
                      />
                   </div>
                 </div>
 
                 {(activeBooking?.totalCost || draftState.total_cost) && (
-                   <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-xl mt-2 shadow-sm">
+                   <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-md mt-2 shadow-sm">
                      <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Total Cost</span>
                      <span className="text-[16px] font-extrabold text-slate-900">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
                    </div>
@@ -550,7 +550,7 @@ export default function Page() {
                 </div>
 
                 {/* Action / Checkout Card */}
-                <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl mt-auto flex flex-col gap-5">
+                <div className="bg-brand-primary text-white p-6 rounded-md shadow-xl mt-auto flex flex-col gap-5">
                    
                     <div className="flex justify-between items-center pb-5 border-b border-white/10">
                        <span className="text-white/60 text-[13px] font-medium">Status</span>
@@ -593,14 +593,14 @@ export default function Page() {
                    {(!activeBooking || (activeBooking?.status === "PENDING" && !activeBooking?.paymentSlipUrl)) ? (
                      <button
                        onClick={triggerConfirmBooking}
-                       className="w-full py-4 bg-white text-slate-900 font-bold rounded-2xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                       className="w-full py-4 bg-white text-slate-900 font-bold rounded-md transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
                        {activeBooking?.bookingId || draftState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
                      </button>
                    ) : activeBooking?.status === "PENDING" && activeBooking?.paymentSlipUrl ? (
                      <button
                        disabled
-                       className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
+                       className="w-full py-4 bg-white/10 text-white font-bold rounded-md transition-all shadow-md mt-2 flex items-center justify-center gap-2"
                      >
                        <Loader2 className="w-5 h-5 animate-spin" />
                        Verification in progress
@@ -608,7 +608,7 @@ export default function Page() {
                    ) : (
                      <button
                        disabled
-                       className="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl shadow-md mt-2 flex items-center justify-center gap-2"
+                       className="w-full py-4 bg-emerald-500 text-white font-bold rounded-md shadow-md mt-2 flex items-center justify-center gap-2"
                      >
                        <CheckCircle2 className="w-5 h-5" />
                        Confirmed

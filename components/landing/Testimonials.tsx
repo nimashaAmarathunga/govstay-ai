@@ -91,7 +91,7 @@ export function Testimonials() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4 }}
-                  className="bg-white rounded-2xl border border-slate-100 p-8 md:p-10 shadow-sm"
+                  className="bg-white rounded-md border border-slate-100 p-8 md:p-10 shadow-sm"
                 >
                   {/* Stars */}
                   <div className="flex gap-1 mb-4">
@@ -152,7 +152,7 @@ export function Testimonials() {
                 onClick={() => setActiveIndex(idx)}
                 className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === activeIndex
-                    ? "bg-slate-900 w-8"
+                    ? "bg-brand-primary w-8"
                     : "bg-slate-300 w-2 hover:bg-slate-400"
                 }`}
                 aria-label={`Go to testimonial ${idx + 1}`}

@@ -45,7 +45,7 @@ export default async function AdminApprovalsPage() {
         {/* Section 1: Bookings */}
         <section>
           <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-blue-600">fact_check</span>
+            <span className="material-symbols-outlined text-brand-primary">fact_check</span>
             Recent Decisions
           </h2>
 
@@ -54,7 +54,7 @@ export default async function AdminApprovalsPage() {
               <p className="text-slate-500 italic">No bookings found yet.</p>
             ) : (
               bookings.map((b) => (
-                <div key={b.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                <div key={b.id} className="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden flex flex-col">
                   {/* Status Header */}
                   <div className={`p-4 border-b border-slate-100 flex justify-between items-center ${
                       b.status === "CONFIRMED" ? "bg-emerald-50" : 
@@ -92,12 +92,12 @@ export default async function AdminApprovalsPage() {
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-xs font-bold uppercase text-slate-400">AI Reasoning</span>
                         {b.confidenceScore && (
-                          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                          <span className="text-xs font-bold text-brand-primary bg-brand-primary/5 px-2 py-0.5 rounded border border-brand-primary/10">
                             Confidence: {(b.confidenceScore * 100).toFixed(0)}%
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-slate-700 leading-relaxed bg-blue-50/50 p-3 rounded-lg">
+                      <p className="text-sm text-slate-700 leading-relaxed bg-brand-primary/5/50 p-3 rounded-lg">
                         {b.approvalReason || "No automated reasoning recorded. (Draft/Manual Booking)"}
                       </p>
                     </div>
@@ -114,7 +114,7 @@ export default async function AdminApprovalsPage() {
             <span className="material-symbols-outlined text-purple-600">policy</span>
             Security & Audit Traces
           </h2>
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden">
             {sessions.length === 0 ? (
               <div className="p-8 text-center text-slate-500">No agent sessions with audit traces found.</div>
             ) : (
@@ -123,7 +123,7 @@ export default async function AdminApprovalsPage() {
                   <details key={s.id} className="group p-5 hover:bg-slate-50 transition-colors">
                     <summary className="cursor-pointer flex items-center justify-between font-semibold text-slate-800 list-none">
                       <div className="flex items-center gap-4">
-                        <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors">history</span>
+                        <span className="material-symbols-outlined text-slate-400 group-hover:text-brand-primary transition-colors">history</span>
                         Session: {s.sessionId}
                       </div>
                       <div className="flex items-center gap-4">
@@ -132,7 +132,7 @@ export default async function AdminApprovalsPage() {
                       </div>
                     </summary>
                     <div className="mt-4 pt-4 border-t border-slate-100">
-                      <div className="bg-slate-900 rounded-xl p-4 overflow-x-auto">
+                      <div className="bg-brand-primary rounded-md p-4 overflow-x-auto">
                         <pre className="text-xs text-emerald-400 font-mono">
                           {JSON.stringify(s.auditTrace, null, 2)}
                         </pre>

@@ -177,7 +177,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
         {/* Search Box with Live Dropdown */}
         <div className="relative pointer-events-auto w-96">
-          <div className="bg-white p-3 rounded-2xl shadow-lg border border-slate-200 flex items-center gap-3 w-full transition-all focus-within:ring-2 focus-within:ring-blue-500">
+          <div className="bg-white p-3 rounded-md shadow-lg border border-slate-200 flex items-center gap-3 w-full transition-all focus-within:ring-2 focus-within:ring-brand-primary">
             <span className="material-symbols-outlined text-slate-400">search</span>
             <input
               type="text"
@@ -205,7 +205,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
           {/* Search Dropdown Results */}
           {showSearchDropdown && searchQuery.trim() !== "" && (
-            <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-72 overflow-y-auto z-30 p-2">
+            <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-md shadow-md border border-slate-200 max-h-72 overflow-y-auto z-30 p-2">
               {filteredBungalows.length > 0 ? (
                 filteredBungalows.map((bungalow) => (
                   <button
@@ -215,16 +215,16 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                       setShowSearchDropdown(false);
                       setSearchQuery(bungalow.name);
                     }}
-                    className="w-full text-left p-3 rounded-xl hover:bg-blue-50 flex items-center gap-3 transition-colors group cursor-pointer"
+                    className="w-full text-left p-3 rounded-md hover:bg-brand-primary/5 flex items-center gap-3 transition-colors group cursor-pointer"
                   >
                     <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100">
                       <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-sm text-slate-800 group-hover:text-blue-600 truncate">{bungalow.name}</h4>
+                      <h4 className="font-bold text-sm text-slate-800 group-hover:text-brand-primary truncate">{bungalow.name}</h4>
                       <p className="text-xs text-slate-500 truncate">{bungalow.location}</p>
                     </div>
-                    <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600 text-lg">chevron_right</span>
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-brand-primary text-lg">chevron_right</span>
                   </button>
                 ))
               ) : (
@@ -240,7 +240,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         <div className="flex gap-2 pointer-events-auto relative">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-6 py-3 bg-white border border-slate-200 shadow-lg rounded-2xl text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${showFilters ? 'text-blue-600 ring-2 ring-blue-500' : 'text-slate-700 hover:bg-slate-50 hover:text-blue-600'}`}
+            className={`px-6 py-3 bg-white border border-slate-200 shadow-lg rounded-md text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${showFilters ? 'text-brand-primary ring-2 ring-brand-primary' : 'text-slate-700 hover:bg-slate-50 hover:text-brand-primary'}`}
           >
             <span className="material-symbols-outlined text-[18px]">tune</span>
             Filters
@@ -248,18 +248,18 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
           {/* Filters Dropdown */}
           {showFilters && (
-            <div className="absolute top-full mt-3 right-0 w-72 bg-white p-5 rounded-2xl shadow-2xl border border-slate-200 z-20">
+            <div className="absolute top-full mt-3 right-0 w-72 bg-white p-5 rounded-md shadow-md border border-slate-200 z-20">
 
               {/* Area Filter */}
               <div className="mb-5">
                 <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[16px] text-blue-600">location_on</span>
+                  <span className="material-symbols-outlined text-[16px] text-brand-primary">location_on</span>
                   Filter by Area
                 </h3>
                 <select
                   value={selectedArea}
                   onChange={(e) => setSelectedArea(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none cursor-pointer"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-md focus:ring-brand-primary focus:border-blue-500 block p-2.5 outline-none cursor-pointer"
                 >
                   <option value="All">All Regions</option>
                   {uniqueAreas.map(area => (
@@ -271,7 +271,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
               {/* Price Filter */}
               <div>
                 <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[16px] text-blue-600">payments</span>
+                  <span className="material-symbols-outlined text-[16px] text-brand-primary">payments</span>
                   Max Price (Rs. {maxPrice.toLocaleString()})
                 </h3>
                 <input
@@ -297,9 +297,9 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
       {/* Selected Bungalow & Nearby Attractions Overlay */}
       {selectedBungalow && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col items-center gap-3 max-w-4xl w-full px-4">
-          <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-2xl shadow-2xl border border-slate-200 flex items-center justify-between gap-4 w-full">
+          <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-md shadow-md border border-slate-200 flex items-center justify-between gap-4 w-full">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+              <div className="w-10 h-10 rounded-md bg-brand-primary/5 border border-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                 <span className="material-symbols-outlined text-xl">holiday_village</span>
               </div>
               <div className="min-w-0">
@@ -310,7 +310,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 href={`/browse/${selectedBungalow.slug}`}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5"
+                className="px-5 py-2 bg-brand-accent hover:bg-[#5a8640] text-white text-xs font-bold rounded-md transition-colors shadow-sm flex items-center gap-1.5"
               >
                 <span>Book Bungalow</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -321,7 +321,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                   setSelectedAttraction(null);
                   setNearbyAttractions([]);
                 }}
-                className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-xl cursor-pointer transition-colors"
+                className="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-md cursor-pointer transition-colors"
                 title="Clear selection"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -353,7 +353,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                     <button
                       key={attraction.id}
                       onClick={() => handleAttractionClick(attraction)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${
                         isSelected
                           ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-400 scale-105"
                           : "bg-white/95 backdrop-blur-md text-purple-950 border-purple-100 hover:bg-purple-50 hover:border-purple-300"

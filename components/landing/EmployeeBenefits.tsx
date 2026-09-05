@@ -68,7 +68,7 @@ export function EmployeeBenefits() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/"
-                className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg text-center"
+                className="bg-brand-primary hover:bg-[#12242b] text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg text-center"
               >
                 Chat with Support Desk
               </Link>
@@ -89,11 +89,11 @@ export function EmployeeBenefits() {
                 <motion.div
                   key={idx}
                   variants={itemVariants}
-                  className="bg-white rounded-2xl p-6 md:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300"
+                  className="bg-white rounded-md p-6 md:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
-                      <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-emerald-50">
+                      <div className="flex items-center justify-center h-12 w-12 rounded-md bg-emerald-50">
                         <Icon className="h-6 w-6 text-emerald-600" />
                       </div>
                     </div>

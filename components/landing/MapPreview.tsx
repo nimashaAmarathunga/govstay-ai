@@ -39,7 +39,7 @@ export function MapPreview() {
             className="order-1 lg:order-2"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-1 h-8 bg-slate-900 rounded-full"></div>
+              <div className="w-1 h-8 bg-brand-primary rounded-full"></div>
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
                 Explore the Map
               </h2>
@@ -67,7 +67,7 @@ export function MapPreview() {
 
             <Link
               href="/map"
-              className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-semibold hover:bg-slate-800 transition-all duration-300 hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-[#12242b] transition-all duration-300 hover:shadow-lg"
             >
               <MapPin className="w-4 h-4" />
               <span>Explore on Map</span>

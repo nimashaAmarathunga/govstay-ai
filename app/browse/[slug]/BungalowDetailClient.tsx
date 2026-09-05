@@ -306,13 +306,13 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Back to browse
           </Link>
-          <span className="text-xs font-semibold px-3 py-1 bg-slate-900 text-white rounded-full border border-slate-900">
+          <span className="text-xs font-semibold px-3 py-1 bg-brand-primary text-white rounded-full border border-slate-900">
             {bungalow.department}
           </span>
         </div>
 
         {/* Hero Card */}
-        <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
           <div className="relative h-72 sm:h-96 lg:h-[28rem]">
             <img 
               src={bungalow.image} 
@@ -330,7 +330,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             </div>
 
             <div className="absolute bottom-6 left-6 right-6 text-white">
-              <span className="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase tracking-wider bg-slate-900/90 backdrop-blur-sm rounded-md text-white">
+              <span className="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase tracking-wider bg-brand-primary/90 backdrop-blur-sm rounded-md text-white">
                 {bungalow.department}
               </span>
               <h1 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl drop-shadow-sm">
@@ -356,9 +356,9 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
               {/* Caretaker Contact Information */}
               {bungalow.caretaker && (
-                <section className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-5 md:p-6">
+                <section className="mb-8 rounded-md border border-slate-200 bg-slate-50 p-5 md:p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-md bg-brand-primary text-white flex items-center justify-center">
                       <span className="material-symbols-outlined text-[22px]">contact_phone</span>
                     </div>
                     <div>
@@ -422,7 +422,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   {bungalow.highlights.map((highlight) => (
                     <div
                       key={highlight}
-                      className="flex items-start gap-3 rounded-xl bg-slate-50 border border-slate-100 p-4 text-sm font-medium text-slate-700"
+                      className="flex items-start gap-3 rounded-md bg-slate-50 border border-slate-100 p-4 text-sm font-medium text-slate-700"
                     >
                       <span className="material-symbols-outlined text-[20px] text-emerald-600 shrink-0 mt-0.5">
                         check_circle
@@ -455,7 +455,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-2xl font-extrabold text-slate-800">Rooms Available Inside</h2>
-                      <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-900 text-white">
+                      <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-brand-primary text-white">
                         {bungalow.rooms.length} {bungalow.rooms.length === 1 ? "Room" : "Rooms"}
                       </span>
                     </div>
@@ -465,12 +465,12 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   </div>
 
                   {/* Room Filters */}
-                  <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                  <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-md">
                     <button
                       onClick={() => setRoomFilter("ALL")}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         roomFilter === "ALL"
-                          ? "bg-slate-900 text-white shadow-sm"
+                          ? "bg-brand-primary text-white shadow-sm"
                           : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
@@ -481,7 +481,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         onClick={() => setRoomFilter("AC")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           roomFilter === "AC"
-                            ? "bg-slate-900 text-white shadow-sm"
+                            ? "bg-brand-primary text-white shadow-sm"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
@@ -494,7 +494,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         onClick={() => setRoomFilter("NON_AC")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           roomFilter === "NON_AC"
-                            ? "bg-slate-900 text-white shadow-sm"
+                            ? "bg-brand-primary text-white shadow-sm"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
@@ -526,7 +526,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       <div
                         key={room.id}
                         onClick={() => toggleRoomSelection(room.id)}
-                        className={`rounded-2xl border p-5 transition-all cursor-pointer relative flex flex-col justify-between ${
+                        className={`rounded-md border p-5 transition-all cursor-pointer relative flex flex-col justify-between ${
                           isSelected
                             ? "border-slate-900 bg-slate-50 shadow-md ring-2 ring-slate-900/20"
                             : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
@@ -591,7 +591,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                             type="button"
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                               isSelected
-                                ? "bg-slate-900 text-white"
+                                ? "bg-brand-primary text-white"
                                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900"
                             }`}
                           >
@@ -606,7 +606,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             </div>
 
             {/* Sidebar Column */}
-            <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sticky top-6">
+            <aside className="h-fit rounded-md border border-slate-200 bg-white p-6 shadow-sm sticky top-6">
               <div className="flex items-baseline justify-between border-b border-slate-100 pb-4 mb-6">
                 <div>
                   <span className="text-xs uppercase tracking-wider font-bold text-slate-400 block">
@@ -665,7 +665,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   </div>
 
                   {/* Selected Rooms Box */}
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
+                  <div className="bg-slate-50 rounded-md p-4 border border-slate-200/80 mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
                       Selected Rooms ({selectedRoomIds.length})
                     </span>
@@ -681,7 +681,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                           .map((r) => (
                             <span
                               key={r.id}
-                              className="px-2.5 py-1 bg-slate-900 text-white rounded-md text-xs font-bold"
+                              className="px-2.5 py-1 bg-brand-primary text-white rounded-md text-xs font-bold"
                             >
                               Room {r.roomNumber}
                             </span>
@@ -720,9 +720,9 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       setShowPaymentStep(true);
                     }}
                     disabled={!checkIn || !checkOut}
-                    className={`w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full py-4 font-bold rounded-md shadow-lg transition-all flex items-center justify-center gap-2 ${
                       checkIn && checkOut
-                        ? "bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
+                        ? "bg-brand-primary text-white hover:bg-[#12242b] cursor-pointer active:scale-[0.99]"
                         : "bg-slate-200 text-slate-400 cursor-not-allowed"
                     }`}
                   >
@@ -748,7 +748,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   </p>
 
                   {/* Summary Card */}
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-5 space-y-2 text-xs">
+                  <div className="bg-slate-50 rounded-md p-4 border border-slate-200/80 mb-5 space-y-2 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span className="font-medium">Property:</span>
                       <span className="font-bold text-slate-900 truncate max-w-[160px]">{bungalow.name}</span>
@@ -777,7 +777,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   {bookingStatus === "idle" && (
                     <button
                       onClick={handleBooking}
-                      className="w-full py-4 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm bg-slate-900 text-white hover:bg-slate-800 cursor-pointer active:scale-[0.99]"
+                      className="w-full py-4 font-bold rounded-md shadow-lg transition-all flex items-center justify-center gap-2 text-sm bg-brand-primary text-white hover:bg-[#12242b] cursor-pointer active:scale-[0.99]"
                     >
                       <span>Submit Reservation</span>
                       <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -787,7 +787,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   {bookingStatus === "booking" && (
                     <button
                       disabled
-                      className="w-full py-4 bg-slate-700 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-wait text-sm"
+                      className="w-full py-4 bg-slate-700 text-white font-bold rounded-md shadow-lg flex items-center justify-center gap-2 cursor-wait text-sm"
                     >
                       <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
                       Submitting Reservation...
@@ -796,7 +796,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                   {/* Payment Slip Upload Component */}
                   {bookingStatus === "awaiting-slip" && activeBookingId && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-5 shadow-sm">
+                    <div className="bg-amber-50 border border-amber-200 rounded-md p-5 mb-5 shadow-sm">
                       <h4 className="font-bold text-amber-900 text-base mb-2">Upload Payment Slip</h4>
                       <p className="text-xs text-amber-700 font-medium mb-4">
                         Your reservation is pending. Please upload your payment slip to confirm.
@@ -817,7 +817,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   )}
 
                   {bookingStatus === "success" && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center shadow-sm">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-md p-5 text-center shadow-sm">
                       <span className="material-symbols-outlined text-4xl text-emerald-600 mb-2">
                         check_circle
                       </span>

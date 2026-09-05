@@ -112,7 +112,7 @@ export function Categories() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleCategoryClick(category.query)}
-                className={`${category.color} rounded-2xl p-4 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:shadow-md border border-transparent hover:border-slate-200`}
+                className={`${category.color} rounded-md p-4 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:shadow-md border border-transparent hover:border-slate-200`}
               >
                 <Icon className="w-6 h-6" />
                 <span className="text-xs md:text-sm font-semibold text-center">
