@@ -204,9 +204,8 @@ export default function RegisterPage() {
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 flex flex-col justify-center items-center p-4 py-12 relative overflow-y-auto">
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 py-12 relative overflow-y-auto">
+      <div className="absolute top-0 w-full h-[30vh] bg-brand-primary/5 pointer-events-none" />
 
       {/* Header */}
       <motion.div
@@ -221,7 +220,7 @@ export default function RegisterPage() {
           </div>
           <div className="text-left">
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">GovSewana</h1>
-            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest">Create Account</p>
+            <p className="text-[11px] font-bold text-brand-primary uppercase tracking-widest">Create Account</p>
           </div>
         </Link>
       </motion.div>
@@ -234,8 +233,8 @@ export default function RegisterPage() {
       >
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
           step === 1
-            ? "bg-blue-600 text-white shadow-md"
-            : "bg-emerald-100 text-emerald-700 border border-emerald-200"
+            ? "bg-brand-primary text-white shadow-sm"
+            : "bg-slate-100 text-slate-500 border border-slate-200"
         }`}>
           {step > 1 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">1</span>}
           <span>Account Details</span>
@@ -245,7 +244,7 @@ export default function RegisterPage() {
 
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
           step === 2
-            ? "bg-blue-600 text-white shadow-md"
+            ? "bg-brand-primary text-white shadow-sm"
             : "bg-slate-100 text-slate-400 border border-slate-200"
         }`}>
           <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">2</span>
@@ -262,17 +261,17 @@ export default function RegisterPage() {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.96, x: -20 }}
             transition={{ duration: 0.35 }}
-            className="w-full max-w-2xl bg-white border border-slate-200/80 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative z-10"
+            className="w-full max-w-2xl bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
           >
             <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-100">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <UserPlus className="w-6 h-6 text-blue-600" />
+                  <UserPlus className="w-6 h-6 text-brand-primary" />
                   <span>Register New Account</span>
                 </h2>
                 <p className="text-sm text-slate-500 mt-1">Join the official government accommodation platform</p>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
                 Step 1 of 2
               </span>
             </div>
@@ -373,7 +372,7 @@ export default function RegisterPage() {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.96, x: 20 }}
             transition={{ duration: 0.35 }}
-            className="w-full max-w-2xl bg-white border border-slate-200/80 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative z-10"
+            className="w-full max-w-2xl bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
           >
             {/* Success State */}
             {uploadSuccess ? (
@@ -404,22 +403,22 @@ export default function RegisterPage() {
                       Upload your Government ID or NIC to verify your eligibility
                     </p>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
                     Step 2 of 2
                   </span>
                 </div>
 
                 {/* Welcome Message */}
                 {createdUser && (
-                  <div className="mb-6 p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                  <div className="mb-6 p-4 rounded-md bg-brand-primary/5 border border-brand-primary/10 flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-md bg-brand-primary flex items-center justify-center shrink-0">
                       <span className="text-sm font-bold text-white">{createdUser.name?.charAt(0).toUpperCase() || "U"}</span>
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-900">Welcome, {createdUser.name}!</p>
                       <p className="text-xs text-slate-500">Your account has been created. Now upload your ID for verification.</p>
                     </div>
-                    <Sparkles className="w-5 h-5 text-blue-500 shrink-0 ml-auto" />
+                    <Sparkles className="w-5 h-5 text-brand-primary shrink-0 ml-auto" />
                   </div>
                 )}
 
@@ -436,9 +435,9 @@ export default function RegisterPage() {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-200 ${
+                  className={`relative rounded-md border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-200 ${
                     isDragging
-                      ? "border-blue-500 bg-blue-50/50 scale-[1.01]"
+                      ? "border-brand-primary bg-brand-primary/5 scale-[1.01]"
                       : selectedFile
                       ? "border-emerald-300 bg-emerald-50/30"
                       : "border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50"

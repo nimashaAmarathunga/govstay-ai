@@ -6,37 +6,35 @@ export default function LandingPage() {
   return (
     <main className="flex-1 overflow-y-auto bg-slate-50">
       {/* Hero Section */}
-      <section className="relative bg-white border-b border-slate-200/80 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent pointer-events-none" />
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
-
+      <section className="relative bg-brand-primary border-b border-brand-primary overflow-hidden">
+        <div className="absolute inset-0 bg-brand-primary opacity-90 pointer-events-none" />
+        
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 relative z-10 text-center">
           {/* <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
             Official Government Portal
           </div> */}
-          <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6">
             Discover and Reserve <br className="hidden md:block" />
-            <span className="text-blue-600">Government Bungalows</span>
+            <span className="text-brand-accent">Government Bungalows</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg text-slate-200 max-w-2xl mx-auto mb-10 leading-relaxed">
             GovSewana is the central platform for eligible public servants and citizens to explore, verify, and book circuit bungalows and holiday resorts across Sri Lanka.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/browse"
-              className="w-full sm:w-auto px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+              className="w-full sm:w-auto px-8 py-4 bg-brand-accent hover:bg-[#5a8640] text-white font-bold rounded-md shadow-sm transition-all flex items-center justify-center gap-2"
             >
               <Search className="w-5 h-5" />
               <span>Explore Bungalows</span>
             </Link>
             <Link
               href="/map"
-              className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+              className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold rounded-md transition-all flex items-center justify-center gap-2"
             >
-              <Map className="w-5 h-5 text-blue-600" />
+              <Map className="w-5 h-5 text-white" />
               <span>View Map</span>
             </Link>
           </div>
@@ -60,8 +58,8 @@ export default function LandingPage() {
               { icon: User, title: "3. Login", desc: "Sign in with your credentials to initiate a booking." },
               { icon: CalendarCheck, title: "4. Book", desc: "Select dates, upload payment, and await verification." }
             ].map((step, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm text-center relative z-10 flex flex-col items-center">
-                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-100">
+              <div key={idx} className="bg-white rounded-md p-6 border border-slate-200 shadow-sm text-center relative z-10 flex flex-col items-center">
+                <div className="w-16 h-16 bg-slate-50 text-brand-primary rounded-md flex items-center justify-center mb-6 border border-slate-200">
                   <step.icon className="w-8 h-8" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">{step.title}</h3>
@@ -89,7 +87,7 @@ export default function LandingPage() {
               { title: "Secure Verification", desc: "Upload payment slips and identification documents securely for official verification.", icon: ShieldCheck },
               { title: "Manage Bookings", desc: "Track the status of your reservations and view your complete booking history.", icon: FileText }
             ].map((feat, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors">
+              <div key={idx} className="p-6 rounded-md bg-white border border-slate-200 hover:border-brand-primary transition-colors shadow-sm">
                 <feat.icon className="w-6 h-6 text-slate-700 mb-4" />
                 <h3 className="font-bold text-slate-900 mb-2">{feat.title}</h3>
                 <p className="text-sm text-slate-500">{feat.desc}</p>
@@ -100,14 +98,14 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-slate-900 text-center px-6">
+      <section className="py-24 bg-brand-primary text-center px-6">
         <h2 className="text-3xl font-bold text-white mb-6">Ready to plan your stay?</h2>
         <p className="text-slate-300 max-w-xl mx-auto mb-10">
           Start exploring our directory of government bungalows and find the perfect accommodation for your next trip.
         </p>
         <Link
           href="/browse"
-          className="inline-flex px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg transition-all items-center justify-center gap-2 active:scale-95"
+          className="inline-flex px-8 py-4 bg-brand-accent hover:bg-[#5a8640] text-white font-bold rounded-md shadow-sm transition-all items-center justify-center gap-2"
         >
           <span>Explore Available Bungalows</span>
           <ArrowRight className="w-5 h-5" />

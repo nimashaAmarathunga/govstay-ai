@@ -106,10 +106,9 @@ function AuthPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-brand-primary selection:text-white">
       {/* Subtle Ambient Background Gradients */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 w-full h-[30vh] bg-brand-primary/5 pointer-events-none" />
 
       {/* Header Logo (GovSewana Logo) */}
       <motion.div
@@ -132,7 +131,7 @@ function AuthPageContent() {
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
               GovSewana
             </h1>
-            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest">
+            <p className="text-[11px] font-bold text-brand-primary uppercase tracking-widest">
               User & Employee Portal
             </p>
           </div>
@@ -144,20 +143,20 @@ function AuthPageContent() {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.08 }}
-        className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative z-10"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
       >
         {/* Card Header */}
         <div className="flex items-center justify-between mb-6 pb-5 border-b border-slate-100">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <BadgeCheck className="w-5 h-5 text-blue-600" />
+              <BadgeCheck className="w-5 h-5 text-brand-primary" />
               <span>User Portal Access</span>
             </h2>
             <p className="text-xs text-slate-500 mt-1">
               Sign in with your verified government credentials
             </p>
           </div>
-          <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+          <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
             Secured
           </span>
         </div>
@@ -204,7 +203,7 @@ function AuthPageContent() {
                 placeholder="e.g. john_doe or 123456V"
                 value={loginIdentifier}
                 onChange={(e) => setLoginIdentifier(e.target.value)}
-                className="w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
               />
             </div>
           </div>
@@ -218,7 +217,7 @@ function AuthPageContent() {
               <button
                 type="button"
                 onClick={() => alert("Password reset link sent to your registered email.")}
-                className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                className="text-[11px] font-semibold text-brand-primary hover:text-[#12242b] cursor-pointer"
               >
                 Forgot?
               </button>
@@ -233,7 +232,7 @@ function AuthPageContent() {
                 placeholder="••••••••••••"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-10 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-10 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
               />
               <button
                 type="button"
@@ -263,7 +262,7 @@ function AuthPageContent() {
           <button
             type="submit"
             disabled={loginLoading}
-            className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99] mt-2"
+            className="w-full py-3.5 px-4 bg-brand-primary hover:bg-[#12242b] text-white font-bold text-sm rounded-md shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer mt-2"
           >
             {loginLoading ? (
               <>
@@ -280,9 +279,9 @@ function AuthPageContent() {
         </form>
 
         {/* New User Register CTA Card */}
-        <div className="mt-5 p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-center justify-between gap-3">
+        <div className="mt-5 p-4 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="h-9 w-9 rounded-md bg-brand-primary text-white flex items-center justify-center shrink-0 shadow-sm">
               <FileCheck2 className="w-5 h-5" />
             </div>
             <div className="min-w-0">
@@ -292,7 +291,7 @@ function AuthPageContent() {
           </div>
           <Link
             href="/register"
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+            className="px-3.5 py-2 rounded-md bg-brand-primary hover:bg-[#12242b] text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
             <span>Register</span>
             <ArrowRight className="w-3.5 h-3.5" />

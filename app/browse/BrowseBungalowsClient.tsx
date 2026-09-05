@@ -130,7 +130,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                     </div>
                     
                     <div className="absolute bottom-3 left-3">
-                      <div className="bg-slate-900 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide">
+                      <div className="bg-brand-primary text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide">
                         {bungalow.department}
                       </div>
                     </div>
@@ -186,7 +186,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                           <span className="text-[12px] text-slate-500 font-medium">/ night</span>
                         </div>
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-slate-900 flex items-center justify-center transition-colors">
+                      <div className="w-10 h-10 rounded-md bg-slate-50 group-hover:bg-brand-primary flex items-center justify-center transition-colors">
                         <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
                       </div>
                     </div>

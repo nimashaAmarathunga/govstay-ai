@@ -709,22 +709,22 @@ export default function AdminPage() {
           </div>
 
           {/* Tab Selector */}
-          <div className="flex flex-wrap gap-2 bg-slate-50 p-1.5 rounded-2xl inline-flex mb-8 border border-slate-100 shadow-inner">
+          <div className="flex border-b border-slate-200 mb-8 overflow-x-auto">
             <button
               onClick={() => setActiveTab("bungalows")}
-              className={`px-6 py-2.5 text-[14px] font-semibold rounded-xl transition-all cursor-pointer ${activeTab === "bungalows" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"
+              className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors border-b-2 ${activeTab === "bungalows" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
                 }`}
             >
               Circuit Bungalows ({bungalows.length})
             </button>
             <button
               onClick={() => setActiveTab("bookings")}
-              className={`px-6 py-2.5 text-[14px] font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${activeTab === "bookings" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"
+              className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "bookings" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
                 }`}
             >
               <span>Reservations & Approvals ({bookings.length})</span>
               {rejectedBookings.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
                   {rejectedBookings.length} To Review
                 </span>
               )}
@@ -732,7 +732,7 @@ export default function AdminPage() {
             {activeUser?.role === "SUPER_ADMIN" && (
               <button
                 onClick={() => setActiveTab("admins")}
-                className={`px-6 py-2.5 text-[14px] font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${activeTab === "admins" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"
+                className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "admins" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
                   }`}
               >
                 <span>Admin Management</span>

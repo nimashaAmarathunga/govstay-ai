@@ -49,10 +49,14 @@
   --color-surface-container-high: #e4e9e7;
   --color-primary-fixed: #89f5e7;
 
+  /* Brand Colors */
+  --color-brand-primary: #1a353e;
+  --color-brand-accent: #6b9f4d;
+
   --radius-DEFAULT: 0.25rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.75rem;
   --radius-full: 9999px;
 
   --spacing-gutter: 24px;

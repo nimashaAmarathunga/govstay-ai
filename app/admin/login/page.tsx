@@ -80,10 +80,9 @@ function AdminLoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-brand-primary selection:text-white">
       {/* Subtle Ambient Background Gradients */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 w-full h-[30vh] bg-brand-primary/5 pointer-events-none" />
 
       {/* Header Logo (GovSewana Logo) */}
       <motion.div
@@ -106,7 +105,7 @@ function AdminLoginContent() {
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
               GovSewana
             </h1>
-            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-widest">
+            <p className="text-[11px] font-bold text-brand-primary uppercase tracking-widest">
               Administrative Portal
             </p>
           </div>
@@ -118,19 +117,19 @@ function AdminLoginContent() {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.08 }}
-        className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative z-10"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
       >
         <div className="flex items-center justify-between mb-6 pb-5 border-b border-slate-100">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-blue-600" />
+              <ShieldCheck className="w-5 h-5 text-brand-primary" />
               Admin Portal Access
             </h2>
             <p className="text-xs text-slate-500 mt-1">
               Sign in with your department admin credentials
             </p>
           </div>
-          <span className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+          <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
             Secured
           </span>
         </div>
@@ -164,7 +163,7 @@ function AdminLoginContent() {
                 placeholder="e.g. superadmin or pubadmin_admin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
               />
             </div>
           </div>
@@ -184,7 +183,7 @@ function AdminLoginContent() {
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-10 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-10 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
               />
               <button
                 type="button"
@@ -201,7 +200,7 @@ function AdminLoginContent() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99] mt-2"
+            className="w-full py-3.5 px-4 bg-brand-primary hover:bg-[#12242b] text-white font-bold text-sm rounded-md shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer mt-2"
           >
             {isLoading ? (
               <>

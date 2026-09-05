@@ -146,7 +146,7 @@ export default function Navigation() {
   }
 
   return (
-    <header className="flex-none h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-50 sticky top-0">
+    <header className="flex-none h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-50 sticky top-0">
       {/* Brand & Left Navigation */}
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -223,13 +223,13 @@ export default function Navigation() {
           <div className="flex items-center gap-2 mr-2">
             <Link
               href="/login"
-              className="px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 text-[13px] font-bold text-white bg-brand-primary hover:bg-[#12242b] rounded-md shadow-sm transition-colors flex items-center gap-1.5"
             >
               Register
             </Link>
@@ -241,9 +241,9 @@ export default function Navigation() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-slate-100 hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+              className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
             >
-              <div className={`h-7 w-7 rounded-full flex items-center justify-center ${avatarBg}`}>
+              <div className={`h-7 w-7 rounded-md flex items-center justify-center ${avatarBg}`}>
                 {avatarContent}
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
