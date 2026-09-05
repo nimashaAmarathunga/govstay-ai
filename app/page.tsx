@@ -10,11 +10,11 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent pointer-events-none" />
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
-        
+
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-            Official Government Portal
+            {/* Official Government Portal */}
           </div>
           <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
             Discover and Reserve <br className="hidden md:block" />
@@ -23,17 +23,17 @@ export default function LandingPage() {
           <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
             GovSewana is the central platform for eligible public servants and citizens to explore, verify, and book circuit bungalows and holiday resorts across Sri Lanka.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              href="/browse" 
+            <Link
+              href="/browse"
               className="w-full sm:w-auto px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 transition-all flex items-center justify-center gap-2 active:scale-95"
             >
               <Search className="w-5 h-5" />
               <span>Explore Bungalows</span>
             </Link>
-            <Link 
-              href="/map" 
+            <Link
+              href="/map"
               className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
             >
               <Map className="w-5 h-5 text-blue-600" />
@@ -53,7 +53,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             <div className="hidden md:block absolute top-12 left-1/8 right-1/8 h-0.5 bg-slate-200/60 -z-10" />
-            
+
             {[
               { icon: Search, title: "1. Explore", desc: "Browse available bungalows, locations, and amenities." },
               { icon: Building2, title: "2. Choose", desc: "Select a bungalow, view rooms, and check availability." },
@@ -105,8 +105,8 @@ export default function LandingPage() {
         <p className="text-slate-300 max-w-xl mx-auto mb-10">
           Start exploring our directory of government bungalows and find the perfect accommodation for your next trip.
         </p>
-        <Link 
-          href="/browse" 
+        <Link
+          href="/browse"
           className="inline-flex px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg transition-all items-center justify-center gap-2 active:scale-95"
         >
           <span>Explore Available Bungalows</span>
