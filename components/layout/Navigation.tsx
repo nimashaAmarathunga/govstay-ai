@@ -146,7 +146,7 @@ export default function Navigation() {
   }
 
   return (
-    <header className="flex-none h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-50 sticky top-0">
+    <header className="flex-none h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-50 sticky top-0 shadow-sm">
       {/* Brand & Left Navigation */}
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -159,7 +159,7 @@ export default function Navigation() {
               priority
             />
           </div>
-          <h1 className="text-[18px] font-bold tracking-tight text-slate-900">GovSewana</h1>
+          <h1 className="text-[18px] font-extrabold tracking-tight text-[#21263A]">GovSewana</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">
@@ -170,17 +170,17 @@ export default function Navigation() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
+                className={`relative px-4 h-full flex items-center text-[13px] font-bold transition-colors ${
                   isActive
-                    ? "text-slate-900 font-bold"
-                    : "text-slate-500 hover:text-slate-900"
+                    ? "text-[#157954]"
+                    : "text-[#21263A]/70 hover:text-[#21263A]"
                 }`}
               >
                 {link.name}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary"
+                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#157954]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />

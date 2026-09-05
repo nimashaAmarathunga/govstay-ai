@@ -54,7 +54,7 @@ export function FeaturedProperties({
   }
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-slate-50">
+    <section className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-6 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -63,10 +63,10 @@ export function FeaturedProperties({
           transition={{ duration: 0.5 }}
           className="mb-10 md:mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#21263A] mb-3">
             Featured Properties
           </h2>
-          <p className="text-slate-500 text-lg">
+          <p className="text-[#21263A]/70 text-lg font-medium">
             Discover our most popular circuit bungalows
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export function FeaturedProperties({
               className="group"
             >
               <Link href={`/browse/${property.slug}`}>
-                <div className="bg-white rounded-[24px] border border-slate-100 overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer">
+                <div className="bg-gradient-bungalow-card rounded-[24px] border border-[#157954]/40 overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer">
                   {/* Image Container */}
                   <div className="relative h-48 md:h-56 overflow-hidden">
                     <Image
@@ -95,37 +95,37 @@ export function FeaturedProperties({
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#21263A]/60 to-transparent" />
 
                     {/* Rating Badge */}
                     <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1 shadow-md">
-                      <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                      <span className="text-sm font-semibold text-slate-900">
+                      <Star className="w-4 h-4 fill-[#D0D34D] text-[#157954]" />
+                      <span className="text-sm font-extrabold text-[#21263A]">
                         {property.rating}
                       </span>
                     </div>
 
                     {/* Department Tag */}
-                    <div className="absolute bottom-3 left-3 bg-brand-primary/80 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                    <div className="absolute bottom-3 left-3 bg-[#D0D34D] text-[#21263A] text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md">
                       {property.department}
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-5 md:p-6 flex flex-col flex-1">
-                    <h3 className="font-bold text-slate-900 mb-2 line-clamp-2 text-lg">
+                    <h3 className="font-extrabold text-white mb-2 line-clamp-2 text-lg group-hover:text-[#D0D34D] transition-colors">
                       {property.name}
                     </h3>
 
-                    <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-4">
-                      <MapPin className="w-4 h-4 flex-shrink-0" />
+                    <div className="flex items-center gap-1.5 text-[#C7CEE8] text-sm mb-4 font-medium">
+                      <MapPin className="w-4 h-4 flex-shrink-0 text-[#D0D34D]" />
                       <span className="line-clamp-1">{property.location}</span>
                     </div>
 
                     {/* Stats Row */}
-                    <div className="flex gap-3 mt-auto pt-4 border-t border-slate-100 text-xs font-semibold text-slate-600">
+                    <div className="flex gap-3 mt-auto pt-4 border-t border-white/10 text-xs font-semibold text-[#C7CEE8]">
                       <div className="flex items-center gap-1.5">
-                        <Users className="w-4 h-4" />
+                        <Users className="w-4 h-4 text-[#D0D34D]" />
                         <span>{property.capacity} guests</span>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -150,7 +150,7 @@ export function FeaturedProperties({
         >
           <Link
             href="/browse"
-            className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-[#12242b] transition-all duration-300 hover:shadow-lg"
+            className="inline-flex items-center gap-2 bg-[#21263A] text-[#D0D34D] px-8 py-4 rounded-full font-bold hover:bg-[#157954] hover:text-white transition-all duration-300 shadow-md"
           >
             View All Properties
             <svg

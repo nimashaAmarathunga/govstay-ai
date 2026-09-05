@@ -2,56 +2,60 @@
 
 @theme {
   --color-tertiary: #595c5e;
-  --color-surface: #f5faf8;
-  --color-surface-tint: #006a61;
+  --color-surface: #ffffff;
+  --color-surface-tint: #157954;
   --color-on-tertiary-container: #fbfdff;
-  --color-on-secondary-container: #5c647a;
-  --color-background: #f5faf8;
-  --color-surface-container: #eaefed;
-  --color-on-primary-container: #f4fffc;
-  --color-surface-bright: #f5faf8;
+  --color-on-secondary-container: #21263A;
+  --color-background: #ffffff;
+  --color-surface-container: #C7CEE8;
+  --color-on-primary-container: #ffffff;
+  --color-surface-bright: #ffffff;
   --color-error-container: #ffdad6;
   --color-on-tertiary-fixed-variant: #444749;
-  --color-surface-variant: #dee4e1;
-  --color-inverse-primary: #6bd8cb;
+  --color-surface-variant: #C7CEE8;
+  --color-inverse-primary: #D0D34D;
   --color-surface-container-lowest: #ffffff;
-  --color-outline-variant: #bcc9c6;
+  --color-outline-variant: #C7CEE8;
   --color-on-secondary: #ffffff;
   --color-on-primary: #ffffff;
-  --color-secondary-fixed-dim: #bec6e0;
-  --color-secondary-fixed: #dae2fd;
-  --color-on-primary-fixed: #00201d;
+  --color-secondary-fixed-dim: #C7CEE8;
+  --color-secondary-fixed: #C7CEE8;
+  --color-on-primary-fixed: #21263A;
   --color-outline: #6d7a77;
   --color-tertiary-container: #727577;
-  --color-surface-container-highest: #dee4e1;
-  --color-on-tertiary-fixed: #191c1e;
+  --color-surface-container-highest: #C7CEE8;
+  --color-on-tertiary-fixed: #21263A;
   --color-tertiary-fixed: #e0e3e5;
   --color-on-error: #ffffff;
-  --color-on-secondary-fixed: #131b2e;
-  --color-secondary: #565e74;
+  --color-on-secondary-fixed: #21263A;
+  --color-secondary: #C7CEE8;
   --color-tertiary-fixed-dim: #c4c7c9;
-  --color-on-background: #171d1c;
-  --color-primary-container: #008378;
-  --color-on-surface-variant: #3d4947;
-  --color-on-surface: #171d1c;
-  --color-on-secondary-fixed-variant: #3f465c;
-  --color-primary: #00685f;
-  --color-surface-dim: #d6dbd9;
-  --color-surface-container-low: #f0f5f2;
-  --color-secondary-container: #dae2fd;
-  --color-inverse-on-surface: #edf2f0;
+  --color-on-background: #21263A;
+  --color-primary-container: #157954;
+  --color-on-surface-variant: #21263A;
+  --color-on-surface: #21263A;
+  --color-on-secondary-fixed-variant: #21263A;
+  --color-primary: #157954;
+  --color-surface-dim: #ffffff;
+  --color-surface-container-low: #ffffff;
+  --color-secondary-container: #C7CEE8;
+  --color-inverse-on-surface: #ffffff;
   --color-error: #ba1a1a;
-  --color-on-primary-fixed-variant: #005049;
+  --color-on-primary-fixed-variant: #157954;
   --color-on-error-container: #93000a;
   --color-on-tertiary: #ffffff;
-  --color-primary-fixed-dim: #6bd8cb;
-  --color-inverse-surface: #2c3130;
-  --color-surface-container-high: #e4e9e7;
-  --color-primary-fixed: #89f5e7;
+  --color-primary-fixed-dim: #D0D34D;
+  --color-inverse-surface: #21263A;
+  --color-surface-container-high: #C7CEE8;
+  --color-primary-fixed: #D0D034D;
 
-  /* Brand Colors */
-  --color-brand-primary: #1a353e;
-  --color-brand-accent: #6b9f4d;
+  /* Brand Colors (Mindful Palettes No. 160) */
+  --color-brand-primary: #21263A;
+  --color-brand-accent: #D0D34D;
+  --color-brand-emerald: #157954;
+  --color-brand-lavender: #C7CEE8;
+  --color-brand-light: #ffffff;
+  --color-brand-dark: #21263A;
 
   --radius-DEFAULT: 0.25rem;
   --radius-lg: 0.375rem;
@@ -118,6 +122,34 @@
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
+}
+
+/* Palette Gradients from Mindful Palettes No. 160 */
+@utility bg-gradient-palette-1 {
+  background-image: linear-gradient(135deg, #D6D9D8 0%, #C7CEE8 100%);
+}
+@utility bg-gradient-palette-2 {
+  background-image: linear-gradient(135deg, #C7CEE8 0%, #D0D34D 100%);
+}
+@utility bg-gradient-palette-3 {
+  background-image: linear-gradient(135deg, #C7CEE8 0%, #157954 100%);
+}
+@utility bg-gradient-palette-4 {
+  background-image: linear-gradient(135deg, #D0D34D 0%, #157954 50%, #21263A 100%);
+}
+@utility bg-gradient-palette-5 {
+  background-image: linear-gradient(135deg, #157954 0%, #21263A 100%);
+}
+
+/* Form Card & Component Card Dark Gradient Backgrounds */
+@utility bg-gradient-form-card {
+  background-image: linear-gradient(145deg, #157954 0%, #21263A 100%);
+}
+@utility bg-gradient-bungalow-card {
+  background-image: linear-gradient(150deg, #184637 0%, #21263A 100%);
+}
+@utility bg-gradient-card-dark {
+  background-image: linear-gradient(145deg, #157954 0%, #21263A 100%);
 }
 
 @keyframes ai-pulse-key {

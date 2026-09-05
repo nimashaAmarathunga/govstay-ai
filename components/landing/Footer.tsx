@@ -58,10 +58,10 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-brand-primary text-white">
+    <footer className="bg-gradient-palette-5 text-white border-t border-[#157954]/30">
       <div className="max-w-6xl mx-auto px-6 md:px-8 py-12 md:py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-10 mb-10 pb-10 border-b border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-10 mb-10 pb-10 border-b border-[#C7CEE8]/20">
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -71,7 +71,7 @@ export function Footer() {
             className="lg:col-span-1"
           >
             <Link href="/" className="flex items-center gap-2.5 mb-4 group">
-              <div className="relative h-9 w-9 bg-white p-1 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
+              <div className="relative h-9 w-9 bg-white p-1 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm">
                 <Image
                   src="/logo_new.png"
                   alt="GovSewana Logo"
@@ -79,9 +79,9 @@ export function Footer() {
                   className="object-contain p-0.5"
                 />
               </div>
-              <h3 className="text-xl font-bold tracking-tight text-white">GovSewana</h3>
+              <h3 className="text-xl font-extrabold tracking-tight text-white">GovSewana</h3>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-[#C7CEE8] text-sm leading-relaxed font-medium">
               Discover and book verified government accommodations across Sri
               Lanka with ease.
             </p>
@@ -97,13 +97,13 @@ export function Footer() {
           >
             {footerSections.map((section, idx) => (
               <motion.div key={idx} variants={itemVariants}>
-                <h4 className="font-semibold text-white mb-4">{section.title}</h4>
+                <h4 className="font-extrabold text-[#D0D34D] mb-4">{section.title}</h4>
                 <ul className="space-y-3">
                   {section.links.map((link, linkIdx) => (
                     <li key={linkIdx}>
                       <Link
                         href={link.href}
-                        className="text-slate-400 hover:text-white transition-colors duration-300 text-sm"
+                        className="text-[#C7CEE8] hover:text-white transition-colors duration-300 text-sm font-medium"
                       >
                         {link.label}
                       </Link>
@@ -122,23 +122,23 @@ export function Footer() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="lg:col-span-1"
           >
-            <h4 className="font-semibold text-white mb-4">Get in Touch</h4>
+            <h4 className="font-extrabold text-[#D0D34D] mb-4">Get in Touch</h4>
             <ul className="space-y-3">
               <li>
                 <a
                   href="mailto:support@govsewana.lk"
-                  className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-300 text-sm"
+                  className="flex items-center gap-2 text-[#C7CEE8] hover:text-white transition-colors duration-300 text-sm font-medium"
                 >
-                  <Mail className="w-4 h-4" />
+                  <Mail className="w-4 h-4 text-[#D0D34D]" />
                   support@govsewana.lk
                 </a>
               </li>
               <li>
                 <a
                   href="tel:+94112345678"
-                  className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-300 text-sm"
+                  className="flex items-center gap-2 text-[#C7CEE8] hover:text-white transition-colors duration-300 text-sm font-medium"
                 >
-                  <Phone className="w-4 h-4" />
+                  <Phone className="w-4 h-4 text-[#D0D34D]" />
                   +94 (11) 234-5678
                 </a>
               </li>
@@ -152,7 +152,7 @@ export function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-400"
+          className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-[#C7CEE8]/80 font-medium"
         >
           <p>&copy; 2026 GovSewana. All rights reserved.</p>
           <div className="flex gap-6">

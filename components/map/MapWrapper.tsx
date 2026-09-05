@@ -310,10 +310,10 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 href={`/browse/${selectedBungalow.slug}`}
-                className="px-5 py-2 bg-brand-accent hover:bg-[#5a8640] text-white text-xs font-bold rounded-md transition-colors shadow-sm flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-[#D0D34D] hover:bg-[#b8bb3d] text-[#21263A] text-xs font-extrabold rounded-xl transition-all shadow-md flex items-center gap-1.5"
               >
                 <span>Book Bungalow</span>
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <span className="material-symbols-outlined text-[16px] text-[#21263A]">arrow_forward</span>
               </Link>
               <button
                 onClick={() => {

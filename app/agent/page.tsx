@@ -251,13 +251,13 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full bg-[#FDFDFD]">
+    <div className="flex flex-col flex-1 min-h-0 h-full bg-white">
       <main className="flex-1 flex overflow-hidden">
         
         {/* Left Column: Agent Status */}
-        <aside className="w-[280px] bg-[#FDFDFD] border-r border-slate-100 flex-col min-h-0 hidden lg:flex">
+        <aside className="w-[280px] bg-white border-r border-[#C7CEE8] flex-col min-h-0 hidden lg:flex">
            <div className="p-6 pb-2">
-             <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">System Agents</h2>
+             <h2 className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#157954]">System Agents</h2>
            </div>
            <div className="flex-1 overflow-y-auto p-4 space-y-2">
               
@@ -269,32 +269,32 @@ export default function Page() {
               ].map(agent => (
                 <div 
                   key={agent.id}
-                  className={`p-3 rounded-lg border transition-all duration-300 relative overflow-hidden flex items-center gap-3 ${
+                  className={`p-3 rounded-xl border transition-all duration-300 relative overflow-hidden flex items-center gap-3 ${
                     agentStates[agent.id] === "WORKING"
-                      ? 'bg-emerald-50 border-emerald-200' 
+                      ? 'bg-gradient-form-card border-[#157954] text-white shadow-md' 
                       : agentStates[agent.id] === "COMPLETED" 
-                      ? 'bg-slate-50 border-slate-200' 
-                      : 'bg-transparent border-transparent hover:bg-slate-50'
+                      ? 'bg-[#21263A] border-[#D0D34D] text-white shadow-sm' 
+                      : 'bg-slate-50 border-[#C7CEE8]/60 hover:bg-slate-100 text-[#21263A]'
                   }`}
                 >
                   <div className="flex items-center gap-3 relative z-10">
-                    <div className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
-                      agentStates[agent.id] === "WORKING" ? 'bg-emerald-100 text-emerald-700' : 
-                      agentStates[agent.id] === "COMPLETED" ? 'bg-slate-200 text-slate-700' : 
-                      'bg-slate-100 text-slate-400'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      agentStates[agent.id] === "WORKING" ? 'bg-[#D0D34D] text-[#21263A]' : 
+                      agentStates[agent.id] === "COMPLETED" ? 'bg-[#157954] text-white' : 
+                      'bg-white text-[#21263A]/60 border border-[#C7CEE8]/40'
                     }`}>
                       {agentStates[agent.id] === "COMPLETED" ? <CheckCircle2 className="w-4 h-4" /> : agentIcons[agent.id]}
                     </div>
                     <div>
                       <h3 className={`text-[13px] font-bold transition-colors ${
-                        agentStates[agent.id] === "WORKING" ? 'text-emerald-900' : 
-                        agentStates[agent.id] === "COMPLETED" ? 'text-slate-900' : 'text-slate-600'
+                        agentStates[agent.id] === "WORKING" ? 'text-white' : 
+                        agentStates[agent.id] === "COMPLETED" ? 'text-white' : 'text-[#21263A]'
                       }`}>
                         {agent.name}
                       </h3>
                       <p className={`text-[11px] font-semibold mt-0.5 ${
-                        agentStates[agent.id] === "WORKING" ? 'text-emerald-700' : 
-                        agentStates[agent.id] === "COMPLETED" ? 'text-slate-500' : 'text-slate-400'
+                        agentStates[agent.id] === "WORKING" ? 'text-[#D0D34D]' : 
+                        agentStates[agent.id] === "COMPLETED" ? 'text-[#D0D34D]' : 'text-[#21263A]/50'
                       }`}>
                         {agentStates[agent.id] === "WORKING" ? 'Working...' : 
                          agentStates[agent.id] === "COMPLETED" ? 'Completed' : 'Standby'}
@@ -303,7 +303,7 @@ export default function Page() {
                   </div>
                   {agentStates[agent.id] === "WORKING" && (
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"
+                      className="absolute left-0 top-0 bottom-0 w-1 bg-[#D0D34D]"
                     />
                   )}
                 </div>
@@ -312,17 +312,17 @@ export default function Page() {
         </aside>
 
         {/* Center Column: Chat Interface */}
-        <section className="flex-1 flex flex-col min-h-0 bg-[#FDFDFD] relative">
+        <section className="flex-1 flex flex-col min-h-0 bg-white relative">
           
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 scroll-smooth">
             <div className="max-w-3xl mx-auto w-full space-y-8">
               {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-center opacity-70 mt-32">
-                   <div className="w-16 h-16 bg-slate-100 rounded-md flex items-center justify-center mb-6">
-                     <MessageSquare className="w-8 h-8 text-slate-700" />
+                <div className="flex flex-col items-center justify-center h-full text-center opacity-90 mt-32">
+                   <div className="w-16 h-16 bg-gradient-palette-5 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                     <MessageSquare className="w-8 h-8 text-[#D0D34D]" />
                    </div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-2">How can I help you today?</h2>
-                   <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
+                   <h2 className="text-xl font-extrabold text-[#21263A] mb-2">How can I help you today?</h2>
+                   <p className="text-sm text-[#21263A]/70 max-w-sm leading-relaxed font-medium">
                      I can help you search for circuit bungalows, check availability, or manage your bookings.
                    </p>
                 </div>
@@ -339,8 +339,8 @@ export default function Page() {
                      key={message.id} 
                      className="flex flex-col items-end gap-1.5"
                    >
-                     <div className="max-w-[85%] md:max-w-2xl bg-brand-primary text-white px-5 py-3 rounded-md rounded-tr-sm shadow-sm">
-                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                     <div className="max-w-[85%] md:max-w-2xl bg-gradient-palette-5 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md">
+                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap font-medium">{message.text}</p>
                      </div>
                    </motion.div>
                  );
@@ -355,27 +355,26 @@ export default function Page() {
                  >
                    {message.agent && (
                      <div className="flex items-center gap-2 ml-4 mb-1">
-                       <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center">
-                         {message.agent.toLowerCase().includes("verification") ? <ShieldCheck className="w-3 h-3 text-slate-600" /> : 
-                          message.agent.toLowerCase().includes("document") ? <FileText className="w-3 h-3 text-slate-600" /> : 
-                          message.agent.toLowerCase().includes("booking") ? <CalendarDays className="w-3 h-3 text-slate-600" /> : 
-                          <Map className="w-3 h-3 text-slate-600" />}
+                       <div className="w-5 h-5 rounded-full bg-[#157954] flex items-center justify-center text-white">
+                         {message.agent.toLowerCase().includes("verification") ? <ShieldCheck className="w-3 h-3 text-[#D0D34D]" /> : 
+                          message.agent.toLowerCase().includes("document") ? <FileText className="w-3 h-3 text-[#D0D34D]" /> : 
+                          message.agent.toLowerCase().includes("booking") ? <CalendarDays className="w-3 h-3 text-[#D0D34D]" /> : 
+                          <Map className="w-3 h-3 text-[#D0D34D]" />}
                        </div>
-                       <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+                       <span className="text-[11px] font-extrabold text-[#157954] uppercase tracking-widest">
                          {message.agent.replace(/\[|\]/g, "").trim().replace("_", " ")}
                        </span>
                      </div>
                    )}
-                   <div className="max-w-[85%] md:max-w-2xl bg-white border border-slate-200 px-5 py-3 rounded-md rounded-tl-sm shadow-sm text-slate-800">
+                   <div className="max-w-[85%] md:max-w-2xl bg-gradient-form-card border border-[#157954]/40 px-5 py-4 rounded-2xl rounded-tl-sm shadow-xl text-white">
                      {message.text ? (
-                       <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-slate-700">
+                       <div className="text-[15px] leading-loose whitespace-pre-wrap font-medium text-white">
                          {message.text.split('\n').map((line, i) => {
-                           // Simple markdown bold parsing for better looks
                            if (line.includes('**')) {
                              const parts = line.split('**');
                              return (
                                <p key={i} className="mb-2">
-                                 {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-slate-900 font-bold">{part}</strong> : part)}
+                                 {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-[#D0D34D] font-extrabold">{part}</strong> : part)}
                                </p>
                              )
                            }
@@ -384,36 +383,36 @@ export default function Page() {
                        </div>
                      ) : (
                        <div className="flex gap-1.5 items-center h-6 px-2">
-                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
-                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                         <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce"></div>
+                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                        </div>
                      )}
 
                      {message.propertyCard && (
-                       <div className="mt-6 rounded-md overflow-hidden border border-slate-100 shadow-sm bg-white group cursor-pointer hover:shadow-md transition-all duration-300">
+                       <div className="mt-6 rounded-xl overflow-hidden border border-[#C7CEE8]/30 shadow-md bg-white group cursor-pointer hover:shadow-lg transition-all duration-300">
                          <div className="h-48 w-full overflow-hidden relative">
                            <img
                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                              alt={message.propertyCard.title}
                              src={message.propertyCard.image}
                            />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                           <div className="absolute inset-0 bg-gradient-to-t from-[#21263A]/80 via-[#21263A]/20 to-transparent"></div>
                            <div className="absolute bottom-4 left-5 text-white">
                               <h4 className="font-bold text-xl leading-tight mb-1">{message.propertyCard.title}</h4>
                               <p className="text-[13px] text-white/90 font-medium flex items-center gap-1.5">
-                                 <MapPin className="w-3.5 h-3.5" />
+                                 <MapPin className="w-3.5 h-3.5 text-[#D0D34D]" />
                                  Nuwara Eliya
                               </p>
                            </div>
                          </div>
-                         <div className="p-5 flex justify-between items-center bg-white">
+                         <div className="p-5 flex justify-between items-center bg-gradient-bungalow-card text-white">
                            <div>
-                             <p className="text-[15px] font-semibold text-slate-900">{message.propertyCard.suite}</p>
+                             <p className="text-[15px] font-bold text-white">{message.propertyCard.suite}</p>
                            </div>
                            <div className="text-right">
-                             <span className="text-slate-900 font-bold text-xl">{message.propertyCard.price}</span>
-                             <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">per night</p>
+                             <span className="text-[#D0D34D] font-extrabold text-xl">{message.propertyCard.price}</span>
+                             <p className="text-[11px] text-[#C7CEE8] font-bold uppercase tracking-wider">per night</p>
                            </div>
                          </div>
                        </div>
@@ -425,44 +424,44 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Chat Input */}
-          <div className="p-6 md:p-8 shrink-0">
+          {/* Chat Input Card */}
+          <div className="p-6 md:p-8 shrink-0 bg-white border-t border-[#C7CEE8]/40">
              <div className="max-w-3xl mx-auto">
                <div className="flex gap-2 mb-4 px-1 overflow-x-auto no-scrollbar">
-                 <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
-                   <Sparkles className="w-3.5 h-3.5" />
+                 <button onClick={() => handleSendMessage("Tell me more about the amenities")} className="shrink-0 text-[13px] font-bold text-[#21263A] bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-[#157954]/30 transition-all flex items-center gap-2 shadow-sm">
+                   <Sparkles className="w-3.5 h-3.5 text-[#157954]" />
                    Amenities
                  </button>
-                 <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="shrink-0 text-[13px] font-medium text-slate-600 bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-slate-200 transition-colors flex items-center gap-2 shadow-sm">
-                   <Search className="w-3.5 h-3.5" />
+                 <button onClick={() => handleSendMessage("What bungalows are available in Nuwara Eliya?")} className="shrink-0 text-[13px] font-bold text-[#21263A] bg-white hover:bg-slate-50 px-4 py-2 rounded-full border border-[#157954]/30 transition-all flex items-center gap-2 shadow-sm">
+                   <Search className="w-3.5 h-3.5 text-[#157954]" />
                    Search bungalows
                  </button>
                </div>
                
-               <div className="relative flex items-center bg-white border border-slate-300 rounded-md p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-slate-200 focus-within:border-slate-400 transition-all">
+               <div className="relative flex items-center bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-2 shadow-xl focus-within:ring-2 focus-within:ring-[#D0D34D] transition-all">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 
-                   className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
-                     attachment ? 'text-slate-900 bg-slate-100' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50'
+                   className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
+                     attachment ? 'text-[#21263A] bg-[#D0D34D]' : 'text-[#C7CEE8] hover:text-white hover:bg-[#21263A]/80'
                    }`}
                  >
                     <Paperclip className="w-5 h-5" />
                  </button>
                  <input
-                   className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-[15px] text-slate-800 placeholder-slate-400 px-3 py-4"
-                   placeholder="Type your message..."
                    type="text"
                    value={inputText}
                    onChange={(e) => setInputText(e.target.value)}
                    onKeyDown={handleKeyPress}
+                   placeholder="Type your message to GovSewana Support..."
+                   className="flex-1 bg-transparent border-0 px-4 py-2 text-[15px] font-medium text-white placeholder:text-[#C7CEE8]/50 focus:outline-none focus:ring-0"
                  />
                  <button
                    onClick={() => handleSendMessage()}
-                   disabled={(!inputText.trim() && !attachment)}
-                   className="w-10 h-10 shrink-0 rounded-lg bg-brand-primary text-white flex items-center justify-center hover:bg-[#12242b] disabled:opacity-30 disabled:hover:bg-brand-primary transition-colors shadow-sm ml-2"
+                   disabled={!inputText.trim() && !attachment}
+                   className="w-10 h-10 rounded-xl bg-[#D0D34D] text-[#21263A] flex items-center justify-center hover:bg-[#c3c642] disabled:opacity-40 transition-all shrink-0 shadow-sm"
                  >
-                   <ArrowRight className="w-5 h-5" />
+                   <Send className="w-4 h-4 text-[#21263A]" />
                  </button>
                </div>
              </div>
@@ -477,67 +476,67 @@ export default function Page() {
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 40 }}
-            className="bg-white border-l border-slate-100 flex flex-col min-h-0 shadow-[-10px_0_30px_rgb(0,0,0,0.02)]"
+            className="bg-white border-l border-[#C7CEE8] flex flex-col min-h-0 shadow-lg"
           >
-             <div className="p-6 pb-4 flex items-center gap-3 border-b border-slate-50">
-               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-                 <FileText className="w-4 h-4 text-slate-700" />
+             <div className="p-6 pb-4 flex items-center gap-3 border-b border-[#C7CEE8]/40">
+               <div className="w-8 h-8 rounded-full bg-[#157954]/10 flex items-center justify-center">
+                 <FileText className="w-4 h-4 text-[#157954]" />
                </div>
-               <h2 className="text-[14px] font-bold text-slate-900">Booking Summary</h2>
+               <h2 className="text-[14px] font-bold text-[#21263A]">Booking Summary</h2>
              </div>
              
               <div className="p-6 flex-1 overflow-y-auto flex flex-col gap-5">
                 
                 <div className="flex flex-col gap-1.5">
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
+                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Employee ID</label>
                    <input 
                      type="text" 
                      value={activeBooking?.user?.empId || draftState.emp_id || ""} 
                      onChange={e => !activeBooking && setDraftState({...draftState, emp_id: e.target.value})}
                      readOnly={!!activeBooking}
-                     className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-[#157954] focus:ring-1 focus:ring-[#157954] outline-none transition-all"
                      placeholder="e.g. EMP-123"
                    />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Room</label>
+                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Room</label>
                    <input 
                      type="text" 
                      value={activeBooking?.room?.roomNumber || draftState.room_number || ""} 
                      onChange={e => !activeBooking && setDraftState({...draftState, room_number: e.target.value})}
                      readOnly={!!activeBooking}
-                     className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 outline-none transition-all"
+                     className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-[#157954] focus:ring-1 focus:ring-[#157954] outline-none transition-all"
                      placeholder="e.g. OLD-101"
                    />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-in</label>
+                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Check-in</label>
                      <input 
                        type="date" 
                        value={activeBooking?.fromDate ? new Date(activeBooking.fromDate).toISOString().split('T')[0] : (draftState.from_date || "")} 
                        onChange={e => !activeBooking && setDraftState({...draftState, from_date: e.target.value})}
                        readOnly={!!activeBooking}
-                       className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
+                       className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-[#157954] outline-none transition-all"
                      />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Check-out</label>
+                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Check-out</label>
                      <input 
                        type="date" 
                        value={activeBooking?.toDate ? new Date(activeBooking.toDate).toISOString().split('T')[0] : (draftState.to_date || "")} 
                        onChange={e => !activeBooking && setDraftState({...draftState, to_date: e.target.value})}
                        readOnly={!!activeBooking}
-                       className="p-3 bg-slate-50 border border-slate-100 rounded-md text-[14px] text-slate-900 font-medium focus:bg-white focus:border-slate-300 outline-none transition-all"
+                       className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 font-medium focus:bg-white focus:border-[#157954] outline-none transition-all"
                      />
                   </div>
                 </div>
 
                 {(activeBooking?.totalCost || draftState.total_cost) && (
-                   <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-md mt-2 shadow-sm">
-                     <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Total Cost</span>
-                     <span className="text-[16px] font-extrabold text-slate-900">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
+                   <div className="flex justify-between items-center bg-slate-50 border border-slate-200 p-4 rounded-xl mt-2 shadow-sm">
+                     <span className="text-[13px] font-bold text-slate-600 uppercase tracking-wider">Total Cost</span>
+                     <span className="text-[16px] font-extrabold text-[#157954]">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
                    </div>
                 )}
 
@@ -550,14 +549,14 @@ export default function Page() {
                 </div>
 
                 {/* Action / Checkout Card */}
-                <div className="bg-brand-primary text-white p-6 rounded-md shadow-xl mt-auto flex flex-col gap-5">
+                <div className="bg-gradient-form-card border border-[#157954]/50 text-white p-6 rounded-2xl shadow-xl mt-auto flex flex-col gap-5">
                    
-                    <div className="flex justify-between items-center pb-5 border-b border-white/10">
-                       <span className="text-white/60 text-[13px] font-medium">Status</span>
+                    <div className="flex justify-between items-center pb-5 border-b border-[#C7CEE8]/30">
+                       <span className="text-[#C7CEE8] text-[13px] font-medium">Status</span>
                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest ${
-                         activeBooking?.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-400' : 
-                         activeBooking?.status === 'PENDING' && activeBooking?.paymentSlipUrl ? 'bg-amber-500/20 text-amber-400' : 
-                         (!activeBooking || (activeBooking?.status === 'PENDING' && !activeBooking?.paymentSlipUrl)) && (activeBooking?.bookingId || draftState.booking_id) ? 'bg-blue-500/20 text-blue-400' :
+                         activeBooking?.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-300' : 
+                         activeBooking?.status === 'PENDING' && activeBooking?.paymentSlipUrl ? 'bg-[#D0D34D]/20 text-[#D0D34D]' : 
+                         (!activeBooking || (activeBooking?.status === 'PENDING' && !activeBooking?.paymentSlipUrl)) && (activeBooking?.bookingId || draftState.booking_id) ? 'bg-blue-500/20 text-blue-300' :
                          'bg-white/10 text-white'
                       }`}>
                          {activeBooking?.status === 'CONFIRMED' ? '✓ Confirmed' : activeBooking?.status === 'PENDING' && activeBooking?.paymentSlipUrl ? '⏳ Payment Verification' : (!activeBooking || (activeBooking?.status === 'PENDING' && !activeBooking?.paymentSlipUrl)) && (activeBooking?.bookingId || draftState.booking_id) ? '⏳ Awaiting Payment Slip' : 'Draft'}
@@ -566,14 +565,14 @@ export default function Page() {
                    
                    {(activeBooking?.bookingId || draftState.booking_id) && (
                      <div className="flex justify-between items-center">
-                       <span className="text-white/60 text-[13px] font-medium">Booking ID</span>
+                       <span className="text-[#C7CEE8] text-[13px] font-medium">Booking ID</span>
                        <span className="text-white text-[13px] font-bold">{activeBooking?.bookingId || draftState.booking_id}</span>
                      </div>
                    )}
 
                    <div className="flex items-center justify-between">
                      <label className="text-[13px] font-medium text-white/90 cursor-pointer flex items-center gap-2" htmlFor="whatsapp-toggle">
-                       <MessageSquare className="w-4 h-4 text-emerald-400" />
+                       <MessageSquare className="w-4 h-4 text-[#D0D34D]" />
                        WhatsApp Updates
                      </label>
                      <div className="relative inline-block w-10 h-5">
@@ -585,7 +584,7 @@ export default function Page() {
                          id="whatsapp-toggle"
                          type="checkbox"
                        />
-                       <div className="w-full h-full bg-white/20 rounded-full peer peer-checked:bg-emerald-500 transition-colors cursor-pointer"></div>
+                       <div className="w-full h-full bg-[#21263A] rounded-full peer peer-checked:bg-[#157954] transition-colors cursor-pointer border border-[#C7CEE8]/30"></div>
                        <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5 cursor-pointer shadow-sm"></div>
                      </div>
                    </div>
@@ -593,30 +592,30 @@ export default function Page() {
                    {(!activeBooking || (activeBooking?.status === "PENDING" && !activeBooking?.paymentSlipUrl)) ? (
                      <button
                        onClick={triggerConfirmBooking}
-                       className="w-full py-4 bg-white text-slate-900 font-bold rounded-md transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                       className="w-full py-4 bg-[#D0D34D] hover:bg-[#c3c642] text-[#21263A] font-extrabold rounded-xl transition-transform active:scale-[0.98] shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                      >
                        {activeBooking?.bookingId || draftState.booking_id ? 'Verify Payment Slip' : 'Confirm Details'}
                      </button>
                    ) : activeBooking?.status === "PENDING" && activeBooking?.paymentSlipUrl ? (
                      <button
                        disabled
-                       className="w-full py-4 bg-white/10 text-white font-bold rounded-md transition-all shadow-md mt-2 flex items-center justify-center gap-2"
+                       className="w-full py-4 bg-white/10 text-white font-bold rounded-xl transition-all shadow-md mt-2 flex items-center justify-center gap-2"
                      >
-                       <Loader2 className="w-5 h-5 animate-spin" />
+                       <Loader2 className="w-5 h-5 animate-spin text-[#D0D34D]" />
                        Verification in progress
                      </button>
                    ) : (
                      <button
                        disabled
-                       className="w-full py-4 bg-emerald-500 text-white font-bold rounded-md shadow-md mt-2 flex items-center justify-center gap-2"
+                       className="w-full py-4 bg-[#157954] text-white font-bold rounded-xl shadow-md mt-2 flex items-center justify-center gap-2"
                      >
-                       <CheckCircle2 className="w-5 h-5" />
+                       <CheckCircle2 className="w-5 h-5 text-[#D0D34D]" />
                        Confirmed
                      </button>
                    )}
                 </div>
-             </div>
-          </motion.aside>
+              </div>
+           </motion.aside>
           )}
         </AnimatePresence>
       </main>

@@ -5,23 +5,70 @@ import L from "leaflet";
 import { useRouter } from "next/navigation";
 import { Attraction } from "./MapWrapper";
 
-// Fix Leaflet's default icon path issues in Next.js/Webpack
-const iconRetinaUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png";
-const iconUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png";
-const shadowUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png";
+const createBungalowIcon = (isSelected: boolean = false) => {
+  const pinBg = isSelected
+    ? "linear-gradient(135deg, #D0D34D 0%, #157954 100%)"
+    : "linear-gradient(135deg, #157954 0%, #21263A 100%)";
+  const size = isSelected ? 42 : 36;
+  const borderCol = isSelected ? "#D0D34D" : "#C7CEE8";
+  
+  return L.divIcon({
+    className: "custom-leaflet-marker",
+    html: `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        background: ${pinBg};
+        border: 2px solid ${borderCol};
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(33, 38, 58, 0.4);
+        transition: transform 0.2s ease;
+      ">
+        <svg style="transform: rotate(45deg); width: ${size * 0.45}px; height: ${size * 0.45}px; fill: white;" viewBox="0 0 24 24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+    popupAnchor: [0, -size],
+  });
+};
 
-const DefaultIcon = L.icon({
-  iconUrl,
-  iconRetinaUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41],
-});
+const createAttractionIcon = (isSelected: boolean = false) => {
+  const pinBg = isSelected
+    ? "linear-gradient(135deg, #D0D34D 0%, #157954 100%)"
+    : "linear-gradient(135deg, #C7CEE8 0%, #157954 100%)";
+  const size = isSelected ? 38 : 32;
 
-L.Marker.prototype.options.icon = DefaultIcon;
+  return L.divIcon({
+    className: "custom-leaflet-marker",
+    html: `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        background: ${pinBg};
+        border: 2px solid white;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(33, 38, 58, 0.3);
+      ">
+        <svg style="transform: rotate(45deg); width: ${size * 0.5}px; height: ${size * 0.5}px; fill: ${isSelected ? "#21263A" : "#ffffff"};" viewBox="0 0 24 24">
+          <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+  });
+};
 
 export type BungalowMarker = {
   id: string;
@@ -46,24 +93,6 @@ function RecenterMap({ lat, lng, zoom = 13 }: { lat: number; lng: number; zoom?:
   }, [lat, lng, zoom, map]);
   return null;
 }
-
-const AttractionIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const ActiveAttractionIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [30, 48],
-  iconAnchor: [15, 48],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
 
 export default function InteractiveMap({
   bungalows,
@@ -118,43 +147,48 @@ export default function InteractiveMap({
           )
         )}
 
-        {validBungalows.map((bungalow) => (
-          <Marker
-            key={bungalow.id}
-            position={[bungalow.latitude!, bungalow.longitude!]}
-            eventHandlers={{
-              click: () => {
-                if (onBungalowClick) {
-                  onBungalowClick(bungalow);
-                } else {
-                  router.push(`/browse/${bungalow.slug}`);
-                }
-              },
-            }}
-          >
-            <Tooltip
-              direction="auto"
-              offset={[0, -20]}
-              opacity={1}
-              className="custom-popup bg-transparent border-0 shadow-none p-0"
+        {validBungalows.map((bungalow) => {
+          const isSelected = selectedBungalow?.id === bungalow.id;
+          return (
+            <Marker
+              key={bungalow.id}
+              position={[bungalow.latitude!, bungalow.longitude!]}
+              icon={createBungalowIcon(isSelected)}
+              zIndexOffset={isSelected ? 1000 : 600}
+              eventHandlers={{
+                click: () => {
+                  if (onBungalowClick) {
+                    onBungalowClick(bungalow);
+                  } else {
+                    router.push(`/browse/${bungalow.slug}`);
+                  }
+                },
+              }}
             >
-              <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 pointer-events-none overflow-hidden">
-                <div className="w-full h-32 overflow-hidden mb-3">
-                  <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover rounded-lg" />
+              <Tooltip
+                direction="auto"
+                offset={[0, -20]}
+                opacity={1}
+                className="custom-popup bg-transparent border-0 shadow-none p-0"
+              >
+                <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 pointer-events-none overflow-hidden">
+                  <div className="w-full h-32 overflow-hidden mb-3">
+                    <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-800 leading-tight mb-1 px-1">{bungalow.name}</h3>
+                  <p className="text-xs text-slate-500 mb-2 truncate px-1">{bungalow.location}</p>
+                  <div className="flex justify-between items-end mb-1 px-1">
+                    <p className="font-bold text-brand-primary text-sm">from Rs. {bungalow.price.toLocaleString()}</p>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-brand-accent/20 text-brand-primary">
+                      Available
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 text-center mt-2 mb-1 font-medium px-1">Click pin to explore nearby</p>
                 </div>
-                <h3 className="font-bold text-sm text-slate-800 leading-tight mb-1 px-1">{bungalow.name}</h3>
-                <p className="text-xs text-slate-500 mb-2 truncate px-1">{bungalow.location}</p>
-                <div className="flex justify-between items-end mb-1 px-1">
-                  <p className="font-bold text-brand-primary text-sm">from Rs. {bungalow.price.toLocaleString()}</p>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-100 text-emerald-700">
-                    Available
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-400 text-center mt-2 mb-1 font-medium px-1">Click pin to explore nearby</p>
-              </div>
-            </Tooltip>
-          </Marker>
-        ))}
+              </Tooltip>
+            </Marker>
+          );
+        })}
 
         {attractions.map((attraction) => {
           const isSelected = selectedAttraction?.id === attraction.id;
@@ -162,7 +196,7 @@ export default function InteractiveMap({
             <Marker
               key={`attr-${attraction.id}`}
               position={[attraction.lat, attraction.lon]}
-              icon={isSelected ? ActiveAttractionIcon : AttractionIcon}
+              icon={createAttractionIcon(isSelected)}
               zIndexOffset={isSelected ? 1000 : 500}
               eventHandlers={{
                 click: () => {

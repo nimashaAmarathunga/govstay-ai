@@ -106,10 +106,7 @@ function AuthPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-brand-primary selection:text-white">
-      {/* Subtle Ambient Background Gradients */}
-      <div className="absolute top-0 w-full h-[30vh] bg-brand-primary/5 pointer-events-none" />
-
+    <div className="min-h-screen bg-white flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-[#157954] selection:text-white">
       {/* Header Logo (GovSewana Logo) */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -128,10 +125,10 @@ function AuthPageContent() {
             />
           </div>
           <div className="text-left">
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#21263A]">
               GovSewana
             </h1>
-            <p className="text-[11px] font-bold text-brand-primary uppercase tracking-widest">
+            <p className="text-[11px] font-extrabold text-[#157954] uppercase tracking-widest">
               User & Employee Portal
             </p>
           </div>
@@ -143,34 +140,32 @@ function AuthPageContent() {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.08 }}
-        className="w-full max-w-md bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
+        className="w-full max-w-md bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-8 shadow-xl relative z-10 text-white"
       >
         {/* Card Header */}
-        <div className="flex items-center justify-between mb-6 pb-5 border-b border-slate-100">
+        <div className="flex items-center justify-between mb-6 pb-5 border-b border-white/10">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <BadgeCheck className="w-5 h-5 text-brand-primary" />
+            <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
+              <BadgeCheck className="w-5 h-5 text-[#D0D34D]" />
               <span>User Portal Access</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[#C7CEE8] mt-1 font-medium">
               Sign in with your verified government credentials
             </p>
           </div>
-          <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
+          <span className="px-3 py-1 rounded-full bg-[#D0D34D] text-[#21263A] text-[10px] font-extrabold uppercase tracking-wider shadow-md">
             Secured
           </span>
         </div>
-
-
 
         {/* Alerts */}
         {loginError && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 p-3.5 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-xl bg-red-950/80 border border-red-500/50 text-red-200 text-xs flex items-start gap-2.5"
           >
-            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
             <span className="leading-relaxed font-medium">{loginError}</span>
           </motion.div>
         )}
@@ -179,9 +174,9 @@ function AuthPageContent() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 p-3.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 text-xs flex items-start gap-2.5"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <span className="leading-relaxed font-medium">{loginSuccess}</span>
           </motion.div>
         )}
@@ -190,11 +185,11 @@ function AuthPageContent() {
         <form onSubmit={handleLoginSubmit} className="space-y-4">
           {/* Username / Employee ID */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">
+            <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">
               Email, Username or Employee ID
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]">
                 <User className="w-4 h-4" />
               </div>
               <input
@@ -203,7 +198,7 @@ function AuthPageContent() {
                 placeholder="e.g. john_doe or 123456V"
                 value={loginIdentifier}
                 onChange={(e) => setLoginIdentifier(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+                className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium"
               />
             </div>
           </div>
@@ -211,19 +206,19 @@ function AuthPageContent() {
           {/* Password */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#C7CEE8] uppercase tracking-wider">
                 Password
               </label>
               <button
                 type="button"
                 onClick={() => alert("Password reset link sent to your registered email.")}
-                className="text-[11px] font-semibold text-brand-primary hover:text-[#12242b] cursor-pointer"
+                className="text-[11px] font-bold text-[#D0D34D] hover:underline cursor-pointer"
               >
                 Forgot?
               </button>
             </div>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]">
                 <Lock className="w-4 h-4" />
               </div>
               <input
@@ -232,12 +227,12 @@ function AuthPageContent() {
                 placeholder="••••••••••••"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-10 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+                className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-10 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium"
               />
               <button
                 type="button"
                 onClick={() => setShowLoginPassword(!showLoginPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#C7CEE8] hover:text-white transition-colors cursor-pointer"
                 aria-label={showLoginPassword ? "Hide password" : "Show password"}
               >
                 {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -252,9 +247,9 @@ function AuthPageContent() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 accent-slate-900"
+                className="w-4 h-4 rounded border-white/30 text-[#D0D34D] focus:ring-[#D0D34D] accent-[#D0D34D]"
               />
-              <span className="text-xs text-slate-600 font-medium">Keep me signed in</span>
+              <span className="text-xs text-[#C7CEE8] font-medium">Keep me signed in</span>
             </label>
           </div>
 
@@ -262,17 +257,17 @@ function AuthPageContent() {
           <button
             type="submit"
             disabled={loginLoading}
-            className="w-full py-3.5 px-4 bg-brand-primary hover:bg-[#12242b] text-white font-bold text-sm rounded-md shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer mt-2"
+            className="w-full py-3.5 px-4 bg-[#D0D34D] hover:bg-[#b8bb3d] text-[#21263A] font-extrabold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer mt-2"
           >
             {loginLoading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#21263A]" />
                 <span>Authenticating...</span>
               </>
             ) : (
               <>
                 <span>Sign In to Account</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-[#21263A]" />
               </>
             )}
           </button>
