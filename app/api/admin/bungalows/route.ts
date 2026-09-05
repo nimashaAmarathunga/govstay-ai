@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedAdmin } from "@/lib/auth";
 
 // GET circuit bungalows with caretaker and rooms (optional ?department=... filter)
 export async function GET(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
-    const department = searchParams.get("department");
+    let department = searchParams.get("department");
+
+    if (admin.role === "DEPT_ADMIN") {
+      // Safely fallback to fetching from DB if placeOfWork is missing from token (e.g. old token)
+      if (!admin.placeOfWork) {
+        const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });
+        department = dbAdmin?.placeOfWork || "UNKNOWN_DEPARTMENT";
+      } else {
+        department = admin.placeOfWork;
+      }
+    }
 
     const where = department && department !== "ALL" ? { department } : {};
 
@@ -73,6 +89,11 @@ async function resolveCoordinates(
 // POST: Create new Circuit Bungalow with Caretaker and Rooms
 export async function POST(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const {
@@ -195,6 +216,11 @@ export async function POST(request: Request) {
 // PUT: Update existing Circuit Bungalow, Caretaker, and Rooms
 export async function PUT(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const {
       id,
@@ -220,6 +246,24 @@ export async function PUT(request: Request) {
         { success: false, error: "Bungalow ID is required for update." },
         { status: 400 }
       );
+    }
+
+    // Role-based authorization
+    if (admin.role === "DEPT_ADMIN") {
+      let adminDept = admin.placeOfWork;
+      if (!adminDept) {
+        const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });
+        adminDept = dbAdmin?.placeOfWork;
+      }
+      
+      const existingBungalow = await prisma.circuitBungalow.findUnique({ where: { id } });
+      if (!existingBungalow || existingBungalow.department !== adminDept) {
+        return NextResponse.json({ success: false, error: "Forbidden: You can only edit bungalows in your department." }, { status: 403 });
+      }
+      // Ensure they don't change the department to something else
+      if (department !== adminDept) {
+        return NextResponse.json({ success: false, error: "Forbidden: Cannot change bungalow department." }, { status: 403 });
+      }
     }
 
     const parsedNoOfRooms = Number(noOfRooms) || (Array.isArray(rooms) ? rooms.length : 1);
@@ -328,6 +372,11 @@ export async function PUT(request: Request) {
 // DELETE: Delete Circuit Bungalow by ID (Cascades to Caretaker & Rooms)
 export async function DELETE(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -336,6 +385,20 @@ export async function DELETE(request: Request) {
         { success: false, error: "Bungalow ID parameter is required." },
         { status: 400 }
       );
+    }
+
+    // Role-based authorization
+    if (admin.role === "DEPT_ADMIN") {
+      let adminDept = admin.placeOfWork;
+      if (!adminDept) {
+        const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });
+        adminDept = dbAdmin?.placeOfWork;
+      }
+      
+      const existingBungalow = await prisma.circuitBungalow.findUnique({ where: { id } });
+      if (!existingBungalow || existingBungalow.department !== adminDept) {
+        return NextResponse.json({ success: false, error: "Forbidden: You can only delete bungalows in your department." }, { status: 403 });
+      }
     }
 
     await prisma.circuitBungalow.delete({

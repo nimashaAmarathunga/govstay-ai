@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, getAuthenticatedAdmin } from "@/lib/auth";
 import { Role } from "@prisma/client";
 
 export async function GET(req: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin || admin.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     // Only return DEPT_ADMINs for the super admin view
     const admins = await prisma.user.findMany({
       where: {
@@ -32,6 +37,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin || admin.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { name, username, password, placeOfWork, emailAddress, mobileNumber } = body;
 

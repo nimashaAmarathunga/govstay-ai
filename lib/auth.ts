@@ -26,6 +26,7 @@ export interface AdminJwtPayload {
   username: string;
   role: string;
   name: string;
+  placeOfWork?: string | null;
   [key: string]: unknown;
 }
 
@@ -215,12 +216,14 @@ export async function signAdminToken(user: {
   username: string;
   role: string;
   name: string;
+  placeOfWork?: string | null;
 }): Promise<string> {
   const token = await new SignJWT({
     userId: user.id,
     username: user.username,
     role: user.role,
     name: user.name,
+    placeOfWork: user.placeOfWork || null,
   })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setIssuedAt()
