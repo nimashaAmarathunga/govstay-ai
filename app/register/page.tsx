@@ -204,9 +204,7 @@ export default function RegisterPage() {
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 py-12 relative overflow-y-auto">
-      <div className="absolute top-0 w-full h-[30vh] bg-brand-primary/5 pointer-events-none" />
-
+    <div className="min-h-screen bg-white flex flex-col justify-center items-center p-4 py-12 relative overflow-y-auto selection:bg-[#157954] selection:text-white">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -219,8 +217,8 @@ export default function RegisterPage() {
             <Image src="/logo_new.png" alt="GovSewana Logo" fill className="object-contain mix-blend-multiply" priority />
           </div>
           <div className="text-left">
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">GovSewana</h1>
-            <p className="text-[11px] font-bold text-brand-primary uppercase tracking-widest">Create Account</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#21263A]">GovSewana</h1>
+            <p className="text-[11px] font-extrabold text-[#157954] uppercase tracking-widest">Create Account</p>
           </div>
         </Link>
       </motion.div>
@@ -231,23 +229,23 @@ export default function RegisterPage() {
         animate={{ opacity: 1 }}
         className="mb-6 flex items-center gap-3 relative z-10"
       >
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+        <div className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all ${
           step === 1
-            ? "bg-brand-primary text-white shadow-sm"
-            : "bg-slate-100 text-slate-500 border border-slate-200"
+            ? "bg-[#D0D34D] text-[#21263A] shadow-md"
+            : "bg-slate-100 text-[#21263A]/70 border border-slate-200"
         }`}>
-          {step > 1 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">1</span>}
+          {step > 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#157954]" /> : <span className="w-4 h-4 rounded-full bg-[#21263A]/20 flex items-center justify-center text-[10px] font-extrabold">1</span>}
           <span>Account Details</span>
         </div>
 
-        <div className="w-8 h-px bg-slate-300" />
+        <div className="w-8 h-px bg-[#157954]/30" />
 
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+        <div className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all ${
           step === 2
-            ? "bg-brand-primary text-white shadow-sm"
-            : "bg-slate-100 text-slate-400 border border-slate-200"
+            ? "bg-[#D0D34D] text-[#21263A] shadow-md"
+            : "bg-slate-100 text-[#21263A]/60 border border-slate-200"
         }`}>
-          <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">2</span>
+          <span className="w-4 h-4 rounded-full bg-[#21263A]/20 flex items-center justify-center text-[10px] font-extrabold">2</span>
           <span>Upload ID</span>
         </div>
       </motion.div>
@@ -261,17 +259,17 @@ export default function RegisterPage() {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.96, x: -20 }}
             transition={{ duration: 0.35 }}
-            className="w-full max-w-2xl bg-white border border-slate-200 rounded-md p-8 shadow-sm relative z-10"
+            className="w-full max-w-2xl bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-8 shadow-xl relative z-10 text-white"
           >
-            <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-100">
+            <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/10">
               <div>
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <UserPlus className="w-6 h-6 text-brand-primary" />
+                <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+                  <UserPlus className="w-6 h-6 text-[#D0D34D]" />
                   <span>Register New Account</span>
                 </h2>
-                <p className="text-sm text-slate-500 mt-1">Join the official government accommodation platform</p>
+                <p className="text-sm text-[#C7CEE8] mt-1 font-medium">Join the official government accommodation platform</p>
               </div>
-              <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 rounded-full bg-[#D0D34D] text-[#21263A] text-[10px] font-extrabold uppercase tracking-wider shadow-md">
                 Step 1 of 2
               </span>
             </div>

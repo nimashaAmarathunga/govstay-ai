@@ -6,8 +6,22 @@ import { BookingStatus } from "@prisma/client";
 // GET bookings with bungalow, room, and user details (optional ?department=... filter)
 export async function GET(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
-    const department = searchParams.get("department");
+    let department = searchParams.get("department");
+
+    if (admin.role === "DEPT_ADMIN") {
+      if (!admin.placeOfWork) {
+        const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });
+        department = dbAdmin?.placeOfWork || "UNKNOWN_DEPARTMENT";
+      } else {
+        department = admin.placeOfWork;
+      }
+    }
 
     const where = department && department !== "ALL"
       ? { circuitBungalow: { department } }
@@ -80,6 +94,24 @@ export async function PATCH(request: Request) {
         { success: false, error: `Invalid status. Must be one of: ${validStatuses.join(", ")}` },
         { status: 400 }
       );
+    }
+
+    // Role-based authorization
+    if (admin.role === "DEPT_ADMIN") {
+      let adminDept = admin.placeOfWork;
+      if (!adminDept) {
+        const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });
+        adminDept = dbAdmin?.placeOfWork;
+      }
+      
+      const existingBooking = await prisma.booking.findUnique({
+        where: { id },
+        include: { circuitBungalow: true }
+      });
+      
+      if (!existingBooking || existingBooking.circuitBungalow?.department !== adminDept) {
+        return NextResponse.json({ success: false, error: "Forbidden: You can only modify bookings in your department." }, { status: 403 });
+      }
     }
 
     // Update booking in database

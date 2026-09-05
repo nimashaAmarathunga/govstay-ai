@@ -294,25 +294,25 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const nonAcRoomsCount = bungalow.rooms.filter((r) => r.roomType === "NON_AC").length;
 
   return (
-    <main className="flex-1 overflow-y-auto bg-slate-50">
+    <main className="flex-1 overflow-y-auto bg-white">
       <div className="max-w-6xl mx-auto px-6 py-8 md:px-8 md:py-10">
         
         {/* Navigation Breadcrumb */}
         <div className="flex justify-between items-center">
           <Link
             href="/browse"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#157954] hover:text-[#21263A] transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Back to browse
           </Link>
-          <span className="text-xs font-semibold px-3 py-1 bg-brand-primary text-white rounded-full border border-slate-900">
+          <span className="text-xs font-semibold px-3 py-1 bg-[#157954] text-white rounded-full border border-[#157954]/50">
             {bungalow.department}
           </span>
         </div>
 
         {/* Hero Card */}
-        <div className="mt-6 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
           <div className="relative h-72 sm:h-96 lg:h-[28rem]">
             <img 
               src={bungalow.image} 
@@ -322,7 +322,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
               }}
               className="h-full w-full object-cover" 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#21263A]/80 via-transparent to-transparent"></div>
             
             <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 shadow-md backdrop-blur-md">
               <span className="material-symbols-outlined text-[18px] text-amber-500">star</span>
@@ -330,14 +330,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             </div>
 
             <div className="absolute bottom-6 left-6 right-6 text-white">
-              <span className="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase tracking-wider bg-brand-primary/90 backdrop-blur-sm rounded-md text-white">
+              <span className="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase tracking-wider bg-[#157954]/90 backdrop-blur-sm rounded-lg text-white">
                 {bungalow.department}
               </span>
               <h1 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl drop-shadow-sm">
                 {bungalow.name}
               </h1>
               <p className="mt-2 flex items-center gap-2 text-sm text-slate-200 font-medium">
-                <span className="material-symbols-outlined text-[18px] text-slate-300">location_on</span>
+                <span className="material-symbols-outlined text-[18px] text-[#D0D34D]">location_on</span>
                 {bungalow.location}
               </p>
             </div>
@@ -350,26 +350,26 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             <div>
               {/* Description */}
               <section className="mb-8">
-                <h2 className="text-xl font-bold text-slate-800 mb-3">About this Circuit Bungalow</h2>
+                <h2 className="text-xl font-bold text-[#21263A] mb-3">About this Circuit Bungalow</h2>
                 <p className="text-base leading-7 text-slate-600">{bungalow.description}</p>
               </section>
 
               {/* Caretaker Contact Information */}
               {bungalow.caretaker && (
-                <section className="mb-8 rounded-md border border-slate-200 bg-slate-50 p-5 md:p-6">
+                <section className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-5 md:p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-md bg-brand-primary text-white flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-[#157954] text-white flex items-center justify-center">
                       <span className="material-symbols-outlined text-[22px]">contact_phone</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800">Caretaker Information</h3>
+                      <h3 className="text-lg font-bold text-[#21263A]">Caretaker Information</h3>
                       <p className="text-xs text-slate-500">Official bungalow in-charge & key contact</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div className="flex items-start gap-2.5">
-                      <span className="material-symbols-outlined text-[18px] text-slate-900 mt-0.5">person</span>
+                      <span className="material-symbols-outlined text-[18px] text-[#157954] mt-0.5">person</span>
                       <div>
                         <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">In-Charge Name</span>
                         <span className="font-semibold text-slate-700">{bungalow.caretaker.name}</span>
@@ -377,12 +377,12 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     </div>
 
                     <div className="flex items-start gap-2.5">
-                      <span className="material-symbols-outlined text-[18px] text-slate-900 mt-0.5">call</span>
+                      <span className="material-symbols-outlined text-[18px] text-[#157954] mt-0.5">call</span>
                       <div>
                         <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Telephone</span>
                         <a
                           href={`tel:${bungalow.caretaker.telephoneNo}`}
-                          className="font-semibold text-slate-900 hover:underline"
+                          className="font-semibold text-[#157954] hover:underline"
                         >
                           {bungalow.caretaker.telephoneNo}
                         </a>
@@ -390,7 +390,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                     </div>
 
                     <div className="flex items-start gap-2.5">
-                      <span className="material-symbols-outlined text-[18px] text-slate-900 mt-0.5">home</span>
+                      <span className="material-symbols-outlined text-[18px] text-[#157954] mt-0.5">home</span>
                       <div>
                         <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Caretaker Address</span>
                         <span className="font-semibold text-slate-700">{bungalow.caretaker.address}</span>
@@ -399,12 +399,12 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                     {bungalow.caretaker.emailAddress && (
                       <div className="flex items-start gap-2.5">
-                        <span className="material-symbols-outlined text-[18px] text-slate-900 mt-0.5">mail</span>
+                        <span className="material-symbols-outlined text-[18px] text-[#157954] mt-0.5">mail</span>
                         <div>
                           <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">Email Address</span>
                           <a
                             href={`mailto:${bungalow.caretaker.emailAddress}`}
-                            className="font-semibold text-slate-900 hover:underline"
+                            className="font-semibold text-[#157954] hover:underline"
                           >
                             {bungalow.caretaker.emailAddress}
                           </a>
@@ -417,14 +417,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
               {/* Highlights */}
               <section className="mb-8 border-t border-slate-100 pt-7">
-                <h2 className="text-xl font-bold text-slate-800 mb-4">What makes this stay special</h2>
+                <h2 className="text-xl font-bold text-[#21263A] mb-4">What makes this stay special</h2>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {bungalow.highlights.map((highlight) => (
                     <div
                       key={highlight}
-                      className="flex items-start gap-3 rounded-md bg-slate-50 border border-slate-100 p-4 text-sm font-medium text-slate-700"
+                      className="flex items-start gap-3 rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm font-medium text-slate-700"
                     >
-                      <span className="material-symbols-outlined text-[20px] text-emerald-600 shrink-0 mt-0.5">
+                      <span className="material-symbols-outlined text-[20px] text-[#157954] shrink-0 mt-0.5">
                         check_circle
                       </span>
                       <span>{highlight}</span>
@@ -435,14 +435,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
               {/* Bungalow Amenities */}
               <section className="mb-8 border-t border-slate-100 pt-7">
-                <h2 className="text-xl font-bold text-slate-800 mb-4">Property Amenities</h2>
+                <h2 className="text-xl font-bold text-[#21263A] mb-4">Property Amenities</h2>
                 <div className="flex flex-wrap gap-2">
                   {bungalow.amenities.map((amenity) => (
                     <span
                       key={amenity}
-                      className="rounded-lg bg-slate-100 px-3.5 py-2 text-sm font-semibold text-slate-800 border border-slate-200 flex items-center gap-1.5"
+                      className="rounded-lg bg-slate-100 px-3.5 py-2 text-sm font-semibold text-[#21263A] border border-slate-200 flex items-center gap-1.5"
                     >
-                      <span className="material-symbols-outlined text-[16px]">done</span>
+                      <span className="material-symbols-outlined text-[16px] text-[#157954]">done</span>
                       {amenity}
                     </span>
                   ))}
@@ -454,8 +454,8 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-2xl font-extrabold text-slate-800">Rooms Available Inside</h2>
-                      <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-brand-primary text-white">
+                      <h2 className="text-2xl font-extrabold text-[#21263A]">Rooms Available Inside</h2>
+                      <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#157954] text-white">
                         {bungalow.rooms.length} {bungalow.rooms.length === 1 ? "Room" : "Rooms"}
                       </span>
                     </div>
@@ -465,12 +465,12 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   </div>
 
                   {/* Room Filters */}
-                  <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-md">
+                  <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
                     <button
                       onClick={() => setRoomFilter("ALL")}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         roomFilter === "ALL"
-                          ? "bg-brand-primary text-white shadow-sm"
+                          ? "bg-[#157954] text-white shadow-sm"
                           : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
@@ -481,7 +481,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         onClick={() => setRoomFilter("AC")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           roomFilter === "AC"
-                            ? "bg-brand-primary text-white shadow-sm"
+                            ? "bg-[#157954] text-white shadow-sm"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
@@ -494,7 +494,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         onClick={() => setRoomFilter("NON_AC")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                           roomFilter === "NON_AC"
-                            ? "bg-brand-primary text-white shadow-sm"
+                            ? "bg-[#157954] text-white shadow-sm"
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
@@ -510,7 +510,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   <span>Select specific rooms to rent:</span>
                   <button
                     onClick={selectAllRooms}
-                    className="text-slate-900 hover:underline cursor-pointer font-bold"
+                    className="text-[#157954] hover:underline cursor-pointer font-bold"
                   >
                     {selectedRoomIds.length === bungalow.rooms.length
                       ? "Deselect All Rooms"
@@ -526,9 +526,9 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       <div
                         key={room.id}
                         onClick={() => toggleRoomSelection(room.id)}
-                        className={`rounded-md border p-5 transition-all cursor-pointer relative flex flex-col justify-between ${
+                        className={`rounded-2xl border p-5 transition-all cursor-pointer relative flex flex-col justify-between ${
                           isSelected
-                            ? "border-slate-900 bg-slate-50 shadow-md ring-2 ring-slate-900/20"
+                            ? "border-[#157954] bg-[#157954]/5 shadow-md ring-2 ring-[#157954]/30"
                             : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
                         }`}
                       >
@@ -536,17 +536,17 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                           {/* Room Header */}
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex items-center gap-2">
-                              <span className="material-symbols-outlined text-slate-900 text-[20px]">
+                              <span className="material-symbols-outlined text-[#157954] text-[20px]">
                                 meeting_room
                               </span>
-                              <h3 className="font-bold text-slate-800 text-base">
+                              <h3 className="font-bold text-[#21263A] text-base">
                                 Room {room.roomNumber}
                               </h3>
                             </div>
 
                             {/* Room Type Badge */}
                             <span
-                               className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 text-slate-700"
+                               className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 text-slate-700"
                             >
                               <span className="material-symbols-outlined text-[14px]">
                                 {room.roomType === "AC" ? "ac_unit" : "mode_fan"}
@@ -585,13 +585,13 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                         <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-2">
                           <div>
                             <span className="text-[10px] text-slate-400 uppercase font-bold block leading-none">Rate / Night</span>
-                            <span className="text-sm font-bold text-slate-900">Rs. {room.price.toLocaleString()}</span>
+                            <span className="text-sm font-bold text-[#157954]">Rs. {room.price.toLocaleString()}</span>
                           </div>
                           <button
                             type="button"
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                               isSelected
-                                ? "bg-brand-primary text-white"
+                                ? "bg-[#157954] text-white"
                                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900"
                             }`}
                           >
@@ -606,43 +606,43 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
             </div>
 
             {/* Sidebar Column */}
-            <aside className="h-fit rounded-md border border-slate-200 bg-white p-6 shadow-sm sticky top-6">
-              <div className="flex items-baseline justify-between border-b border-slate-100 pb-4 mb-6">
+            <aside className="h-fit rounded-2xl border border-[#157954]/50 bg-gradient-form-card p-6 shadow-xl text-white sticky top-6">
+              <div className="flex items-baseline justify-between border-b border-[#C7CEE8]/30 pb-4 mb-6">
                 <div>
-                  <span className="text-xs uppercase tracking-wider font-bold text-slate-400 block">
+                  <span className="text-xs uppercase tracking-wider font-extrabold text-[#D0D34D] block">
                     Base Rate
                   </span>
-                  <span className="text-3xl font-extrabold text-slate-900">
+                  <span className="text-3xl font-extrabold text-white">
                     {formatPrice(bungalow.price)}
                   </span>
                 </div>
-                <span className="text-xs uppercase font-semibold text-slate-500">/ night</span>
+                <span className="text-xs uppercase font-bold text-[#C7CEE8]">/ night</span>
               </div>
 
               {/* Property Quick Summary */}
               <div className="space-y-3.5 mb-6 text-sm">
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-500 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[18px] text-slate-400">group</span>
+                <div className="flex items-center justify-between py-2 border-b border-[#C7CEE8]/20">
+                  <span className="text-[#C7CEE8] flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-[#D0D34D]">group</span>
                     Total Capacity
                   </span>
-                  <span className="font-semibold text-slate-800">{bungalow.capacity} guests</span>
+                  <span className="font-semibold text-white">{bungalow.capacity} guests</span>
                 </div>
 
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-500 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[18px] text-slate-400">door_open</span>
+                <div className="flex items-center justify-between py-2 border-b border-[#C7CEE8]/20">
+                  <span className="text-[#C7CEE8] flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-[#D0D34D]">door_open</span>
                     Total Rooms
                   </span>
-                  <span className="font-semibold text-slate-800">{bungalow.noOfRooms} rooms</span>
+                  <span className="font-semibold text-white">{bungalow.noOfRooms} rooms</span>
                 </div>
 
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-500 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+                <div className="flex items-center justify-between py-2 border-b border-[#C7CEE8]/20">
+                  <span className="text-[#C7CEE8] flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-[#D0D34D]">schedule</span>
                     Check-in
                   </span>
-                  <span className="font-semibold text-slate-800">From 2:00 PM</span>
+                  <span className="font-semibold text-white">From 2:00 PM</span>
                 </div>
               </div>
 
@@ -650,7 +650,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 <>
                   {/* Date Selection Section */}
                   <div className="mb-6">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#C7CEE8] block mb-2">
                       Select Dates
                     </h4>
                     <DateRangePicker 
@@ -665,13 +665,13 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   </div>
 
                   {/* Selected Rooms Box */}
-                  <div className="bg-slate-50 rounded-md p-4 border border-slate-200/80 mb-6">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  <div className="bg-[#21263A]/80 rounded-xl p-4 border border-[#C7CEE8]/30 mb-6">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#C7CEE8] block mb-2">
                       Selected Rooms ({selectedRoomIds.length})
                     </span>
 
                     {selectedRoomIds.length === 0 ? (
-                      <p className="text-xs text-slate-500 italic">
+                      <p className="text-xs text-[#C7CEE8]/70 italic">
                         No specific rooms selected. Booking will reserve the Entire Bungalow.
                       </p>
                     ) : (
@@ -681,7 +681,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                           .map((r) => (
                             <span
                               key={r.id}
-                              className="px-2.5 py-1 bg-brand-primary text-white rounded-md text-xs font-bold"
+                              className="px-2.5 py-1 bg-[#157954] text-white rounded-md text-xs font-bold"
                             >
                               Room {r.roomNumber}
                             </span>
@@ -692,20 +692,20 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
 
                   {/* Dynamic Pricing Breakdown */}
                   {checkIn && checkOut && (
-                    <div className="border-t border-slate-100 pt-4 mb-6 space-y-2 text-xs">
-                      <div className="flex justify-between items-center text-slate-500">
+                    <div className="border-t border-[#C7CEE8]/30 pt-4 mb-6 space-y-2 text-xs">
+                      <div className="flex justify-between items-center text-[#C7CEE8]">
                         <span>
                           {isEntireBungalow ? "Entire Bungalow Rate" : `Selected Rooms (${selectedRooms.length})`}
                         </span>
-                        <span className="font-semibold text-slate-700">{formatPrice(pricePerNight)} / night</span>
+                        <span className="font-semibold text-white">{formatPrice(pricePerNight)} / night</span>
                       </div>
-                      <div className="flex justify-between items-center text-slate-500">
+                      <div className="flex justify-between items-center text-[#C7CEE8]">
                         <span>Duration</span>
-                        <span className="font-semibold text-slate-700">{nights} {nights === 1 ? "Night" : "Nights"}</span>
+                        <span className="font-semibold text-white">{nights} {nights === 1 ? "Night" : "Nights"}</span>
                       </div>
-                      <div className="border-t border-slate-100/60 pt-2 flex justify-between items-center text-sm font-bold">
-                        <span className="text-slate-800">Total Price</span>
-                        <span className="text-lg text-slate-900">{formatPrice(totalCost)}</span>
+                      <div className="border-t border-[#C7CEE8]/20 pt-2 flex justify-between items-center text-sm font-bold">
+                        <span className="text-[#C7CEE8]">Total Price</span>
+                        <span className="text-lg text-white font-extrabold">{formatPrice(totalCost)}</span>
                       </div>
                     </div>
                   )}
@@ -720,10 +720,10 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       setShowPaymentStep(true);
                     }}
                     disabled={!checkIn || !checkOut}
-                    className={`w-full py-4 font-bold rounded-md shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full py-4 font-extrabold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 ${
                       checkIn && checkOut
-                        ? "bg-brand-primary text-white hover:bg-[#12242b] cursor-pointer active:scale-[0.99]"
-                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                        ? "bg-[#D0D34D] text-[#21263A] hover:bg-[#c3c642] cursor-pointer active:scale-[0.99]"
+                        : "bg-[#21263A]/60 text-[#C7CEE8]/40 cursor-not-allowed border border-[#C7CEE8]/20"
                     }`}
                   >
                     {selectedRoomIds.length > 0
@@ -736,40 +736,40 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 <div>
                   <button
                     onClick={() => setShowPaymentStep(false)}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 mb-4 transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-[#C7CEE8] hover:text-white mb-4 transition-colors cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[16px]">arrow_back</span>
                     Change Rooms or Dates
                   </button>
 
-                  <h4 className="font-bold text-slate-900 text-base mb-1">Review Reservation</h4>
-                  <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
+                  <h4 className="font-bold text-white text-base mb-1">Review Reservation</h4>
+                  <p className="text-xs text-[#C7CEE8] mb-4 font-medium leading-relaxed">
                     Review your booking details and submit the reservation request. You will be prompted to upload your payment slip in the next step.
                   </p>
 
                   {/* Summary Card */}
-                  <div className="bg-slate-50 rounded-md p-4 border border-slate-200/80 mb-5 space-y-2 text-xs">
-                    <div className="flex justify-between items-center text-slate-600">
+                  <div className="bg-[#21263A]/80 rounded-xl p-4 border border-[#C7CEE8]/30 mb-5 space-y-2 text-xs">
+                    <div className="flex justify-between items-center text-[#C7CEE8]">
                       <span className="font-medium">Property:</span>
-                      <span className="font-bold text-slate-900 truncate max-w-[160px]">{bungalow.name}</span>
+                      <span className="font-bold text-white truncate max-w-[160px]">{bungalow.name}</span>
                     </div>
-                    <div className="flex justify-between items-center text-slate-600">
+                    <div className="flex justify-between items-center text-[#C7CEE8]">
                       <span className="font-medium">Selected Rooms:</span>
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-white">
                         {selectedRoomIds.length === 0 
                           ? "Entire Bungalow" 
                           : `Room ${selectedRooms.map(r => r.roomNumber).sort().join(", ")}`}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-slate-600">
+                    <div className="flex justify-between items-center text-[#C7CEE8]">
                       <span className="font-medium">Stay Dates:</span>
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-white">
                         {formatDateString(checkIn)} - {formatDateString(checkOut)}
                       </span>
                     </div>
-                    <div className="border-t border-slate-200/80 pt-2 flex justify-between items-center text-sm">
-                      <span className="font-bold text-slate-800">Total Payable:</span>
-                      <span className="font-extrabold text-slate-900">{formatPrice(totalCost)}</span>
+                    <div className="border-t border-[#C7CEE8]/30 pt-2 flex justify-between items-center text-sm">
+                      <span className="font-bold text-[#C7CEE8]">Total Payable:</span>
+                      <span className="font-extrabold text-[#D0D34D]">{formatPrice(totalCost)}</span>
                     </div>
                   </div>
 
@@ -777,7 +777,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   {bookingStatus === "idle" && (
                     <button
                       onClick={handleBooking}
-                      className="w-full py-4 font-bold rounded-md shadow-lg transition-all flex items-center justify-center gap-2 text-sm bg-brand-primary text-white hover:bg-[#12242b] cursor-pointer active:scale-[0.99]"
+                      className="w-full py-4 font-extrabold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm bg-[#D0D34D] text-[#21263A] hover:bg-[#c3c642] cursor-pointer active:scale-[0.99]"
                     >
                       <span>Submit Reservation</span>
                       <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -787,18 +787,18 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   {bookingStatus === "booking" && (
                     <button
                       disabled
-                      className="w-full py-4 bg-slate-700 text-white font-bold rounded-md shadow-lg flex items-center justify-center gap-2 cursor-wait text-sm"
+                      className="w-full py-4 bg-[#21263A] text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 cursor-wait text-sm border border-[#C7CEE8]/30"
                     >
-                      <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
+                      <span className="material-symbols-outlined animate-spin text-[20px] text-[#D0D34D]">sync</span>
                       Submitting Reservation...
                     </button>
                   )}
 
                   {/* Payment Slip Upload Component */}
                   {bookingStatus === "awaiting-slip" && activeBookingId && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-md p-5 mb-5 shadow-sm">
-                      <h4 className="font-bold text-amber-900 text-base mb-2">Upload Payment Slip</h4>
-                      <p className="text-xs text-amber-700 font-medium mb-4">
+                    <div className="bg-[#21263A]/80 border border-[#D0D34D]/40 rounded-xl p-5 mb-5 shadow-md">
+                      <h4 className="font-bold text-[#D0D34D] text-base mb-2">Upload Payment Slip</h4>
+                      <p className="text-xs text-[#C7CEE8] font-medium mb-4">
                         Your reservation is pending. Please upload your payment slip to confirm.
                       </p>
                       <PaymentSlipUpload
@@ -817,25 +817,25 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                   )}
 
                   {bookingStatus === "success" && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-md p-5 text-center shadow-sm">
-                      <span className="material-symbols-outlined text-4xl text-emerald-600 mb-2">
+                    <div className="bg-[#21263A]/90 border border-[#157954] rounded-xl p-5 text-center shadow-md">
+                      <span className="material-symbols-outlined text-4xl text-[#D0D34D] mb-2">
                         check_circle
                       </span>
-                      <h4 className="font-bold text-emerald-900 text-base mb-1">Reservation Pending Approval!</h4>
-                      <p className="text-xs text-emerald-700 leading-relaxed font-medium mb-4">
+                      <h4 className="font-bold text-white text-base mb-1">Reservation Pending Approval!</h4>
+                      <p className="text-xs text-[#C7CEE8] leading-relaxed font-medium mb-4">
                         Your reservation request for <strong>{bungalow.name}</strong> ({bookedRoomNumbers.join(", ")}) has been recorded with status <strong>Pending</strong>.
                       </p>
                       <div className="flex flex-col gap-2">
                         <Link
                           href="/bookings"
-                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+                          className="w-full py-2.5 bg-[#157954] hover:bg-[#126646] text-white text-xs font-bold rounded-lg transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
                         >
                           <span>View in My Reservations</span>
                           <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                         </Link>
                         <button
                           onClick={resetBooking}
-                          className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors py-1 cursor-pointer"
+                          className="text-xs font-semibold text-[#C7CEE8] hover:text-white transition-colors py-1 cursor-pointer"
                         >
                           Make another selection
                         </button>
@@ -845,7 +845,7 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                 </div>
               )}
 
-              <p className="mt-4 text-center text-xs text-slate-400 leading-relaxed">
+              <p className="mt-4 text-center text-xs text-[#C7CEE8]/70 leading-relaxed">
                 Verification & official quota applied automatically during checkout.
               </p>
             </aside>
