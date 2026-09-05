@@ -95,7 +95,7 @@ function AdminLoginContent() {
         <Link href="/" className="inline-flex items-center gap-3 group">
           <div className="relative h-12 w-12 flex items-center justify-center transition-transform group-hover:scale-105">
             <Image
-              src="/logo.png"
+              src="/logo_new.png"
               alt="GovSewana Logo"
               fill
               className="object-contain mix-blend-multiply"

@@ -12,10 +12,10 @@ export default function LandingPage() {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
+          {/* <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-8">
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-            {/* Official Government Portal */}
-          </div>
+            Official Government Portal
+          </div> */}
           <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
             Discover and Reserve <br className="hidden md:block" />
             <span className="text-blue-600">Government Bungalows</span>

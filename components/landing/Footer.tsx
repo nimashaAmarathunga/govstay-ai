@@ -73,7 +73,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2.5 mb-4 group">
               <div className="relative h-9 w-9 bg-white p-1 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
                 <Image
-                  src="/logo.png"
+                  src="/logo_new.png"
                   alt="GovSewana Logo"
                   fill
                   className="object-contain p-0.5"

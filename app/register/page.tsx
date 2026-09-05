@@ -217,7 +217,7 @@ export default function RegisterPage() {
       >
         <Link href="/" className="inline-flex items-center gap-3 group">
           <div className="relative h-12 w-12 flex items-center justify-center transition-transform group-hover:scale-105">
-            <Image src="/logo.png" alt="GovSewana Logo" fill className="object-contain mix-blend-multiply" priority />
+            <Image src="/logo_new.png" alt="GovSewana Logo" fill className="object-contain mix-blend-multiply" priority />
           </div>
           <div className="text-left">
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">GovSewana</h1>

@@ -152,7 +152,7 @@ export default function Navigation() {
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="relative h-10 w-10 flex items-center justify-center transition-transform group-hover:scale-105">
             <Image
-              src="/logo.png"
+              src="/logo_new.png"
               alt="GovSewana Logo"
               fill
               className="object-contain mix-blend-multiply"
