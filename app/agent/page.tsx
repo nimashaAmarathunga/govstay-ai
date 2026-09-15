@@ -8,7 +8,7 @@ import { useUser } from "@/components/context/UserContext";
 import { 
   Send, Paperclip, Map, ShieldCheck, 
   CalendarDays, Bell, CheckCircle2, 
-  FileText, Sparkles, Search, MessageSquare, Loader2, Info, MapPin, ArrowRight
+  FileText, Sparkles, Search, MessageSquare, Loader2, Info, MapPin, ArrowRight, XCircle
 } from "lucide-react";
 
 interface PropertyCard {
@@ -603,6 +603,14 @@ export default function Page() {
                      >
                        <Loader2 className="w-5 h-5 animate-spin text-[#D0D34D]" />
                        Verification in progress
+                     </button>
+                   ) : activeBooking?.status === "REJECTED" ? (
+                     <button
+                       disabled
+                       className="w-full py-4 bg-red-500/20 text-red-200 font-bold rounded-xl shadow-md mt-2 flex items-center justify-center gap-2"
+                     >
+                       <XCircle className="w-5 h-5 text-red-400" />
+                       Verification Failed
                      </button>
                    ) : (
                      <button
