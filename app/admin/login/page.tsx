@@ -18,10 +18,13 @@ import {
   KeyRound,
 } from "lucide-react";
 
+import { useUser } from "@/components/context/UserContext";
+
 function AdminLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const { checkAuthSession } = useUser();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -34,11 +37,13 @@ function AdminLoginContent() {
     fetch("/api/admin/me")
       .then((res) => {
         if (res.ok) {
-          router.replace(callbackUrl);
+          checkAuthSession().then(() => {
+            router.replace(callbackUrl);
+          });
         }
       })
       .catch(() => { });
-  }, [router, callbackUrl]);
+  }, [router, callbackUrl, checkAuthSession]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +68,7 @@ function AdminLoginContent() {
         throw new Error(data.error || "Login failed. Please verify credentials.");
       }
 
+      await checkAuthSession();
       router.push(callbackUrl);
       router.refresh();
     } catch (err: unknown) {

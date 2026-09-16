@@ -156,11 +156,15 @@ export default function AdminPage() {
   // Verify Admin Authentication on Mount
   useEffect(() => {
     fetch("/api/admin/me")
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
           setIsAdminAuthenticated(false);
           router.replace("/admin/login?callbackUrl=/admin");
         } else {
+          const data = await res.json();
+          if (data.authenticated && data.user) {
+            setActiveUser(data.user);
+          }
           setIsAdminAuthenticated(true);
         }
       })
@@ -168,7 +172,7 @@ export default function AdminPage() {
         setIsAdminAuthenticated(false);
         router.replace("/admin/login?callbackUrl=/admin");
       });
-  }, [router]);
+  }, [router, setActiveUser]);
 
   const handleLogout = async () => {
     try {
