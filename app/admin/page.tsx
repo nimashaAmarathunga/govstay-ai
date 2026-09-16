@@ -584,6 +584,7 @@ export default function AdminPage() {
 
   const filteredBookings = bookings.filter(b => {
     if (bookingStatusFilter === "ALL") return true;
+    if (bookingStatusFilter === "PENDING") return b.status === "PENDING" || b.status === "PAYMENT_PENDING";
     return b.status === bookingStatusFilter;
   }).filter(b => {
     if (!bookingSearchQuery) return true;
@@ -649,9 +650,21 @@ export default function AdminPage() {
             )}
           </div>
 
-          {/* Stats calculation & counts */}
+          {/* Stats calculation & counts - 4 Interactive Clickable Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
+            {/* Card 1: Total Bungalows */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0 }}
+              onClick={() => setActiveTab("bungalows")}
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                activeTab === "bungalows"
+                  ? "bg-emerald-50/40 border-emerald-300 ring-2 ring-emerald-500/20"
+                  : "bg-white border-slate-100 hover:border-slate-300"
+              }`}
+              title="Click to view Circuit Bungalows"
+            >
               <div className="w-13 h-13 rounded-md bg-brand-primary/5 text-brand-primary flex items-center justify-center shrink-0 shadow-sm">
                 <Hotel className="w-6 h-6" />
               </div>
@@ -661,17 +674,58 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
-                <BedDouble className="w-6 h-6" />
+            {/* Card 2: Pending Stays */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              onClick={() => {
+                setActiveTab("bookings");
+                setBookingStatusFilter("PENDING");
+              }}
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                activeTab === "bookings" && bookingStatusFilter === "PENDING"
+                  ? "bg-amber-50/80 border-amber-300 ring-2 ring-amber-500/20"
+                  : pendingBookings.length > 0
+                  ? "bg-amber-50/40 border-amber-200 hover:border-amber-300"
+                  : "bg-white border-slate-100 hover:border-slate-300"
+              }`}
+              title="Click to view Pending Stays"
+            >
+              <div className={`w-13 h-13 rounded-md flex items-center justify-center shrink-0 shadow-sm ${
+                pendingBookings.length > 0 ? "bg-amber-500 text-white" : "bg-amber-50 text-amber-600"
+              }`}>
+                <Clock className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Configured Rooms</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{loading ? "..." : totalRooms}</h3>
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Pending Stays</p>
+                  {pendingBookings.length > 0 && (
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  )}
+                </div>
+                <h3 className={`text-2xl font-extrabold ${pendingBookings.length > 0 ? "text-amber-700" : "text-slate-900"}`}>
+                  {pendingBookings.length} Pending
+                </h3>
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
+            {/* Card 3: Confirmed Stays */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              onClick={() => {
+                setActiveTab("bookings");
+                setBookingStatusFilter("CONFIRMED");
+              }}
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                activeTab === "bookings" && bookingStatusFilter === "CONFIRMED"
+                  ? "bg-emerald-50/80 border-emerald-300 ring-2 ring-emerald-500/20"
+                  : "bg-white border-slate-100 hover:border-slate-300"
+              }`}
+              title="Click to view Confirmed Stays"
+            >
               <div className="w-13 h-13 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
                 <CalendarDays className="w-6 h-6" />
               </div>
@@ -681,6 +735,7 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
+            {/* Card 4: Rejected Stays / Needs Review */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -689,13 +744,18 @@ export default function AdminPage() {
                 setActiveTab("bookings");
                 setBookingStatusFilter("REJECTED");
               }}
-              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] ${rejectedBookings.length > 0
-                ? "bg-rose-50/70 border-rose-200"
-                : "bg-white border-slate-100"
-                }`}
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                activeTab === "bookings" && bookingStatusFilter === "REJECTED"
+                  ? "bg-rose-50/80 border-rose-300 ring-2 ring-rose-500/20"
+                  : rejectedBookings.length > 0
+                  ? "bg-rose-50/70 border-rose-200 hover:border-rose-300"
+                  : "bg-white border-slate-100 hover:border-slate-300"
+              }`}
+              title="Click to view Rejected Stays"
             >
-              <div className={`w-13 h-13 rounded-md flex items-center justify-center shrink-0 shadow-sm ${rejectedBookings.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
-                }`}>
+              <div className={`w-13 h-13 rounded-md flex items-center justify-center shrink-0 shadow-sm ${
+                rejectedBookings.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
