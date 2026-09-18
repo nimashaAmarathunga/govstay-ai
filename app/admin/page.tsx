@@ -156,11 +156,15 @@ export default function AdminPage() {
   // Verify Admin Authentication on Mount
   useEffect(() => {
     fetch("/api/admin/me")
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
           setIsAdminAuthenticated(false);
           router.replace("/admin/login?callbackUrl=/admin");
         } else {
+          const data = await res.json();
+          if (data.authenticated && data.user) {
+            setActiveUser(data.user);
+          }
           setIsAdminAuthenticated(true);
         }
       })
@@ -168,7 +172,7 @@ export default function AdminPage() {
         setIsAdminAuthenticated(false);
         router.replace("/admin/login?callbackUrl=/admin");
       });
-  }, [router]);
+  }, [router, setActiveUser]);
 
   const handleLogout = async () => {
     try {
@@ -579,6 +583,7 @@ export default function AdminPage() {
 
   const filteredBookings = bookings.filter(b => {
     if (bookingStatusFilter === "ALL") return true;
+    if (bookingStatusFilter === "PENDING") return b.status === "PENDING" || b.status === "PAYMENT_PENDING";
     return b.status === bookingStatusFilter;
   }).filter(b => {
     if (!bookingSearchQuery) return true;
@@ -644,10 +649,22 @@ export default function AdminPage() {
             )}
           </div>
 
-          {/* Stats calculation & counts */}
+          {/* Stats calculation & counts - 4 Interactive Clickable Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white p-6 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] border border-slate-200/80 flex items-center gap-4 transition-transform hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            {/* Card 1: Total Bungalows */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0 }}
+              onClick={() => setActiveTab("bungalows")}
+              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                activeTab === "bungalows"
+                  ? "bg-emerald-50/40 border-emerald-300 ring-2 ring-emerald-500/20"
+                  : "bg-white border-slate-100 hover:border-slate-300"
+              }`}
+              title="Click to view Circuit Bungalows"
+            >
+              <div className="w-13 h-13 rounded-md bg-brand-primary/5 text-brand-primary flex items-center justify-center shrink-0 shadow-sm">
                 <Hotel className="w-6 h-6" />
               </div>
               <div>
