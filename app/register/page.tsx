@@ -316,10 +316,10 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Employee ID (Optional)</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Employee ID</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Hash className="w-4 h-4" /></div>
-                    <input type="text" name="empId" value={formData.empId} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. 245503B" />
+                    <input type="text" name="empId" required value={formData.empId} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. 245503B" />
                   </div>
                 </div>
 
