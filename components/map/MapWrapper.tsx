@@ -148,7 +148,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       const attractions: Attraction[] = topPlaces.map((p: any) => {
         const page = pages[p.pageid];
-        const distanceKm = getDistanceFromLatLonInKm(bungalow.latitude, bungalow.longitude, p.lat, p.lon);
+        const distanceKm = getDistanceFromLatLonInKm(bungalow.latitude!, bungalow.longitude!, p.lat, p.lon);
         return {
           id: p.pageid,
           title: p.title,
@@ -158,7 +158,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           extract: page?.extract,
           distanceKm,
         };
-      }).sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
+      }).sort((a: Attraction, b: Attraction) => (a.distanceKm || 0) - (b.distanceKm || 0));
 
       setNearbyAttractions(attractions);
     } catch (error) {
@@ -320,7 +320,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-slate-200 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 w-full">
             <div className="flex-1 min-w-0">
               <h2 className="text-xl font-bold text-slate-800 truncate mb-1">{selectedBungalow.name}</h2>
-              <p className="text-sm text-slate-500 font-medium flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px] text-brand-primary">location_on</span>{selectedBungalow.area}</p>
+              <p className="flex items-center text-slate-500 font-medium text-xs mb-3"><span className="material-symbols-outlined text-sm mr-1 text-primary">location_on</span>{selectedBungalow.location}</p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
               <button 
@@ -417,7 +417,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           isOpen={isPlannerOpen}
           onClose={() => setIsPlannerOpen(false)}
           bungalowName={selectedBungalow.name}
-          bungalowArea={selectedBungalow.area}
+          bungalowArea={selectedBungalow.location}
           attractions={nearbyAttractions}
         />
       )}
