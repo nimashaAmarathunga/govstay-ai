@@ -113,15 +113,14 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.05 }}
-                whileHover={{ scale: 1.02, y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
                 key={idx} 
-                className="p-6 rounded-2xl bg-gradient-card-dark border border-[#157954]/40 shadow-md transition-all cursor-pointer glass-panel-dark"
+                className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] hover:border-emerald-600/40 hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(15,81,50,0.08)] transition-all duration-200 cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#D0D34D] flex items-center justify-center mb-4 shadow-sm">
-                  <feat.icon className="w-5 h-5 text-[#21263A]" />
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
+                  <feat.icon className="w-5 h-5 text-emerald-700" />
                 </div>
-                <h3 className="font-extrabold text-white text-lg mb-2">{feat.title}</h3>
-                <p className="text-sm text-[#C7CEE8] leading-relaxed">{feat.desc}</p>
+                <h3 className="text-base font-semibold text-slate-900 mb-2">{feat.title}</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
               </motion.div>
             ))}
           </div>

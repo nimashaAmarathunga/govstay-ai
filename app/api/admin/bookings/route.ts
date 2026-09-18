@@ -14,6 +14,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     let department = searchParams.get("department");
 
+    // Enforce restriction: Super Admins cannot view or manage bookings
+    if (admin.role === "SUPER_ADMIN") {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
     if (admin.role === "DEPT_ADMIN") {
       if (!admin.placeOfWork) {
         const dbAdmin = await prisma.user.findUnique({ where: { id: admin.userId } });

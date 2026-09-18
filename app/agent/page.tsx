@@ -8,42 +8,26 @@ import { useUser } from "@/components/context/UserContext";
 import { 
   Send, Paperclip, Map, ShieldCheck, 
   CalendarDays, Bell, CheckCircle2, 
-  FileText, Sparkles, Search, MessageSquare, Loader2, Info, MapPin, ArrowRight, XCircle
+  FileText, Sparkles, Search, MessageSquare, Loader2, Info, MapPin, ArrowRight, XCircle, PlusCircle
 } from "lucide-react";
-
-interface PropertyCard {
-  title: string;
-  suite: string;
-  price: string;
-  image: string;
-}
-
-interface Message {
-  id: string;
-  sender: "user" | "ai";
-  agent?: string;
-  text: string;
-  timestamp: string;
-  propertyCard?: PropertyCard;
-}
+import { useChat } from "@/components/context/ChatContext";
 
 export default function Page() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const {
+    messages, setMessages,
+    sessionId,
+    draftState, setDraftState,
+    agentStates, setAgentStates,
+    isBookingMode, setIsBookingMode,
+    whatsappEnabled, setWhatsappEnabled,
+    startNewChat
+  } = useChat();
+
   const [inputText, setInputText] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [whatsappEnabled, setWhatsappEnabled] = useState(true);
-  const [draftState, setDraftState] = useState<{ emp_id: string; room_number: string; from_date: string; to_date: string; total_cost?: number; booking_id?: string; status?: string }>({ emp_id: "", room_number: "", from_date: "", to_date: "" });
   const [activeBooking, setActiveBooking] = useState<any>(null);
-  const [agentStates, setAgentStates] = useState<Record<string, "STANDBY" | "WORKING" | "COMPLETED" | "ERROR">>({
-    verification_agent: "STANDBY",
-    travel_agent: "STANDBY",
-    booking_agent: "STANDBY",
-    notification_agent: "STANDBY",
-  });
-  const [isBookingMode, setIsBookingMode] = useState(false);
-  const [sessionId] = useState(() => `demo-session-${Date.now()}`);
   const router = useRouter();
   
   const { activeUser } = useUser();
@@ -256,8 +240,12 @@ export default function Page() {
         
         {/* Left Column: Agent Status */}
         <aside className="w-[280px] bg-white border-r border-[#C7CEE8] flex-col min-h-0 hidden lg:flex">
-           <div className="p-6 pb-2">
+           <div className="p-6 pb-2 flex items-center justify-between">
              <h2 className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#157954]">System Agents</h2>
+             <button onClick={startNewChat} className="text-[#157954] hover:text-[#D0D34D] transition-colors flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
+               <PlusCircle className="w-3 h-3" />
+               New
+             </button>
            </div>
            <div className="flex-1 overflow-y-auto p-4 space-y-2">
               
