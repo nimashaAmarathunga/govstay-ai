@@ -7,9 +7,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, empId, emailAddress, mobileNumber, username, password, placeOfWork } = body;
 
-    if (!name || !username || !password) {
+    if (!name || !username || !password || !empId) {
       return NextResponse.json(
-        { error: "Name, username, and password are required." },
+        { error: "Name, Employee ID, username, and password are required." },
         { status: 400 }
       );
     }

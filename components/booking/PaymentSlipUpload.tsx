@@ -133,7 +133,7 @@ export default function PaymentSlipUpload({ onUploadComplete, value, bookingId, 
     <div className="w-full space-y-2">
       <div className="flex items-center justify-between">
         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-          Payment Slip <span className="text-slate-400 font-normal lowercase">(optional)</span>
+          Payment Slip
         </label>
         <span className="text-[11px] text-brand-primary font-medium">JPG, PNG, WEBP or PDF</span>
       </div>
