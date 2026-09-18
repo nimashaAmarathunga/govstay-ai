@@ -15,7 +15,7 @@ const createBungalowIcon = (isSelected: boolean = false) => {
   return L.divIcon({
     className: "custom-leaflet-marker",
     html: `
-      <div style="
+      <div class="animate-map-pin" style="
         width: ${size}px;
         height: ${size}px;
         background: ${pinBg};
@@ -48,7 +48,7 @@ const createAttractionIcon = (isSelected: boolean = false) => {
   return L.divIcon({
     className: "custom-leaflet-marker",
     html: `
-      <div style="
+      <div class="animate-map-pin" style="
         width: ${size}px;
         height: ${size}px;
         background: ${pinBg};
@@ -171,7 +171,7 @@ export default function InteractiveMap({
                 opacity={1}
                 className="custom-popup bg-transparent border-0 shadow-none p-0"
               >
-                <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 pointer-events-none overflow-hidden">
+                <div className="w-56 p-1 bg-white/80 backdrop-blur-md rounded-md shadow-xl border border-white/40 pointer-events-none overflow-hidden">
                   <div className="w-full h-32 overflow-hidden mb-3">
                     <img src={bungalow.image} alt={bungalow.name} className="w-full h-full object-cover rounded-lg" />
                   </div>
@@ -218,7 +218,7 @@ export default function InteractiveMap({
                 offset={[0, -20]}
                 className="custom-popup border-0 shadow-none p-0"
               >
-                <div className="w-56 p-1 bg-white rounded-md shadow-md border border-slate-200 overflow-hidden m-0">
+                <div className="w-56 p-1 bg-white/80 backdrop-blur-md rounded-md shadow-xl border border-white/40 overflow-hidden m-0">
                   {attraction.thumbnail && (
                     <div className="w-full h-24 overflow-hidden mb-2">
                       <img src={attraction.thumbnail} alt={attraction.title} className="w-full h-full object-cover rounded-lg" />

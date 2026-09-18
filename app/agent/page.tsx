@@ -271,7 +271,7 @@ export default function Page() {
                   key={agent.id}
                   className={`p-3 rounded-xl border transition-all duration-300 relative overflow-hidden flex items-center gap-3 ${
                     agentStates[agent.id] === "WORKING"
-                      ? 'bg-gradient-form-card border-[#157954] text-white shadow-md' 
+                      ? 'bg-gradient-form-card border-[#D0D34D] text-white shadow-lg animate-pulse-glow'
                       : agentStates[agent.id] === "COMPLETED" 
                       ? 'bg-[#21263A] border-[#D0D34D] text-white shadow-sm' 
                       : 'bg-slate-50 border-[#C7CEE8]/60 hover:bg-slate-100 text-[#21263A]'
@@ -381,13 +381,13 @@ export default function Page() {
                            return <p key={i} className={line.trim() === '' ? 'h-2' : ''}>{line}</p>
                          })}
                        </div>
-                     ) : (
-                       <div className="flex gap-1.5 items-center h-6 px-2">
-                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce"></div>
-                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                         <div className="w-1.5 h-1.5 bg-[#D0D34D] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
-                       </div>
-                     )}
+                      ) : (
+                        <div className="flex gap-1.5 items-center h-6 px-2">
+                          <div className="w-1.5 h-4 bg-[#D0D34D] rounded-full typing-bar" style={{ animationDelay: '0s' }}></div>
+                          <div className="w-1.5 h-4 bg-[#D0D34D] rounded-full typing-bar" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-1.5 h-4 bg-[#D0D34D] rounded-full typing-bar" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      )}
 
                      {message.propertyCard && (
                        <div className="mt-6 rounded-xl overflow-hidden border border-[#C7CEE8]/30 shadow-md bg-white group cursor-pointer hover:shadow-lg transition-all duration-300">
@@ -438,7 +438,7 @@ export default function Page() {
                  </button>
                </div>
                
-               <div className="relative flex items-center bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-2 shadow-xl focus-within:ring-2 focus-within:ring-[#D0D34D] transition-all">
+               <div className="relative flex items-center bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-2 shadow-xl focus-within:ring-2 focus-within:ring-[#D0D34D] transition-all glass-panel-dark">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 

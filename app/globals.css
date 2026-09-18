@@ -246,3 +246,56 @@ body {
 .glass-tooltip::after {
   display: none !important;
 }
+
+/* Glassmorphism Utilities */
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+@utility glass-panel-dark {
+  background: rgba(33, 38, 58, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(199, 206, 232, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Advanced Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(208, 211, 77, 0.4);
+    border-color: rgba(208, 211, 77, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(208, 211, 77, 0.6);
+    border-color: rgba(208, 211, 77, 1);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes map-pin-pulse {
+  0% { transform: scale(1) rotate(-45deg); }
+  50% { transform: scale(1.1) rotate(-45deg); }
+  100% { transform: scale(1) rotate(-45deg); }
+}
+
+.animate-map-pin {
+  animation: map-pin-pulse 2s infinite ease-in-out;
+}
+
+@keyframes typing-wave {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(2); opacity: 1; }
+}
+
+.typing-bar {
+  animation: typing-wave 1s infinite ease-in-out;
+  transform-origin: bottom;
+}
