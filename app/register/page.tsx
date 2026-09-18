@@ -284,60 +284,60 @@ export default function RegisterPage() {
             <form onSubmit={handleStep1Submit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Full Name</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Full Name</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><User className="w-4 h-4" /></div>
-                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. Kasun Perera" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><User className="w-4 h-4" /></div>
+                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="e.g. Kasun Perera" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Username</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Username</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><User className="w-4 h-4" /></div>
-                    <input type="text" name="username" required value={formData.username} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. kasun_p" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><User className="w-4 h-4" /></div>
+                    <input type="text" name="username" required value={formData.username} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="e.g. kasun_p" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Email Address</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Email Address</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Mail className="w-4 h-4" /></div>
-                    <input type="email" name="emailAddress" required value={formData.emailAddress} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="user@gov.lk" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><Mail className="w-4 h-4" /></div>
+                    <input type="email" name="emailAddress" required value={formData.emailAddress} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="user@gov.lk" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Phone Number</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Phone Number</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Phone className="w-4 h-4" /></div>
-                    <input type="tel" name="mobileNumber" required value={formData.mobileNumber} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="07XXXXXXXX" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><Phone className="w-4 h-4" /></div>
+                    <input type="tel" name="mobileNumber" required value={formData.mobileNumber} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="07XXXXXXXX" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Employee ID</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Employee ID (Optional)</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Hash className="w-4 h-4" /></div>
-                    <input type="text" name="empId" required value={formData.empId} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="e.g. 245503B" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><Hash className="w-4 h-4" /></div>
+                    <input type="text" name="empId" value={formData.empId} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="e.g. 245503B" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Department / Ministry</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Department / Ministry</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Building2 className="w-4 h-4" /></div>
-                    <input type="text" name="placeOfWork" required value={formData.placeOfWork} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Ministry of Public Administration" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><Building2 className="w-4 h-4" /></div>
+                    <input type="text" name="placeOfWork" required value={formData.placeOfWork} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="Ministry of Public Administration" />
                   </div>
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Password</label>
+                  <label className="block text-xs font-bold text-[#C7CEE8] mb-2 uppercase tracking-wider">Password</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><Lock className="w-4 h-4" /></div>
-                    <input type="password" name="password" required value={formData.password} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-md pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="••••••••••••" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C7CEE8]"><Lock className="w-4 h-4" /></div>
+                    <input type="password" name="password" required value={formData.password} onChange={handleChange} className="w-full bg-[#21263A]/80 border border-[#157954]/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#D0D34D] focus:ring-2 focus:ring-[#D0D34D]/30 transition-all font-medium" placeholder="••••••••••••" />
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1.5 pl-1">Min 8 characters with at least one letter and one number or special character</p>
+                  <p className="text-[11px] text-[#C7CEE8]/70 mt-1.5 pl-1">Min 8 characters with at least one letter and one number or special character</p>
                 </div>
               </div>
 
