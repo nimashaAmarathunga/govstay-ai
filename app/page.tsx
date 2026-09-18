@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Map, CalendarCheck, ShieldCheck, FileText, ArrowRight, MapPin, Building2, User, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function LandingPage() {
   return (
@@ -10,15 +13,30 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-radial from-[#157954]/40 to-[#21263A] pointer-events-none" />
         
         <div className="max-w-6xl mx-auto px-6 relative z-10 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-md">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-md"
+          >
             Discover and Reserve <br className="hidden md:block" />
             <span className="text-[#D0D34D]">Government Bungalows</span>
-          </h1>
-          <p className="text-lg text-[#C7CEE8] max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-lg text-[#C7CEE8] max-w-2xl mx-auto mb-10 leading-relaxed font-medium"
+          >
             GovSewana is the central platform for eligible public servants and citizens to explore, verify, and book circuit bungalows and holiday resorts across Sri Lanka.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             <Link
               href="/browse"
               className="w-full sm:w-auto px-8 py-4 bg-[#D0D34D] hover:bg-[#b8bb3d] text-[#21263A] font-extrabold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
@@ -33,7 +51,7 @@ export default function LandingPage() {
               <Map className="w-5 h-5 text-[#D0D34D]" />
               <span>View Map</span>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -54,13 +72,20 @@ export default function LandingPage() {
               { icon: User, title: "3. Login", desc: "Sign in with your credentials to initiate a booking." },
               { icon: CalendarCheck, title: "4. Book", desc: "Select dates, upload payment, and await verification." }
             ].map((step, idx) => (
-              <div key={idx} className="bg-gradient-card-dark rounded-2xl p-6 border border-[#157954]/40 shadow-md text-center relative z-10 flex flex-col items-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                key={idx} 
+                className="bg-gradient-card-dark rounded-2xl p-6 border border-[#157954]/40 shadow-md text-center relative z-10 flex flex-col items-center hover:shadow-xl transition-shadow"
+              >
                 <div className="w-16 h-16 bg-[#D0D34D] text-[#21263A] rounded-xl flex items-center justify-center mb-6 shadow-md">
                   <step.icon className="w-8 h-8 text-[#21263A]" />
                 </div>
                 <h3 className="text-lg font-extrabold text-white mb-2">{step.title}</h3>
                 <p className="text-sm text-[#C7CEE8] leading-relaxed">{step.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -83,13 +108,20 @@ export default function LandingPage() {
               { title: "Secure Verification", desc: "Upload payment slips and identification documents securely for official verification.", icon: ShieldCheck },
               { title: "Manage Bookings", desc: "Track the status of your reservations and view your complete booking history.", icon: FileText }
             ].map((feat, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-gradient-card-dark border border-[#157954]/40 shadow-md">
-                <div className="w-10 h-10 rounded-xl bg-[#D0D34D] flex items-center justify-center mb-4 shadow-sm">
-                  <feat.icon className="w-5 h-5 text-[#21263A]" />
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                key={idx} 
+                className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] hover:border-emerald-600/40 hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(15,81,50,0.08)] transition-all duration-200 cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
+                  <feat.icon className="w-5 h-5 text-emerald-700" />
                 </div>
-                <h3 className="font-extrabold text-white text-lg mb-2">{feat.title}</h3>
-                <p className="text-sm text-[#C7CEE8] leading-relaxed">{feat.desc}</p>
-              </div>
+                <h3 className="text-base font-semibold text-slate-900 mb-2">{feat.title}</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>

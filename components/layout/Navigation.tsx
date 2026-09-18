@@ -146,7 +146,7 @@ export default function Navigation() {
   }
 
   return (
-    <header className="flex-none h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-50 sticky top-0 shadow-sm">
+    <header className="flex-none h-16 glass-panel border-b border-[#C7CEE8]/40 flex items-center justify-between px-6 z-50 sticky top-0 shadow-sm">
       {/* Brand & Left Navigation */}
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center gap-2.5 group">
