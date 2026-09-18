@@ -10,7 +10,7 @@ import {
   Home, Phone, MapPin, BedDouble, FileText, CheckCircle2,
   Hotel, ArrowRight, ArrowLeft, LogOut, XCircle, Clock,
   AlertTriangle, Eye, Sparkles, Check, Filter, UserCheck,
-  ShieldAlert, Mail, CreditCard, RefreshCw
+  ShieldAlert, Mail, CreditCard, RefreshCw, BarChart3
 } from "lucide-react";
 
 // --- Types ---
@@ -177,8 +177,7 @@ export default function AdminPage() {
       console.error("Logout failed:", err);
     }
     setActiveUser(null);
-    router.push("/admin/login");
-    router.refresh();
+    window.location.href = "/admin/login";
   };
 
   // Determine active department filter (DEPT_ADMIN filters by placeOfWork, SUPER_ADMIN sees all)
@@ -610,32 +609,32 @@ export default function AdminPage() {
 
           <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">Admin Dashboard</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 tracking-tight">Admin Dashboard</h1>
               <p className="text-[15px] text-slate-500 font-medium">
                 Manage circuit bungalows, rooms, caretakers, and view live system reservations.
               </p>
             </div>
             {activeUser && (
               <div className="flex items-center gap-3 self-start md:self-auto">
-                <div className="bg-brand-primary text-white px-5 py-3 rounded-md shadow-sm flex items-center gap-3.5 border border-slate-800">
-                  <div className="w-9 h-9 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
+                <div className="bg-white text-slate-900 px-5 py-3 rounded-xl shadow-sm flex items-center gap-3.5 border border-slate-200/80">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm">
                     {activeUser.name.charAt(0)}
                   </div>
                   <div>
-                    <div className="text-[13px] font-bold text-white leading-tight flex items-center gap-2">
+                    <div className="text-[13px] font-bold text-slate-900 leading-tight flex items-center gap-2">
                       {activeUser.name}
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200/50">
                         {activeUser.role === "SUPER_ADMIN" ? "Super Admin" : "Dept Admin"}
                       </span>
                     </div>
-                    <div className="text-[11.5px] text-slate-400 font-medium mt-0.5">
+                    <div className="text-[11.5px] text-slate-500 font-medium mt-0.5">
                       {adminDepartment ? `Department: ${adminDepartment}` : "All Departments Access"}
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-md text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                  className="px-4 py-3 bg-white hover:bg-rose-50 text-rose-600 border border-slate-200/80 hover:border-rose-200 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-[0.99]"
                   title="Sign out of Admin Portal"
                 >
                   <LogOut className="w-4 h-4" />
@@ -647,96 +646,111 @@ export default function AdminPage() {
 
           {/* Stats calculation & counts */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-md bg-brand-primary/5 text-brand-primary flex items-center justify-center shrink-0 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="bg-white p-6 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] border border-slate-200/80 flex items-center gap-4 transition-transform hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
                 <Hotel className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Total Bungalows</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{loading ? "..." : totalBungalows}</h3>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Total Bungalows</p>
+                <h3 className="text-3xl font-bold text-slate-900">{loading ? "..." : totalBungalows}</h3>
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white p-6 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] border border-slate-200/80 flex items-center gap-4 transition-transform hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
                 <BedDouble className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Configured Rooms</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{loading ? "..." : totalRooms}</h3>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Configured Rooms</p>
+                <h3 className="text-3xl font-bold text-slate-900">{loading ? "..." : totalRooms}</h3>
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-slate-100 rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4">
-              <div className="w-13 h-13 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
-                <CalendarDays className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Confirmed Stays</p>
-                <h3 className="text-2xl font-extrabold text-emerald-700">{confirmedBookings.length}</h3>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              onClick={() => {
-                setActiveTab("bookings");
-                setBookingStatusFilter("REJECTED");
-              }}
-              className={`border rounded-md p-6 shadow-[0_2px_12px_rgb(0,0,0,0.03)] flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] ${rejectedBookings.length > 0
-                ? "bg-rose-50/70 border-rose-200"
-                : "bg-white border-slate-100"
-                }`}
-            >
-              <div className={`w-13 h-13 rounded-md flex items-center justify-center shrink-0 shadow-sm ${rejectedBookings.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
-                }`}>
-                <ShieldAlert className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Needs Review</p>
-                  {rejectedBookings.length > 0 && (
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                  )}
+            {activeUser?.role !== "SUPER_ADMIN" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white p-6 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] border border-slate-200/80 flex items-center gap-4 transition-transform hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <CalendarDays className="w-6 h-6" />
                 </div>
-                <h3 className={`text-2xl font-extrabold ${rejectedBookings.length > 0 ? "text-rose-700" : "text-slate-900"}`}>
-                  {rejectedBookings.length} Rejected
-                </h3>
-              </div>
-            </motion.div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Confirmed Stays</p>
+                  <h3 className="text-3xl font-bold text-slate-900">{confirmedBookings.length}</h3>
+                </div>
+              </motion.div>
+            )}
+
+            {activeUser?.role !== "SUPER_ADMIN" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                onClick={() => {
+                  setActiveTab("bookings");
+                  setBookingStatusFilter("REJECTED");
+                }}
+                className={`bg-white p-6 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] flex items-center gap-4 cursor-pointer transition-all hover:-translate-y-1 border ${rejectedBookings.length > 0
+                  ? "border-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
+                  : "border-slate-200/80"
+                  }`}
+              >
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${rejectedBookings.length > 0 ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-700"
+                  }`}>
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Needs Review</p>
+                    {rejectedBookings.length > 0 && (
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    )}
+                  </div>
+                  <h3 className={`text-3xl font-bold ${rejectedBookings.length > 0 ? "text-rose-600" : "text-slate-900"}`}>
+                    {rejectedBookings.length} Rejected
+                  </h3>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Tab Selector */}
-          <div className="flex border-b border-slate-200 mb-8 overflow-x-auto">
+          <div className="flex border-b border-slate-200/80 mb-8 overflow-x-auto">
             <button
               onClick={() => setActiveTab("bungalows")}
-              className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors border-b-2 ${activeTab === "bungalows" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors border-b-2 ${activeTab === "bungalows" ? "border-emerald-700 text-emerald-800" : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
                 }`}
             >
               Circuit Bungalows ({bungalows.length})
             </button>
-            <button
-              onClick={() => setActiveTab("bookings")}
-              className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "bookings" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
-                }`}
-            >
-              <span>Reservations & Approvals ({bookings.length})</span>
-              {rejectedBookings.length > 0 && (
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  {rejectedBookings.length} To Review
-                </span>
-              )}
-            </button>
-            {activeUser?.role === "SUPER_ADMIN" && (
+            {activeUser?.role !== "SUPER_ADMIN" && (
               <button
-                onClick={() => setActiveTab("admins")}
-                className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "admins" ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                onClick={() => setActiveTab("bookings")}
+                className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "bookings" ? "border-emerald-700 text-emerald-800" : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
                   }`}
               >
-                <span>Admin Management</span>
+                <span>Reservations & Approvals ({bookings.length})</span>
+                {rejectedBookings.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                    {rejectedBookings.length} To Review
+                  </span>
+                )}
               </button>
+            )}
+            {activeUser?.role === "SUPER_ADMIN" && (
+              <>
+                <button
+                  onClick={() => setActiveTab("admins")}
+                  className={`px-6 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors flex items-center gap-2 border-b-2 ${activeTab === "admins" ? "border-emerald-700 text-emerald-800" : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
+                    }`}
+                >
+                  <span>Admin Management</span>
+                </button>
+                <button
+                  onClick={() => window.location.href = "/admin/analytics"}
+                  className="px-6 py-2.5 ml-auto text-[14px] font-medium whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg shadow-sm border border-emerald-200 my-1 hover:brightness-95 active:scale-[0.99]"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Government Analytics</span>
+                </button>
+              </>
             )}
           </div>
 
@@ -752,13 +766,13 @@ export default function AdminPage() {
               <motion.div key="bungalows" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900">Manage Circuit Bungalows</h2>
+                    <h2 className="text-xl font-semibold text-slate-900">Manage Circuit Bungalows</h2>
                   </div>
                   <button
                     onClick={handleAddBungalow}
-                    className="flex items-center gap-2 px-5 py-3 bg-brand-primary text-white rounded-md hover:bg-[#12242b] transition-colors shadow-lg font-bold text-[14px] cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-3 bg-white border border-emerald-800 text-emerald-900 hover:bg-emerald-50 rounded-xl transition-all shadow-sm font-medium text-[14px] cursor-pointer hover:brightness-95 active:scale-[0.99]"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4" />
                     Add Bungalow
                   </button>
                 </div>
@@ -769,23 +783,23 @@ export default function AdminPage() {
                     <p className="text-[15px] font-medium text-slate-600">Loading data...</p>
                   </div>
                 ) : bungalows.length === 0 ? (
-                  <div className="bg-white rounded-[32px] border border-slate-100 p-24 text-center text-slate-500 shadow-sm flex flex-col items-center">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                      <Hotel className="w-8 h-8 text-slate-400" />
+                  <div className="bg-white rounded-xl border border-slate-200/80 p-24 text-center text-slate-600 shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex flex-col items-center">
+                    <div className="w-16 h-16 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-center mb-4">
+                      <Hotel className="w-8 h-8 text-emerald-700" />
                     </div>
-                    <p className="text-xl font-bold text-slate-900 mb-2">No Bungalows Found</p>
+                    <p className="text-xl font-semibold text-slate-900 mb-2">No Bungalows Found</p>
                     <p className="text-[15px] text-slate-500 mb-6 max-w-sm">You haven't added any circuit bungalows to the system yet.</p>
                     <button
                       onClick={handleAddBungalow}
-                      className="px-6 py-3 bg-brand-primary text-white rounded-md font-bold text-[14px] hover:bg-[#12242b] transition-colors cursor-pointer flex items-center gap-2"
+                      className="px-6 py-3 bg-white border border-emerald-800 hover:bg-emerald-50 text-emerald-900 rounded-xl font-medium text-[14px] transition-all cursor-pointer flex items-center gap-2 shadow-sm hover:brightness-95 active:scale-[0.99]"
                     >
                       <Plus className="w-4 h-4" />
                       Add First Bungalow
                     </button>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)] overflow-hidden">
-                    <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-5 border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="bg-white rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden">
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 border-b border-slate-100 bg-emerald-50/30 text-[11px] font-medium uppercase tracking-wider text-slate-600">
                       <div className="col-span-4">Bungalow Details</div>
                       <div className="col-span-3">Caretaker Info</div>
                       <div className="col-span-2 text-center">Rooms / Capacity</div>
@@ -796,18 +810,18 @@ export default function AdminPage() {
                       {bungalows.map((b) => {
                         const startingPrice = b.rooms?.length > 0 ? Math.min(...b.rooms.map((r) => r.price)) : 0;
                         return (
-                          <div key={b.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 md:px-8 py-6 items-center hover:bg-slate-50/50 transition-colors">
+                          <div key={b.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 md:px-8 py-4 items-center hover:bg-emerald-50/20 transition-colors">
                             <div className="col-span-1 md:col-span-4 flex items-center gap-4">
-                              <div className="w-16 h-16 rounded-md overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+                              <div className="w-16 h-16 rounded-md overflow-hidden shrink-0 border border-slate-200/80 shadow-sm">
                                 <img src={b.image} alt={b.name} className="w-full h-full object-cover" />
                               </div>
                               <div>
-                                <h3 className="font-bold text-slate-900 text-[15px] leading-tight mb-1">{b.name}</h3>
-                                <p className="text-[13px] text-slate-500 flex items-center gap-1 mb-1.5 font-medium">
+                                <h3 className="font-semibold text-slate-900 text-[14px] leading-tight mb-1">{b.name}</h3>
+                                <p className="text-[12px] text-slate-500 flex items-center gap-1 mb-1.5 font-medium">
                                   <MapPin className="w-3.5 h-3.5" />
                                   {b.location}
                                 </p>
-                                <span className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600 rounded-md border border-slate-200">
+                                <span className="inline-block px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest bg-slate-100 text-slate-600 rounded-md border border-slate-200">
                                   {b.department.split(" ")[0]}...
                                 </span>
                               </div>
@@ -870,7 +884,7 @@ export default function AdminPage() {
                 {/* Header with Search and Status Filter Pills */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900">Database Reservations & Approvals</h2>
+                    <h2 className="text-xl font-semibold text-slate-900">Database Reservations & Approvals</h2>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Review automated decisions, override rejected applications, or update guest reservation status.
                     </p>
@@ -884,7 +898,7 @@ export default function AdminPage() {
                       placeholder="Search ref ID, guest, bungalow..."
                       value={bookingSearchQuery}
                       onChange={(e) => setBookingSearchQuery(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-md pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
                     />
                     {bookingSearchQuery && (
                       <button
@@ -899,14 +913,14 @@ export default function AdminPage() {
 
                 {/* Sub-Filters: All, Rejected, Pending, Confirmed */}
                 <div className="flex flex-wrap items-center gap-2 mb-6">
-                  <span className="text-xs font-semibold text-slate-400 mr-1 flex items-center gap-1">
+                  <span className="text-xs font-semibold text-slate-500 mr-1 flex items-center gap-1">
                     <Filter className="w-3.5 h-3.5" /> Filter:
                   </span>
                   <button
                     onClick={() => setBookingStatusFilter("ALL")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${bookingStatusFilter === "ALL"
-                      ? "bg-brand-primary text-white shadow-sm"
-                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${bookingStatusFilter === "ALL"
+                      ? "bg-slate-800 text-white shadow-sm border border-slate-800"
+                      : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                   >
                     All ({bookings.length})
@@ -914,9 +928,9 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("REJECTED")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "REJECTED"
-                      ? "bg-rose-600 text-white shadow-sm"
-                      : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "REJECTED"
+                      ? "bg-rose-600 text-white shadow-sm border border-rose-600"
+                      : "bg-white text-rose-600 border border-rose-200 hover:bg-rose-50"
                       }`}
                   >
                     <AlertTriangle className="w-3.5 h-3.5" />
@@ -925,9 +939,9 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("PENDING")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "PENDING"
-                      ? "bg-amber-600 text-white shadow-sm"
-                      : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "PENDING"
+                      ? "bg-amber-500 text-white shadow-sm border border-amber-500"
+                      : "bg-white text-amber-700 border border-amber-200 hover:bg-amber-50"
                       }`}
                   >
                     <Clock className="w-3.5 h-3.5" />
@@ -936,9 +950,9 @@ export default function AdminPage() {
 
                   <button
                     onClick={() => setBookingStatusFilter("CONFIRMED")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "CONFIRMED"
-                      ? "bg-emerald-600 text-white shadow-sm"
-                      : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${bookingStatusFilter === "CONFIRMED"
+                      ? "bg-emerald-700 text-white shadow-sm border border-emerald-700"
+                      : "bg-white text-emerald-800 border border-emerald-200 hover:bg-emerald-50"
                       }`}
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -947,20 +961,20 @@ export default function AdminPage() {
                 </div>
 
                 {filteredBookings.length === 0 ? (
-                  <div className="bg-white rounded-[32px] border border-slate-100 p-24 text-center text-slate-500 flex flex-col items-center shadow-sm">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                      <CalendarDays className="w-8 h-8 text-slate-400" />
+                  <div className="bg-gradient-card-dark glass-panel-dark rounded-3xl border border-[#157954]/40 p-24 text-center text-[#C7CEE8] flex flex-col items-center shadow-md">
+                    <div className="w-16 h-16 bg-[#21263A]/50 rounded-2xl border border-[#157954]/30 flex items-center justify-center mb-4">
+                      <CalendarDays className="w-8 h-8 text-[#D0D34D]" />
                     </div>
-                    <p className="text-xl font-bold text-slate-900 mb-2">No Bookings Found</p>
-                    <p className="text-[15px] font-medium text-slate-500">
+                    <p className="text-xl font-extrabold text-white mb-2">No Bookings Found</p>
+                    <p className="text-[15px] font-medium text-[#C7CEE8]">
                       {bookingStatusFilter !== "ALL"
                         ? `No reservations matching the filter "${bookingStatusFilter}".`
                         : "The database currently has no booking records."}
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)] overflow-hidden">
-                    <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <div className="bg-white rounded-3xl border border-[#C7CEE8]/50 shadow-sm overflow-hidden">
+                    <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 border-b border-[#C7CEE8]/30 bg-[#21263A]/5 text-[11px] font-bold uppercase tracking-wider text-[#21263A]/70">
                       <div className="col-span-3">Booking Ref & Guest</div>
                       <div className="col-span-3">Accommodation</div>
                       <div className="col-span-2">Stay Dates</div>
@@ -968,7 +982,7 @@ export default function AdminPage() {
                       <div className="col-span-2 text-right">Manual Action</div>
                     </div>
 
-                    <div className="divide-y divide-slate-100">
+                    <div className="divide-y divide-[#C7CEE8]/20">
                       {filteredBookings.map((b) => {
                         const isRejected = b.status === "REJECTED";
                         const isConfirmed = b.status === "CONFIRMED";
@@ -979,7 +993,7 @@ export default function AdminPage() {
                             key={b.id}
                             className={`grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 md:px-8 py-5 items-center transition-colors ${isRejected
                               ? "bg-rose-50/30 hover:bg-rose-50/60 border-l-4 border-l-rose-500"
-                              : "hover:bg-slate-50/50"
+                              : "hover:bg-[#21263A]/5"
                               }`}
                           >
                             {/* Column 1: Reference & Guest */}
@@ -1065,9 +1079,9 @@ export default function AdminPage() {
                             <div className="col-span-1 lg:col-span-2 flex flex-wrap lg:flex-col items-start lg:items-end justify-start lg:justify-center gap-2 mt-2 lg:mt-0">
                               <button
                                 onClick={() => handleOpenReviewModal(b)}
-                                className={`px-3.5 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${isRejected
-                                  ? "bg-rose-600 hover:bg-rose-700 text-white ring-2 ring-rose-300"
-                                  : "bg-brand-primary hover:bg-[#12242b] text-white"
+                                className={`px-3.5 py-2 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${isRejected
+                                  ? "bg-rose-600 hover:bg-rose-700 text-white"
+                                  : "bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
                                   }`}
                               >
                                 <Eye className="w-3.5 h-3.5" />
@@ -1155,32 +1169,32 @@ export default function AdminPage() {
                       <input name="mobileNumber" required className="w-full border rounded-md p-2.5 text-sm" placeholder="07XXXXXXXX" />
                     </div>
                     <div className="md:col-span-2 mt-2">
-                      <button type="submit" disabled={saving} className="px-6 py-2.5 bg-brand-accent hover:bg-[#5a8640] text-white font-bold text-sm rounded-md transition-all cursor-pointer">
+                      <button type="submit" disabled={saving} className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-sm rounded-lg transition-all cursor-pointer shadow-sm active:scale-[0.99]">
                         {saving ? "Creating..." : "Create Admin Account"}
                       </button>
                     </div>
                   </form>
                 </div>
 
-                <div className="bg-white rounded-md shadow-sm border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] border border-slate-200/80 overflow-hidden">
                   <div className="p-5 border-b border-slate-100 bg-slate-50/50">
-                    <h3 className="font-bold text-slate-900">Existing Department Admins ({admins.length})</h3>
+                    <h3 className="font-semibold text-slate-900">Existing Department Admins ({admins.length})</h3>
                   </div>
                   <div className="divide-y divide-slate-100">
                     {admins.map((a) => (
-                      <div key={a.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                      <div key={a.id} className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors">
                         <div>
-                          <p className="font-bold text-slate-900 text-sm">{a.name} <span className="text-xs text-slate-400 font-normal ml-2">(@{a.username})</span></p>
+                          <p className="font-semibold text-slate-900 text-sm">{a.name} <span className="text-xs text-slate-500 font-medium ml-2">(@{a.username})</span></p>
                           <p className="text-xs text-slate-500 mt-0.5">{a.placeOfWork}</p>
                         </div>
-                        <div className="text-right text-xs text-slate-500">
+                        <div className="text-right text-xs text-slate-500 font-medium">
                           <p>{a.emailAddress}</p>
                           <p>{a.mobileNumber}</p>
                         </div>
                       </div>
                     ))}
                     {admins.length === 0 && (
-                      <div className="p-8 text-center text-slate-500 text-sm">No department admins found.</div>
+                      <div className="p-8 text-center text-slate-500 text-sm font-medium">No department admins found.</div>
                     )}
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { BungalowMarker } from "./InteractiveMap";
 import { useState, useMemo, useRef, useEffect } from "react";
+import TripPlannerModal from "./TripPlannerModal";
 
 // Dynamically import the Leaflet map so it only renders on the client
 // This prevents "window is not defined" errors during SSR
@@ -26,7 +27,20 @@ export type Attraction = {
   lon: number;
   thumbnail?: string;
   extract?: string;
+  distanceKm?: number;
 };
+
+function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+    Math.sin(dLon / 2) * Math.sin(dLon / 2); 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+  return R * c; // Distance in km
+}
 
 export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +52,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
   const [selectedBungalow, setSelectedBungalow] = useState<BungalowMarker | null>(null);
   const [nearbyAttractions, setNearbyAttractions] = useState<Attraction[]>([]);
   const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
+  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
   const [isLoadingAttractions, setIsLoadingAttractions] = useState(false);
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -91,12 +106,15 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
     setNearbyAttractions([]);
 
     try {
-      const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=20&format=json&origin=*`;
+      // We are using Wikipedia Geosearch API because public Overpass API is rate-limited and throws 504 timeouts.
+      // Wikipedia is 100% reliable for hackathon demos.
+      const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=50&format=json&origin=*`;
       const geoRes = await fetch(geoUrl);
       const geoData = await geoRes.json();
 
       const allPlaces = geoData.query?.geosearch || [];
-      const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
+      // Filter out non-tourist mundane places to improve accuracy
+      const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp', 'station', 'office'];
       let places = allPlaces.filter((p: any) => {
         const title = p.title.toLowerCase();
         return !excludeKeywords.some(keyword => title.includes(keyword));
@@ -104,7 +122,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       if (places.length === 0) {
         // Fallback: search wider radius (25km = 25000) for remote bungalows
-        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=25000&gslimit=20&format=json&origin=*`;
+        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=25000&gslimit=50&format=json&origin=*`;
         const fallbackRes = await fetch(fallbackUrl);
         const fallbackData = await fallbackRes.json();
         const fallbackPlaces = fallbackData.query?.geosearch || [];
@@ -119,7 +137,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         return;
       }
 
-      const topPlaces = places.slice(0, 10);
+      const topPlaces = places.slice(0, 15);
       const pageIds = topPlaces.map((p: any) => p.pageid).join('|');
 
       const detailsUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=200&exsentences=2&explaintext=true&pageids=${pageIds}&format=json&origin=*`;
@@ -130,6 +148,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       const attractions: Attraction[] = topPlaces.map((p: any) => {
         const page = pages[p.pageid];
+        const distanceKm = getDistanceFromLatLonInKm(bungalow.latitude!, bungalow.longitude!, p.lat, p.lon);
         return {
           id: p.pageid,
           title: p.title,
@@ -137,12 +156,13 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
           lon: p.lon,
           thumbnail: page?.thumbnail?.source,
           extract: page?.extract,
+          distanceKm,
         };
-      });
+      }).sort((a: Attraction, b: Attraction) => (a.distanceKm || 0) - (b.distanceKm || 0));
 
       setNearbyAttractions(attractions);
     } catch (error) {
-      console.error("Error fetching attractions:", error);
+      console.error("Error fetching Overpass attractions:", error);
     } finally {
       setIsLoadingAttractions(false);
     }
@@ -296,18 +316,20 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       {/* Selected Bungalow & Nearby Attractions Overlay */}
       {selectedBungalow && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto flex flex-col items-center gap-3 max-w-4xl w-full px-4">
-          <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-md shadow-md border border-slate-200 flex items-center justify-between gap-4 w-full">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-md bg-brand-primary/5 border border-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
-                <span className="material-symbols-outlined text-xl">holiday_village</span>
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-800 text-sm truncate">{selectedBungalow.name}</h3>
-                <p className="text-xs text-slate-500 truncate">{selectedBungalow.location} • Rs. {selectedBungalow.price.toLocaleString()}/night</p>
-              </div>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto flex flex-col items-center gap-3 max-w-4xl w-full px-4">
+          <div className="bg-white/95 backdrop-blur-md px-6 py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.15)] border border-slate-200 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 w-full">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-bold text-slate-800 truncate mb-1">{selectedBungalow.name}</h2>
+              <p className="flex items-center text-slate-500 font-medium text-xs mb-3"><span className="material-symbols-outlined text-sm mr-1 text-primary">location_on</span>{selectedBungalow.location}</p>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <button 
+                onClick={() => setIsPlannerOpen(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg font-semibold text-sm shadow-md transition-all hover:shadow-lg active:scale-95 shrink-0 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                Plan Trip with AI
+              </button>
               <Link
                 href={`/browse/${selectedBungalow.slug}`}
                 className="px-5 py-2.5 bg-[#D0D34D] hover:bg-[#b8bb3d] text-[#21263A] text-xs font-extrabold rounded-xl transition-all shadow-md flex items-center gap-1.5"
@@ -353,17 +375,23 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
                     <button
                       key={attraction.id}
                       onClick={() => handleAttractionClick(attraction)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${
-                        isSelected
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold shadow-lg transition-all shrink-0 border cursor-pointer ${isSelected
                           ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-400 scale-105"
                           : "bg-white/95 backdrop-blur-md text-purple-950 border-purple-100 hover:bg-purple-50 hover:border-purple-300"
-                      }`}
+                        }`}
                       title={`Click to zoom in on ${attraction.title}`}
                     >
-                      <span className="material-symbols-outlined text-[16px] text-amber-400">
+                      <span className="material-symbols-outlined text-[16px] text-amber-500">
                         {isSelected ? "zoom_in" : "location_on"}
                       </span>
-                      <span className="truncate max-w-[150px]">{attraction.title}</span>
+                      <div className="flex flex-col items-start">
+                        <span className="truncate max-w-[150px]">{attraction.title}</span>
+                        {attraction.distanceKm !== undefined && (
+                          <span className={`text-[10px] font-medium leading-none mt-0.5 ${isSelected ? "text-white/90" : "text-slate-500"}`}>
+                            {attraction.distanceKm.toFixed(1)} km away
+                          </span>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
@@ -381,6 +409,17 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             </div>
           )}
         </div>
+      )}
+
+      {/* Trip Planner Modal */}
+      {selectedBungalow && isPlannerOpen && (
+        <TripPlannerModal
+          isOpen={isPlannerOpen}
+          onClose={() => setIsPlannerOpen(false)}
+          bungalowName={selectedBungalow.name}
+          bungalowArea={selectedBungalow.location}
+          attractions={nearbyAttractions}
+        />
       )}
 
       <InteractiveMap
