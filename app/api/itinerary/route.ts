@@ -28,10 +28,8 @@ Generate a beautiful, day-by-day markdown itinerary. Be creative, engaging, and 
         prompt: prompt,
         session_id: `itinerary-${Date.now()}`,
         user: "govstay-user",
+        // Pass agent_name, but because agent-kernel routing can be tricky, the prompt also guides the supervisor.
         agent_name: "itinerary_agent",
-        execution: {
-            mode: "sync" // We want the full response at once for the UI
-        }
       }),
     });
 
@@ -44,11 +42,41 @@ Generate a beautiful, day-by-day markdown itinerary. Be creative, engaging, and 
       });
     }
 
-    const data = await response.json();
-    
-    // The response is usually { result: { text: "..." } } or { reply: "..." } depending on AK version
-    // Let's return the full data so the frontend can parse it
-    return new Response(JSON.stringify(data), {
+    // Agent Kernel returns Server-Sent Events (SSE). 
+    // We need to accumulate the stream and return a single JSON string to the modal.
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let fullItinerary = "";
+
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.substring(6).trim();
+            if (dataStr === '[DONE]' || !dataStr) continue;
+            try {
+              const dataObj = JSON.parse(dataStr);
+              // Agent Kernel sends text in `delta` or `reply`
+              if (dataObj.delta) {
+                fullItinerary += dataObj.delta;
+              } else if (dataObj.reply && !fullItinerary) {
+                fullItinerary = dataObj.reply;
+              }
+            } catch (e) {
+              // Ignore incomplete JSON chunks from SSE
+            }
+          }
+        }
+      }
+    }
+
+    return new Response(JSON.stringify({ text: fullItinerary }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

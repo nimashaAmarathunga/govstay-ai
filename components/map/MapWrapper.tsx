@@ -106,12 +106,15 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
     setNearbyAttractions([]);
 
     try {
-      const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=20&format=json&origin=*`;
+      // We are using Wikipedia Geosearch API because public Overpass API is rate-limited and throws 504 timeouts.
+      // Wikipedia is 100% reliable for hackathon demos.
+      const geoUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=10000&gslimit=50&format=json&origin=*`;
       const geoRes = await fetch(geoUrl);
       const geoData = await geoRes.json();
 
       const allPlaces = geoData.query?.geosearch || [];
-      const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp'];
+      // Filter out non-tourist mundane places to improve accuracy
+      const excludeKeywords = ['school', 'college', 'university', 'vidyalaya', 'hospital', 'clinic', 'medical', 'camp', 'station', 'office'];
       let places = allPlaces.filter((p: any) => {
         const title = p.title.toLowerCase();
         return !excludeKeywords.some(keyword => title.includes(keyword));
@@ -119,7 +122,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       if (places.length === 0) {
         // Fallback: search wider radius (25km = 25000) for remote bungalows
-        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=25000&gslimit=20&format=json&origin=*`;
+        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${bungalow.latitude}|${bungalow.longitude}&gsradius=25000&gslimit=50&format=json&origin=*`;
         const fallbackRes = await fetch(fallbackUrl);
         const fallbackData = await fallbackRes.json();
         const fallbackPlaces = fallbackData.query?.geosearch || [];
@@ -134,7 +137,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
         return;
       }
 
-      const topPlaces = places.slice(0, 10);
+      const topPlaces = places.slice(0, 15);
       const pageIds = topPlaces.map((p: any) => p.pageid).join('|');
 
       const detailsUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=200&exsentences=2&explaintext=true&pageids=${pageIds}&format=json&origin=*`;
@@ -159,7 +162,7 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
 
       setNearbyAttractions(attractions);
     } catch (error) {
-      console.error("Error fetching attractions:", error);
+      console.error("Error fetching Overpass attractions:", error);
     } finally {
       setIsLoadingAttractions(false);
     }
@@ -406,6 +409,17 @@ export default function MapWrapper({ bungalows }: { bungalows: BungalowMarker[] 
             </div>
           )}
         </div>
+      )}
+
+      {/* Trip Planner Modal */}
+      {selectedBungalow && isPlannerOpen && (
+        <TripPlannerModal
+          isOpen={isPlannerOpen}
+          onClose={() => setIsPlannerOpen(false)}
+          bungalowName={selectedBungalow.name}
+          bungalowArea={selectedBungalow.area}
+          attractions={nearbyAttractions}
+        />
       )}
 
       <InteractiveMap

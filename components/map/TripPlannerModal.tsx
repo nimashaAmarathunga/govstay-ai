@@ -19,6 +19,17 @@ export default function TripPlannerModal({ isOpen, onClose, bungalowName, bungal
   const [isGenerating, setIsGenerating] = useState(false);
   const [itinerary, setItinerary] = useState<string | null>(null);
 
+  const parseMarkdown = (text: string) => {
+    return text
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2 text-emerald-800">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-5 mb-3 text-emerald-900 border-b pb-1">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-black mt-6 mb-4 text-slate-900">$1</h1>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+      .replace(/^- (.*$)/gim, '<li class="ml-4 mb-1 list-disc marker:text-emerald-500">$1</li>')
+      .replace(/\n/gim, '<br/>');
+  };
+
   if (!isOpen) return null;
 
   const handleGenerate = async () => {
@@ -141,8 +152,8 @@ export default function TripPlannerModal({ isOpen, onClose, bungalowName, bungal
 
           {itinerary && !isGenerating && (
             <div className="space-y-4">
-              <div className="prose prose-sm prose-emerald max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: itinerary.replace(/\n/g, '<br/>') }} className="whitespace-pre-wrap text-slate-700 leading-relaxed" />
+              <div className="prose prose-sm max-w-none">
+                <div dangerouslySetInnerHTML={{ __html: parseMarkdown(itinerary) }} className="text-slate-700 leading-relaxed" />
               </div>
               <div className="pt-4 border-t border-slate-100 flex justify-end gap-3 mt-8">
                 <button 
