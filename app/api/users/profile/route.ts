@@ -45,13 +45,40 @@ export async function PUT(request: Request) {
     if (body.fullName !== undefined) updateData.name = body.fullName;
     else if (body.name !== undefined) updateData.name = body.name;
 
+    // Username
+    if (body.username !== undefined) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username: body.username,
+          id: { not: userId }
+        }
+      });
+      if (existingUser) {
+        return NextResponse.json({ error: 'Username is already taken' }, { status: 400 });
+      }
+      updateData.username = body.username;
+    }
+
     // NIC
     if (body.nic !== undefined) updateData.nicNumber = body.nic;
     else if (body.nicNumber !== undefined) updateData.nicNumber = body.nicNumber;
 
     // Employee ID
-    if (body.memberId !== undefined) updateData.empId = body.memberId;
-    else if (body.empId !== undefined) updateData.empId = body.empId;
+    if (body.memberId !== undefined || body.empId !== undefined) {
+      const newEmpId = body.memberId !== undefined ? body.memberId : body.empId;
+      if (newEmpId) {
+        const existingEmpIdUser = await prisma.user.findFirst({
+          where: {
+            empId: newEmpId,
+            id: { not: userId }
+          }
+        });
+        if (existingEmpIdUser) {
+          return NextResponse.json({ error: 'Employee ID is already registered to another user' }, { status: 400 });
+        }
+      }
+      updateData.empId = newEmpId;
+    }
 
     // Mobile
     if (body.phone !== undefined) updateData.mobileNumber = body.phone;

@@ -272,9 +272,10 @@ export default function DateRangePicker({
               let cellClass = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all relative cursor-pointer ";
               
               if (isCellDisabledVal) {
-                cellClass += "text-slate-300 cursor-not-allowed ";
                 if (isBooked) {
-                  cellClass += "bg-red-50/60 line-through text-red-300 ";
+                  cellClass += "bg-red-100 line-through text-red-700 cursor-not-allowed font-bold ";
+                } else {
+                  cellClass += "text-slate-300 cursor-not-allowed ";
                 }
               } else if (!isCurrentMonth) {
                 cellClass += "text-slate-400 hover:bg-slate-100 ";

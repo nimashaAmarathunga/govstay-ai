@@ -112,6 +112,7 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: profileData.name,
+          username: profileData.username,
           emailAddress: profileData.emailAddress,
           mobileNumber: profileData.mobileNumber,
           empId: profileData.empId,
@@ -227,7 +228,7 @@ export default function ProfilePage() {
 
   const profileFields = [
     { label: "Full Name", key: "name", icon: User, editable: true, type: "text" },
-    { label: "Username", key: "username", icon: User, editable: false, type: "text" },
+    { label: "Username", key: "username", icon: User, editable: true, type: "text" },
     { label: "Email Address", key: "emailAddress", icon: Mail, editable: true, type: "email" },
     { label: "Mobile Number", key: "mobileNumber", icon: Phone, editable: true, type: "tel" },
     { label: "Employee ID", key: "empId", icon: Hash, editable: true, type: "text" },
