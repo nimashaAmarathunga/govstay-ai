@@ -109,18 +109,18 @@ export default function LandingPage() {
               { title: "Manage Bookings", desc: "Track the status of your reservations and view your complete booking history.", icon: FileText }
             ].map((feat, idx) => (
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
                 key={idx} 
-                className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.02)] hover:border-emerald-600/40 hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(15,81,50,0.08)] transition-all duration-200 cursor-pointer"
+                className="bg-gradient-card-dark rounded-2xl p-6 border border-[#157954]/40 shadow-md text-center relative z-10 flex flex-col items-center hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
-                  <feat.icon className="w-5 h-5 text-emerald-700" />
+                <div className="w-16 h-16 bg-[#D0D34D] text-[#21263A] rounded-xl flex items-center justify-center mb-6 shadow-md">
+                  <feat.icon className="w-8 h-8 text-[#21263A]" />
                 </div>
-                <h3 className="text-base font-semibold text-slate-900 mb-2">{feat.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
+                <h3 className="text-lg font-extrabold text-white mb-2">{feat.title}</h3>
+                <p className="text-sm text-[#C7CEE8] leading-relaxed">{feat.desc}</p>
               </motion.div>
             ))}
           </div>

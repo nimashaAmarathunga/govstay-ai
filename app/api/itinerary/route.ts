@@ -16,9 +16,9 @@ Generate a beautiful, day-by-day markdown itinerary. Be creative, engaging, and 
 `;
 
     const agentKernelUrl = process.env.AGENT_KERNEL_URL || "http://127.0.0.1:8000";
-    
+
     console.log(`[Next.js API] Sending itinerary request to ${agentKernelUrl}/api/v1/chat...`);
-    
+
     const response = await fetch(`${agentKernelUrl}/api/v1/chat`, {
       method: "POST",
       headers: {
@@ -42,43 +42,14 @@ Generate a beautiful, day-by-day markdown itinerary. Be creative, engaging, and 
       });
     }
 
-    // Agent Kernel returns Server-Sent Events (SSE). 
-    // We need to accumulate the stream and return a single JSON string to the modal.
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let fullItinerary = "";
-
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.substring(6).trim();
-            if (dataStr === '[DONE]' || !dataStr) continue;
-            try {
-              const dataObj = JSON.parse(dataStr);
-              // Agent Kernel sends text in `delta` or `reply`
-              if (dataObj.delta) {
-                fullItinerary += dataObj.delta;
-              } else if (dataObj.reply && !fullItinerary) {
-                fullItinerary = dataObj.reply;
-              }
-            } catch (e) {
-              // Ignore incomplete JSON chunks from SSE
-            }
-          }
-        }
-      }
-    }
-
-    return new Response(JSON.stringify({ text: fullItinerary }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    // Proxy the Agent Kernel Server-Sent Events (SSE) stream directly to the frontend
+    return new Response(response.body, {
+      status: response.status,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
     });
 
   } catch (error) {

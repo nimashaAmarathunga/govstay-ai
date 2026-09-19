@@ -28,9 +28,17 @@ export default function Page() {
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeBooking, setActiveBooking] = useState<any>(null);
+  const [bankConfig, setBankConfig] = useState<any>(null);
   const router = useRouter();
   
   const { activeUser } = useUser();
+
+  useEffect(() => {
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => setBankConfig(data))
+      .catch(console.error);
+  }, []);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -426,12 +434,12 @@ export default function Page() {
                  </button>
                </div>
                
-               <div className="relative flex items-center bg-gradient-form-card border border-[#157954]/50 rounded-2xl p-2 shadow-xl focus-within:ring-2 focus-within:ring-[#D0D34D] transition-all glass-panel-dark">
+               <div className="relative flex items-center bg-white border-2 border-[#C7CEE8]/60 rounded-2xl p-2 shadow-sm focus-within:border-[#157954] focus-within:ring-4 focus-within:ring-[#157954]/10 transition-all">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,application/pdf" />
                  <button 
                    onClick={() => fileInputRef.current?.click()} 
                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
-                     attachment ? 'text-[#21263A] bg-[#D0D34D]' : 'text-[#C7CEE8] hover:text-white hover:bg-[#21263A]/80'
+                     attachment ? 'text-white bg-[#157954]' : 'text-slate-400 hover:text-[#157954] hover:bg-emerald-50'
                    }`}
                  >
                     <Paperclip className="w-5 h-5" />
@@ -442,14 +450,14 @@ export default function Page() {
                    onChange={(e) => setInputText(e.target.value)}
                    onKeyDown={handleKeyPress}
                    placeholder="Type your message to GovSewana Support..."
-                   className="flex-1 bg-transparent border-0 px-4 py-2 text-[15px] font-medium text-white placeholder:text-[#C7CEE8]/50 focus:outline-none focus:ring-0"
+                   className="flex-1 bg-transparent border-0 px-4 py-2 text-[15px] font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0"
                  />
                  <button
                    onClick={() => handleSendMessage()}
                    disabled={!inputText.trim() && !attachment}
-                   className="w-10 h-10 rounded-xl bg-[#D0D34D] text-[#21263A] flex items-center justify-center hover:bg-[#c3c642] disabled:opacity-40 transition-all shrink-0 shadow-sm"
+                   className="w-10 h-10 rounded-xl bg-[#157954] text-white flex items-center justify-center hover:bg-[#0f583d] disabled:opacity-40 disabled:bg-slate-200 disabled:text-slate-400 transition-all shrink-0 shadow-sm"
                  >
-                   <Send className="w-4 h-4 text-[#21263A]" />
+                   <Send className="w-4 h-4" />
                  </button>
                </div>
              </div>
@@ -526,6 +534,29 @@ export default function Page() {
                      <span className="text-[13px] font-bold text-slate-600 uppercase tracking-wider">Total Cost</span>
                      <span className="text-[16px] font-extrabold text-[#157954]">LKR {(activeBooking?.totalCost || draftState.total_cost).toLocaleString()}</span>
                    </div>
+                )}
+
+                {bankConfig && (
+                  <div className="bg-blue-50/50 border border-blue-200 rounded-xl p-4 mt-2 shadow-sm">
+                    <h3 className="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                      Deposit Details
+                    </h3>
+                    <div className="flex flex-col gap-1.5 text-[13px] text-blue-900">
+                      <div className="flex justify-between items-center">
+                        <span className="opacity-70 font-medium">Bank</span>
+                        <span className="font-bold">{bankConfig.bankName}</span>
+                      </div>
+                      <div className="flex justify-between items-start gap-2">
+                        <span className="opacity-70 font-medium whitespace-nowrap">Account Name</span>
+                        <span className="font-bold text-right leading-tight">{bankConfig.accountName}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="opacity-70 font-medium">Account No</span>
+                        <span className="font-black text-[15px]">{bankConfig.accountNumber}</span>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 <div className="mt-2">

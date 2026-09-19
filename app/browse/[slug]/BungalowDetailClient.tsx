@@ -85,6 +85,14 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
   const [bookedRoomNumbers, setBookedRoomNumbers] = useState<string[]>([]);
   const [paymentSlipUrl, setPaymentSlipUrl] = useState<string | null>(null);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [bankConfig, setBankConfig] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => setBankConfig(data))
+      .catch(console.error);
+  }, []);
 
   const formatPrice = (price: number) => {
     return `Rs. ${price.toLocaleString()}`;
@@ -801,6 +809,30 @@ export default function BungalowDetailClient({ bungalow }: BungalowDetailClientP
                       <p className="text-xs text-[#C7CEE8] font-medium mb-4">
                         Your reservation is pending. Please upload your payment slip to confirm.
                       </p>
+                      
+                      {bankConfig && (
+                        <div className="bg-[#1E293B]/60 border border-[#334155]/60 rounded-xl p-4 mb-4">
+                          <h5 className="text-[11px] font-bold text-[#D0D34D] uppercase tracking-wider mb-2 flex items-center gap-2">
+                             <span className="w-1.5 h-1.5 rounded-full bg-[#D0D34D] animate-pulse"></span>
+                             Deposit Details
+                          </h5>
+                          <div className="flex flex-col gap-2 text-xs text-[#C7CEE8]">
+                            <div className="flex justify-between items-center">
+                              <span className="opacity-70 font-medium">Bank</span>
+                              <span className="font-bold text-white">{bankConfig.bankName}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-2">
+                              <span className="opacity-70 font-medium whitespace-nowrap">Account Name</span>
+                              <span className="font-bold text-white text-right leading-tight">{bankConfig.accountName}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="opacity-70 font-medium">Account No</span>
+                              <span className="font-black text-sm text-[#D0D34D]">{bankConfig.accountNumber}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       <PaymentSlipUpload
                         onUploadComplete={(url) => {
                           setPaymentSlipUrl(url);

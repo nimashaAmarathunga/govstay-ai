@@ -197,3 +197,13 @@ model AgentSession {
 
   @@map("agent_sessions")
 }
+
+model SystemConfig {
+  id            String   @id @default("global")
+  bankName      String   @default("ABC Bank")
+  accountName   String   @default("GovSewana Official Bank Account")
+  accountNumber String   @default("123456")
+  updatedAt     DateTime @updatedAt
+
+  @@map("system_config")
+}
