@@ -41,7 +41,7 @@ export default function LandingClient() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight mb-6 leading-[1.1] drop-shadow-lg"
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 leading-[1.1] drop-shadow-lg whitespace-nowrap"
             >
               Discover and Reserve <br />
               <span className="text-[#D0D34D]">Government Bungalows</span>
