@@ -113,7 +113,7 @@ export default function BrowseBungalowsClient({ bungalows }: BrowseBungalowsClie
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-gradient-bungalow-card rounded-[20px] border border-[#157954]/40 overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer h-full"
+                  className="bg-gradient-bungalow-card rounded-[20px] border-2 border-[#D0D34D] overflow-hidden shadow-md hover:shadow-[0_8px_30px_rgba(208,211,77,0.2)] hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer h-full"
                 >
                   <div className="h-48 w-full relative overflow-hidden shrink-0">
                     <img

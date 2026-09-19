@@ -146,7 +146,7 @@ export default function Navigation() {
   }
 
   return (
-    <header className="flex-none h-16 glass-panel border-b border-[#C7CEE8]/40 flex items-center justify-between px-6 z-50 sticky top-0 shadow-sm">
+    <header className="flex-none h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-50 sticky top-0 shadow-sm transition-colors">
       {/* Brand & Left Navigation */}
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -155,11 +155,11 @@ export default function Navigation() {
               src="/logo_new.png"
               alt="GovSewana Logo"
               fill
-              className="object-contain mix-blend-multiply"
+              className="object-contain"
               priority
             />
           </div>
-          <h1 className="text-[18px] font-extrabold tracking-tight text-[#21263A]">GovSewana</h1>
+          <h1 className="text-[18px] font-extrabold tracking-tight text-slate-900">GovSewana</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 h-16">
@@ -170,17 +170,17 @@ export default function Navigation() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative px-4 h-full flex items-center text-[13px] font-bold transition-colors ${
+                className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
                   isActive
-                    ? "text-[#157954]"
-                    : "text-[#21263A]/70 hover:text-[#21263A]"
+                    ? "text-slate-900 font-bold"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {link.name}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#157954]"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
@@ -198,14 +198,14 @@ export default function Navigation() {
                 className={`relative px-4 h-full flex items-center text-[13px] font-medium transition-colors ${
                   isActive
                     ? "text-slate-900 font-bold"
-                    : "text-slate-500 hover:text-slate-900"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {link.name}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
@@ -223,13 +223,13 @@ export default function Navigation() {
           <div className="flex items-center gap-2 mr-2">
             <Link
               href="/login"
-              className="px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+              className="px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 text-[13px] font-bold text-white bg-brand-primary hover:bg-[#12242b] rounded-md shadow-sm transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 text-[13px] font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-sm transition-colors flex items-center gap-1.5"
             >
               Register
             </Link>
@@ -246,7 +246,7 @@ export default function Navigation() {
               <div className={`h-7 w-7 rounded-md flex items-center justify-center ${avatarBg}`}>
                 {avatarContent}
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
 
             <AnimatePresence>
@@ -304,8 +304,8 @@ export default function Navigation() {
             onClick={() => setSettingsOpen((prev) => !prev)}
             className={`p-2.5 rounded-md border transition-all cursor-pointer flex items-center justify-center ${
               settingsOpen 
-                ? "bg-brand-primary text-white border-slate-900 shadow-md ring-2 ring-brand-primary/30" 
-                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300"
+                ? "bg-slate-100 text-slate-900 border-slate-300 shadow-inner" 
+                : "bg-transparent text-slate-500 border-transparent hover:bg-slate-100 hover:text-slate-700"
             }`}
             title="App Settings & Admin Login"
             aria-label="Settings and Admin Login"

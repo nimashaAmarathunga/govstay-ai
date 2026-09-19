@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'landcom.gov.lk',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.landdevelopment.lk',
+      },
     ],
   },
 };

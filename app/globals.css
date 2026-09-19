@@ -49,14 +49,14 @@
   --color-surface-container-high: #C7CEE8;
   --color-primary-fixed: #D0D034D;
 
-  /* Brand Colors (Mindful Palettes No. 160) */
-  --color-brand-primary: #21263A;
+  /* Brand Colors (Mindful Palettes No. 160 + GovSewana Dark Green Theme) */
+  --color-brand-primary: #0F382E;
   --color-brand-accent: #D0D34D;
   --color-brand-emerald: #157954;
   --color-brand-lavender: #C7CEE8;
   --color-brand-light: #ffffff;
-  --color-brand-dark: #21263A;
-
+  --color-brand-dark: #0a251e; /* darker shade for text or deepest bg */
+  
   --radius-DEFAULT: 0.25rem;
   --radius-lg: 0.375rem;
   --radius-xl: 0.5rem;
