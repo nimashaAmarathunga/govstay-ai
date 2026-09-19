@@ -79,37 +79,83 @@ In alignment with the Open Category prototype guidelines, our application featur
 
 ```mermaid
 graph TD
-    User([User / Next.js]) -->|Chat / Upload| AK[Agent Kernel Middleware]
-    
-    subgraph "Agent Kernel Pipeline"
-        AK --> PreHook{Prompt Injection PreHook}
-        PreHook -->|Blocked| Reject[Safe Error Response]
-        PreHook -->|Passed| Router[Supervisor / Router]
-        
-        subgraph "LangGraph Specialists"
-            Router -->|Travel Queries| Travel[Travel Agent]
-            Router -->|Booking Logic| Booking[Booking Agent]
-            Router -->|Document AI| Verify[Verification Agent]
-            Router -->|Alerts| Notify[Notification Agent]
-        end
-        
-        Travel <-->|Queries| DB[(PostgreSQL Database)]
-        Booking <-->|Creates Bookings| DB
-        Verify <-->|Validates ID via Vision| DB
-        
-        Travel -.-> PostHook[Output Sanitization PostHook]
-        Booking -.-> PostHook
-        Verify -.-> PostHook
+    %% Styles
+    classDef frontend fill:#0a192f,stroke:#4a5568,color:#fff
+    classDef llm fill:#4a154b,stroke:#805ad5,color:#fff
+    classDef agent fill:#0f382e,stroke:#38a169,color:#fff
+    classDef security fill:#742a2a,stroke:#fc8181,color:#fff
+    classDef db fill:#ffffff,stroke:#718096,color:#000
+
+    subgraph Frontend [Frontend Next.js]
+        UI["Next.js App UI"]:::frontend
+        API["Next.js API"]:::frontend
+        UI --> API
     end
+
+    subgraph AI_Models [AI Models]
+        Qwen["Qwen 2.5 (7B/14B)"]:::llm
+        Llama["Llama 3.2 (3B)"]:::llm
+    end
+
+    subgraph Orchestration [Agent Kernel Orchestration]
+        REST["REST API"]:::agent
+        Batch["Batch Verifier"]:::agent
+        PreHook["PreHook (Security)"]:::security
+        Supervisor["Supervisor"]:::agent
+        PostHook["PostHook (Sanitization)"]:::security
+        
+        subgraph Agents [LangGraph Specialist Agents]
+            Verify["Verification Agent"]:::agent
+            Travel["Travel Agent"]:::agent
+            Booking["Booking Agent"]:::agent
+            Itinerary["Itinerary Agent"]:::agent
+        end
+    end
+
+    subgraph DB_Layer [Database Layer]
+        Prisma["Prisma ORM"]:::db
+        Postgres[("PostgreSQL")]:::db
+        Prisma --> Postgres
+    end
+
+    %% Flow Connections
+    API --> REST
+    API --> Batch
+
+    REST --> PreHook
+    PreHook --> Supervisor
     
-    PostHook -->|Clean Response| User
+    Supervisor --> Verify
+    Supervisor --> Travel
+    Supervisor --> Booking
+    Supervisor --> Itinerary
+
+    Verify --> PostHook
+    Travel --> PostHook
+    Booking --> PostHook
+    Itinerary --> PostHook
+
+    PostHook -.->|Clean Response| REST
+
+    Batch --> Prisma
+    Verify --> Prisma
+    Travel --> Prisma
+    Booking --> Prisma
+    Itinerary --> Prisma
+
+    Supervisor --> Llama
+    Verify --> Qwen
+    Travel --> Qwen
+    Booking --> Qwen
+    Itinerary --> Qwen
+    Batch --> Qwen
 ```
 
 ### Multi-Model Local AI Implementation
 
-- **Supervisor (Router) Agent:** Powered by `llama3.2:3b`. A lightning-fast, lightweight model used strictly to evaluate user intent and route them to the appropriate specialist agent (Travel, Booking, Verification, or Notification).
-- **Reasoning Agents (Travel & Booking):** Powered by `qwen2.5:7b`. Handles complex logic, state manipulation, and strict tool-calling to safely interact with our PostgreSQL database.
-- **Verification Agent (Document AI):** Powered by `qwen2.5-vl`. Handles our Vision/Document AI pipeline to securely read and verify uploaded government employee slips.
+- **Supervisor (Router) Agent:** Powered by `llama3.2:3b`. A lightning-fast, lightweight model used strictly to evaluate user intent and route them to the appropriate specialist agent (Travel, Booking, Verification, or Itinerary).
+- **Reasoning Agents (Travel, Booking, & Itinerary):** Powered by `qwen2.5:7b`. Handles complex logic, state manipulation, itinerary planning, and strict tool-calling to safely interact with our PostgreSQL database.
+- **Verification & Batch Verifier Agents (Document AI):** Powered by `qwen2.5-vl` / `qwen2.5`. Handles our Vision/Document AI pipeline and background verification tasks to securely process government employee documents.
 - **Agent Kernel Hooks:** A PreHook intercepts and blocks prompt injections, and a PostHook sanitizes all database outputs to prevent stack-trace leaks.
 
 ## Tech Stack
